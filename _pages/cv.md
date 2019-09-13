@@ -11,9 +11,10 @@ redirect_from:
 
 Education
 ======
-* B.S. in GitHub, GitHub University, 2012
-* M.S. in Jekyll, GitHub University, 2014
-* Ph.D in Version Control Theory, GitHub University, 2018 (expected)
+* B.S. in Mathematics, University Of Toronto, 2009-2014
+* M.A. in Economics, University Of Toronto, 2014-2015
+* M.S. in Statistics, University Of Toronto, 2015-2016
+* Ph.D in Statistics, Pennsylvania State University, 2016-2021 (expected)
 
 Work experience
 ======
