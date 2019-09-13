@@ -1,6 +1,6 @@
 ---
 layout: archive
-title: "CV"
+title: "Harris Quach"
 permalink: /cv/
 author_profile: true
 redirect_from:
@@ -16,7 +16,7 @@ Education
 * M.S. in Statistics, University Of Toronto, 2015-2016
 * Ph.D in Statistics, Pennsylvania State University, 2016-2021 (expected)
 
-Work experience
+<!-- Work experience
 ======
 * Summer 2015: Research Assistant
   * Github University
@@ -57,4 +57,4 @@ Teaching
   
 Service and leadership
 ======
-* Currently signed in to 43 different slack teams
+* Currently signed in to 43 different slack teams -->
