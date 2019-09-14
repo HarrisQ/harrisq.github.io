@@ -1,6 +1,6 @@
 ---
 layout: archive
-title: "Harris Quach"
+title: <!-- "Harris Quach" -->
 permalink: /cv/
 author_profile: true
 redirect_from:
