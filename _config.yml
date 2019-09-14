@@ -275,8 +275,14 @@ plugins:
   - jekyll-gist
   - jekyll-feed
   - jekyll-redirect-from
+  # From the original MM
+  # - jekyll-paginate
+  # - jekyll-sitemap
+  # - jekyll-gist
+  # - jekyll-feed
+  - jemoji
+  - jekyll-include-cache
   - jekyll-remote-theme
-  # - jekyll-include-cache # following the mmistakes starter set up
 # mimic GitHub Pages with --safe
 whitelist:
   - jekyll-paginate
@@ -284,7 +290,10 @@ whitelist:
   - jekyll-gist
   - jekyll-feed
   - jemoji
-
+  #
+  # - jemoji
+  - jekyll-include-cache
+  - jekyll-remote-theme
 
 # Archives
 #  Type
