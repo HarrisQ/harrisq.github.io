@@ -19,9 +19,9 @@
 
 /*
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+@import "minimal-mistakes"; // main partials
 */
 
-@import "minimal-mistakes"; // main partials
 
 /*
  * copying the maincss file from the original mmistakes maincss to see if the skins can be changed.
