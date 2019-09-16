@@ -11,10 +11,13 @@ redirect_from:
 
 Education
 ======
-* B.S. in Mathematics, University Of Toronto, 2009-2014
-* M.A. in Economics, University Of Toronto, 2014-2015
+
+* Ph.D in Statistics, Pennsylvania State University, 2016-present \\
+  * Advisor: Bing Li
 * M.S. in Statistics, University Of Toronto, 2015-2016
-* Ph.D in Statistics, Pennsylvania State University, 2016-2021 (expected)
+* M.A. in Economics, University Of Toronto, 2014-2015
+* B.S. in Mathematics, University Of Toronto, 2009-2014
+
 
 <!-- Work experience
 ======
