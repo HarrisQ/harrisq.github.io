@@ -13,17 +13,16 @@
 /*
  * copying the maincss file from the original mmistakes maincss to see if the skins can be changed.
  *
-*/
-
-@charset "utf-8";
-
-@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
-@import "minimal-mistakes"; // main partials
-
-/*
+ * @charset "utf-8";
+ * @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+ * @import "minimal-mistakes"; // main partials
+ *
  * copying the maincss file from the original mmistakes maincss to see if the skins can be changed.
  *
 */
+
+@import "minimal-mistakes"; // main partials
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 
 @import "vendor/breakpoint/breakpoint"; // media query mixins
 @import "variables";
@@ -49,8 +48,19 @@
 @import "archive";
 @import "sidebar";
 
-@import "vendor/font-awesome/fontawesome";
+/*
+ * copying the maincss file from the original mmistakes maincss to see if the skins can be changed.
+ *
+ * @charset "utf-8";
+ * @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+ * @import "minimal-mistakes"; // main partials
+ *
+ * copying the maincss file from the original mmistakes maincss to see if the skins can be changed.
+ *
+*/
+
+/*@import "vendor/font-awesome/fontawesome";
 @import "vendor/font-awesome/solid";
 @import "vendor/font-awesome/brands";
 @import "vendor/magnific-popup/magnific-popup";
-@import "print";
+@import "print";*/
