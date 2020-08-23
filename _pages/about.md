@@ -8,7 +8,7 @@ author_profile: true
   - /orighome.html -->
 ---
 
-I am a fourth year Ph.D. student, advised by [Dr. Bing Li](https://stat.psu.edu/people/bxl9), in the [Department of Statistics](http://stat.psu.edu/) at [Penn State University](https://www.psu.edu/).
+I am a fourth year Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/).
 
 
 
