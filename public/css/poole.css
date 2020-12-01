@@ -29,7 +29,10 @@
  */
 
 
+
 /*
+ * This is where Hyde Starts
+ * 
  * Body resets
  *
  * Update the foundational and global aspects of the page.
@@ -428,3 +431,4 @@ a.pagination-item:hover {
     border-bottom-right-radius: 4px;
   }
 }
+

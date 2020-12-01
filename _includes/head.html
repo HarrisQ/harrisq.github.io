@@ -37,8 +37,11 @@
   <!-- <link href="https://fonts.googleapis.com/css?family=PT+Serif:400,700|Lato:300,400,700&display=swap" rel="stylesheet"> -->
   
   <!-- Because baseurl is "/", take off the / from the two hrefs below -->
+  <!-- Actually, using "/" as base is outdated and the standard is now "" -->
+  <!-- But seems we still need to take off the "/" for this to work.... -->
+
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{{ "assets/fonts/font-awesome/css/font-awesome.min.css" | prepend: site.baseurl }}">
   <!-- Styles from Flexible - Makes a white/greyish sidebar --> 
-  <!-- <link rel="stylesheet" href="{{ "assets/css/main.css" | prepend: site.baseurl }}"> -->
+  <!-- <link rel="stylesheet" href="{{ "/assets/css/main.css" | prepend: site.baseurl }}"> -->
 </head>
