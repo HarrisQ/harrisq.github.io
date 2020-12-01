@@ -8,7 +8,7 @@ layout: default
 <!-- CV + About Me -->
 I am a fifth year Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/).
 
-A pdf copy of my CV can be found [here](files/Resume-HarrisQuach-acv.pdf). (Last updated January 2019)
+A pdf copy of my CV can be found [here](files/Resume-HarrisQuach-acv.pdf). (Last updated January 2020)
 
 
 <!-- ## Education
