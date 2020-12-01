@@ -8,7 +8,7 @@ Research Interests
 
 Broadly, my research interest is in dimension reduction and information extraction. My current focus is on theoretical and applied aspects of forward Sufficient Dimension Reduction (SDR). I have dabbled in applications of SDR with Approximate Bayesian Computations, Indirect Inference and Optimal Transport.      
 
-Prior to my doctoral studies at Penn State, I experimented with applications of higher-order likelihood methods (which are another form of dimension reduction) at Toronto.
+Prior to my doctoral studies at Penn State, I experimented with applications of higher-order likelihood approximations (which is another perspective for dimension reduction) at Toronto.
 
 
 <!-- Publications
