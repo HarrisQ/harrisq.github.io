@@ -22,12 +22,11 @@ Prior to my doctoral studies at Penn State, I experimented with applications of 
 Talks + Presentations
 ---
 
-* Accurate Confidence Intervals for Clustered Data and Small Samples, 2017.
-<!-- <br/> -->
-	*The Annual Statistical Society of Canada Conference.* Meeting (Winnipeg, Canada). (Oral Presentation accepted; Masters Work)
+* Accurate Confidence Intervals for Clustered Data and Small Samples, 2017. 
+	*The Annual Statistical Society of Canada Conference.* Meeting (Winnipeg, Canada). (Talk; Masters Work) (Was not able to attend)
 
 * An Investigation of Composite Likelihood and Indirect Inference, 2016
-	*The 4th Annual Statistical Society of Canada Student Conference.* Meeting (St. Catherines, Canada). (Poster Presentation; Masters Work)
+	*The 4th Annual Statistical Society of Canada Student Conference.* Meeting (St. Catherines, Canada). (Poster; Masters Work)
 
 <!-- <p class="message">
   Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!
