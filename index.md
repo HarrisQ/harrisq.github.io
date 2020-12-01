@@ -1,8 +1,8 @@
 ---
-layout: default
 title: Home
 ---
-
+<!-- layout: default --> 
+<!-- Needed to manually remove the default line in the index.html in _site -->
 # About Me
 
 <!-- CV + About Me -->
