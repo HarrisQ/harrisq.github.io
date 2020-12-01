@@ -3,15 +3,30 @@ layout: page
 title: Research 
 ---
 
-Publications
+Research Interests
 ---
+
+Broadly, my research interest is in dimension reduction and information extraction. My current focus is on theoretical and applied aspects of forward Sufficient Dimension Reduction.     
+
+
+
+<!-- Publications
+--- -->
 <!-- <ul>
     <li> Paper 1</li>
     <li> Paper 2</li> 
+    Kim, K., Li, B., Yu, Z., & Li, L. (2020). On post dimension reduction statistical inference. Annals of Statistics, 48(3), 1567-1592.
 </ul> -->
 
 Talks + Presentations
 ---
+
+* Accurate Confidence Intervals for Clustered Data and Small Samples, 2017.
+<!-- <br/> -->
+	*The Annual Statistical Society of Canada Conference.* Meeting (Winnipeg, Canada). (Oral Presentation accepted; Masters Work)
+
+* An Investigation of Composite Likelihood and Indirect Inference, 2016
+	*The 4th Annual Statistical Society of Canada Student Conference.* Meeting (St. Catherines, Canada). (Poster Presentation; Masters Work)
 
 <!-- <p class="message">
   Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!

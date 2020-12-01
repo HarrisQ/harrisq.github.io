@@ -1,14 +1,15 @@
 ---
 title: Home
+layout: default
 ---
-<!-- layout: default --> 
-<!-- Needed to manually remove the default line in the index.html in _site -->
+
 # About Me
 
 <!-- CV + About Me -->
 I am a fifth year Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/).
 
-My CV can be found [here](files/Resume-HarrisQuach-acv.pdf).
+A pdf copy of my CV can be found [here](files/Resume-HarrisQuach-acv.pdf).
+
 
 <!-- ## Education
 
@@ -32,9 +33,21 @@ My CV can be found [here](files/Resume-HarrisQuach-acv.pdf).
 
 ## Teaching at Penn State
 
+### Instructor
+
 * STAT318 - Elementary Probability (Fall 2019, Spring 2019, Fall 2018)
-* STAT200 - Introduction to Statistics (Summer 2019)
+* STAT200 - Introduction to Statistics (Summer 2019, Summer 2020 Online)
 * STAT414WC - Introduction to Probability Theory (Summer 2018 World Campus) 
+
+### Teaching Assistant
+
+* STAT517 - Probability Theory I (Fall 2020)
+* STAT561 - Statistical Inference I (Winter 2020)
+* STAT414 - Introduction to Probability Theory (Fall 2017, Summer 2017 World Campus) 
+* STAT319 - Introduction to Statistics (Winter 2017)
+* STAT318 - Elementary Probability (Winter 2018)
+* STAT200 - Introduction to Statistics (Fall 2016) 
+
 
 
 <!-- Work experience
