@@ -32,7 +32,8 @@
  */
 
 html {
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  /*font-family: "PT Sans", Helvetica, Arial, sans-serif;*/
+  font-family: 'Noto Sans', sans-serif;
 }
 @media (min-width: 48em) {
   html {
@@ -96,7 +97,7 @@ html {
  /* color: #e0e0e0 ;*/
   margin-top: 0;
   margin: 0 auto 0px;
-/*  font-family: 'Cabin';*/
+  font-family: 'Cabin', sans-serif;
   font-size: 2.5rem; /* Site Title/Name */
 }
 
@@ -135,7 +136,7 @@ html {
   text-align: center;
   color: #fff;
   margin-top: 0;
-  /*font-family: 'PT Serif', serif;*/
+  font-family: 'Noto Sans', sans-serif;
   font-size: 3.25rem;
 }
 
@@ -171,7 +172,7 @@ html {
 }*/
 
 .sidebar-about .author-name {
- /* font-family: 'PT Serif', serif;*/
+  font-family: 'Cabin', sans-serif;
   /*margin: 0 0 10px;*/
   position: relative;
   /*padding-bottom: 10px;*/
@@ -201,7 +202,7 @@ html {
   position: relative;
   color: #e0e0e0 ; /*#515151;*/
   font-size: 20px;
-/*  font-family: 'Noto Sans';*/
+  font-family: 'Noto Sans', sans-serif;
   margin: 0 0 30px;
 }
 
@@ -554,19 +555,19 @@ footer .copyright {
     background-color: #ffffff;
     -webkit-box-shadow: 0 1px 1px 0 rgba(31, 35, 46, 0.15);
             box-shadow: 0 1px 1px 0 rgba(31, 35, 46, 0.15);
-    /*text-align: center;*/
-    /*top: 0;
-    left: 0;
-    bottom: 0;*/
+    /*text-align: center;*/ /* doesn't seem to do anything */
+    /*top: 0;*/ /* doesn't seem to do anything */
+    /*left: 0;*/ /* doesn't seem to do anything */
+    /*bottom: 0;*/ /* doesn't seem to do anything */
     /*width: 21rem; */ /* position is now relative, get rid of this */
-    /*height: 100%;*/
-    /*padding: 20px 10px;*/
+    /*height: 100%;*/ /* doesn't seem to do anything */
+    /*padding: 20px 10px;*/ /* doesn't seem to do anything */
     background-color: #202020;  
     /*color: rgba(255,255,255,.5);*/
   } 
-  /*.sidebar footer {
+  .sidebar footer {
     margin-bottom: 10px;
-  }*/
+  }
   .about {
     text-align: center;
     max-width: 480px;

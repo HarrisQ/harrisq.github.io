@@ -51,7 +51,8 @@ body {
 }
 
 html {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /*font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+  font-family: 'Noto Sans', sans-serif;
   font-size: 16px;
   line-height: 1.5;
 }
@@ -84,6 +85,7 @@ a:focus {
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cabin', sans-serif;
   margin-bottom: .5 rem;
   font-weight: bold;
   line-height: 1.25;
@@ -392,7 +394,8 @@ tbody tr:nth-child(odd) th {
   overflow: hidden; /* clearfix */
   margin-left: 1rem;
   margin-right: 1rem;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-family: 'Cabin', sans-serif;
+  /*font-family: "PT Sans", Helvetica, Arial, sans-serif;*/
   color: #ccc;
   text-align: center;
 }
