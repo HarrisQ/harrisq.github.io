@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Generalized Forward Sufficient Dimension Reduction for Classification</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Harris Quach" />
+    <link href="libs/remark-css-0.0.1/hygge-duke.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/ninjutsu.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="cols.css" type="text/css" />
+    <link rel="stylesheet" href="assets/ninpo.css" type="text/css" />
+    <link rel="stylesheet" href="mytheme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Generalized Forward Sufficient Dimension Reduction for Classification
+### Harris Quach
+### Pennsylvania State University
+### 2021/01/22 (updated: 2020-12-01)
+
+---
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: { 
+      independenT: ["{\\mathrel{\\rlap{ #1 }\\mkern2mu{ #1 }}}",1],
+      indep: "{\\independenT{\\perp}}",
+      SS: "{\\mathscr{S}}",
+      R:"{\\mathbb{R}}",
+      Xcal: "{\\mathcal{X}}",
+      water: "{H_2O}",
+      braket: ['{\\langle #1 \\rangle}', 1], 
+      Abs: ['\\left\\lvert #2 \\right\\rvert_{\\text{#1}}', 2, ""]
+    }
+  }
+});
+</script>
+
+
+
+
+# Outline
+
+1. Sufficient Dimension Reduction (SDR)
+  - Inverse Regression for SDR
+  - Forward Regression for SDR
+
+2. Generalized Forward Regression for SDR
+  - Outer Product of Canonical Products (OPCG)
+  - Minimum Average Deviance Estimation (MADE)
+  - Order Determination, Implementation, Refinements
+  
+3. Categorical and Ordinal Classification
+  - Multivariate Canonical Link functions 
+  - Tuning the bandwidth via K-means
+  - Comparison to the Literature
+
+4. Simulations and Applications
+  &lt;!-- - Simulations --&gt;
+  &lt;!-- - USPS Digits --&gt;
+  &lt;!-- - Wine Quality --&gt;
+  &lt;!-- - ISOLET --&gt;
+  &lt;!-- - Amazon Commerce Reviews --&gt;
+  &lt;!-- - Anuran Frogs --&gt;
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# What is Sufficient Dimension Reduction?
+
+A Sufficient Dimension Reduction (SDR) method extracts a lower dimensional function of the predictors that "preserves" relationships of interest between the predictors and response.
+
+Let `\(Y \in \R^m\)` be a response and `\(X \in \R^p\)` be a predictor. 
+
+- Linear SDR seeks a linear function `\(s(X) = \beta^\top X\)`, where `\(\beta \in \R^{p \times d}\)` with `\(d &lt; p\)`.
+
+  - We focus mainly on Linear SDR.
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# What is Sufficient Dimension Reduction?
+
+
+- If we want to preserve all relevant information available in `\(X\)` about `\(Y\)`, then the goal of SDR is to find `\(\beta\)` so that `\(Y \indep X \; | \; \beta^\top X\)`.
+
+  - For any `\(\beta\)` such that `\(Y \indep X \; | \; \beta^\top X\)`, the `\(span(\beta)\)`     is a _Sufficient Dimension Reduction Subspace_.
+  
+  - Under mild conditions, a _minimial_ Sufficient Dimension Reduction Subspace exists (Yin, Li, and Cook (2008))
+  
+      - This is the **Central Subspace (CS)** and is denoted `\(\SS_{Y \indep X}\)`.
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# What is Sufficient Dimension Reduction?
+
+- If we want to preserve all relevant information available in `\(X\)` about the _regression relation_ `\(E(Y|X)\)`, then the goal is to find `\(\beta\)` so that 
+`\(Y \indep E(Y|X) \; | \; \beta^\top X\)`.
+
+  - The dimension reduction for the regression relation can be phrased as finding       `\(\beta\)` such that `\(E(Y|X) = E(Y | \beta^\top X )\)`
+  
+  - The minimial Sufficient Dimension Reduction Subspace for the regression            relation is the **Central Mean Subspace (CMS)** and is denoted `\(\SS_{E(Y | X)}\)`.
+  
+  - In general, the CMS is a subspace of the CS: `\(\SS_{E(Y | X)} \leq \SS_{Y \indep X}\)`
+   
+&lt;div class=prop text="CMS=CS"&gt;
+If \(Y\) depends on \(X\) only through the Conditional Mean, 
+i.e. \(Y \indep X \;|\; E(Y|X)\), then \(\SS_{E(Y | X)} = \SS_{Y \indep X}\).
+&lt;/div&gt;
+
+&lt;!-- - This framework can be applied broadly to define the Central Median Subspace, Central Quantile Subspace, Central `\(k^{th}\)`-Moment Subspace, and so on. --&gt;
+
+&lt;!-- `\(\Xcal\)` and `\(\water\)` and `\(\braket{4}\)` and `\(\Abs{4}{3}\)`. --&gt;    
+ 
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+
+Given response `\(Y\)` and predictor `\(X = (X_1, X_2) \in [0,1]^2\)`, let `\(Y=X_1^2\)`.
+So `\(Y= (\beta^\top X)^2\)`, where `\(\beta = (1,0) \in \R^2\)`. 
+
+.center[
+&lt;img align="centered" class="image" src="images/sdr_plot.png" width="50%"&gt;
+]
+
+- we want to recover `\(span(\beta)\)`.
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images/sir_plot1.png" width="60%"&gt;
+]
+
+&lt;!-- &lt;iframe src="images/almost_sir.html" width="90%" height="90%" frameborder="0"&gt;&lt;/iframe&gt; --&gt;
+
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images/sir_plot2.png" width="60%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images/sir_plot3.png" width="60%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images/sir_plot4.png" width="60%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images/sir_plot5.png" width="60%"&gt;
+]
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img align="centered" class="image" src="images/sir_plot5.png" width="60%"&gt;
+]
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img class="image" src="images/bad_sir_plot1.png" width="60%"&gt;
+] 
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img class="image" src="images/bad_sir_plot2.png" width="60%"&gt;
+] 
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img class="image" src="images/bad_sir_plot3.png" width="60%"&gt;
+] 
+--
+- Inverse methods require assumptions on the support of the predictor.
+
+---
+class: left, top  
+
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, and Zhu, 2002)
+
+.center[
+&lt;img class="image" src="images/fsdr_plot1.png" width="60%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, et al., 2002)
+
+
+.center[
+&lt;img class="image" src="images/fsdr_plot2.png" width="60%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, et al., 2002)
+ 
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3.png" width="60%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, et al., 2002)
+ 
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="60%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, et al., 2002)
+
+
+.center[
+&lt;img class="image" src="images/fsdr_plot4.png" width="60%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, et al., 2002)
+
+
+.center[
+&lt;img class="image" src="images/fsdr_plot5.png" width="60%"&gt;
+]  
+
+ 
+---
+class: left, top
+# Forward Regression for SDR 
+
+- OPG can only estimate dimension reduction for the regression relationship `\(E(Y|X)\)`
+
+  - OPG can only recover `\(\SS_{E(Y|X)}\)`
+  
+  - Extensions exist to recover `\(\SS_{Y|X}\)` 
+  
+      - dOPG (Xia and others, 2007); 
+        Ensemble OPG (Yin, Li, and others, 2011); 
+        Sliced Regression (Wang and Xia, 2008)
+
+
+---
+class: left, top
+# Generalized Forward Regression for SDR 
+
+
+- OPG does not work well for non-continuous response or classification problems.
+  
+- Idea: Estimate a GLM locally instead of a Linear Regression.
+&lt;br/&gt;&lt;br/&gt;
+
+--
+
+Existing extensions of Forward SDR:
+
+1. Generalized Single Index Model (GSIM): Lambert-Lacroix and Peyre (2006)
+  - Local Linear Single Index GLM with inverse link to estimate the Conditional Mean
+
+2. Minium Average Deviance Estimation (MADE): Adragni (2018)
+  - Local Linear GLM for scalar response
+  - Restricted to binary classification
+
+
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# Outer Product of Canonical Gradients (OPCG) 
+# and 
+# Minimum Average Deviance Estimator (MADE)
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Generalized Forward Regression for SDR
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
+]  
+
+- In OPG, we assume that `\(Y\)` depends on `\(X\)` through `\(E(Y|X)\)` (though not necessarily only through `\(E(Y|X)\)`) 
+  - we fit a linear regression about `\(\chi\)`, `\(Y = a + B^\top(X-\chi) +                  \varepsilon\)` and estimate `\(\partial E(Y|X)/ \partial \chi^\top\)` using 
+    `$$\hat B = \frac{ \widehat{ \partial E(Y|\chi)} }{\partial \chi^\top}.$$`
+
+
+---
+class: left, top 
+ 
+# Generalized Forward Regression for SDR
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
+]  
+
+- For generalized Forward SDR, we fit a linear exponential family to `\(Y|X\)` about `\(\chi\)` with a single observation of the local log-likelihood given by
+$$
+\log f(y|x) \equiv \theta(x-\chi)^\top y - b(\theta(x-\chi)) 
+$$ 
+---
+class: left, top 
+ 
+# Generalized Forward Regression for SDR
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
+]  
+
+- In OPG, we assume `\(Y\)` depends on `\(X\)` through the canonical parameter `\(E(Y|X)\)`
+- For the GLM, we assume that `\(Y\)` depends on `\(X\)` through the canonical parameter `\(\theta(X)\)` 
+
+
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+- In OPG, the dimension reduction assumption is `\(E(Y|X) = E(Y|\beta^\top X)\)`
+
+- With GLMs, the dimension reduction assumption is on the canonical parameter         `\(\theta(X) = \theta(\beta^\top X) \in \R^m\)`
+
+  - Recall: the canonical parameter is the inverse canonical link applied to            `\(E(Y|X)\)`, i.e. `\(\theta(X) = g^{-1}(E(Y|X))\)`, so the dimension reduction             assumption coincides with that of OPG.
+  
+--
+
+- Similar to OPG, we want to estimate the direction of change in `\(\theta(\chi)\)` about `\(\chi\)`, i.e. `\(\partial \theta(\chi) /\partial \chi^\top\)`.
+
+- To achieve this, we fit a linear function to the canonical parameter about `\(\chi\)`, giving the local-linear likelihood
+$$
+\log f(y|x) \equiv [a + B^\top(x-\chi)]^\top y - b( a + B^\top(x-\chi) ) 
+$$ 
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+The local linear log-likelihood for the linear exponential family about `\(\chi\)` is
+`\begin{align*}
+&amp; l(a_{\chi}, B_{\chi}; \chi, X_{1:n}, Y_{1:n}) \\
+= &amp;
+\frac 1n \sum_{i=1}^n
+K \bigg ( \frac{X_i - \chi}{h} \bigg )
+\{[a_{\chi} + B_{\chi}^\top (X_i - \chi)]^\top Y_i - 
+b(a_{\chi} + B_{\chi}^\top (X_i - \chi)) \} 
+\end{align*}`
+where `\(b(\cdot)\)` is the corresponding cumulant generating function, and `\(K(\cdot)\)` is a kernel weight with bandwidth `\(h\)`. 
+
+--
+
+We estimate `\(\partial \theta(\chi) /\partial \chi^\top\)` using
+`$$\hat B_\chi = \frac{ \widehat{ \partial \theta(\chi) } }{\partial \chi^\top}.$$`
+
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+We estimate a GLM about each `\(\chi=X_j\)` for `\(j=1,...,n\)` by minimizing the full negative local linear log-likelihood:
+
+`\begin{align*}
+&amp; L(a_1,..,a_n, B_1,...,B_n; X_{1:n}, Y_{1:n}) \\
+= &amp; -\frac 1n \sum_{j=1}^n l(a_j, B_j; X_j, X_{1:n}, Y_{1:n}) \\ 
+= &amp; -\frac {1}{n^2} \sum_{j,i=1}^n
+K \bigg ( \frac{X_i - X_j}{h} \bigg )\\
+&amp; \times 
+\{[a_{j} + B_{j}^\top (X_i - X_j)]^\top Y_i - 
+b(a_{j} + B_{j}^\top (X_i - X_j)) \} 
+.
+\end{align*}`
+
+--
+
+&lt;!-- This provides estimates `\(\hat B_1,...\hat B_n\)`. --&gt;
+
+Given our estimates `\(\hat B_j\)`, for `\(j=1,..,n\)`, we construct the average outer product
+`$$\hat \Lambda_n = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top.$$` 
+
+---
+class: left, top
+
+# The OPCG Estimator
+
+The **Outer Product of Canonical Gradients (OPCG) Estimator** for `\(\beta\)`, `\(\hat \beta_{opcg}\)`, is the first `\(d\)` eigenvectors of 
+`$$\hat \Lambda_n = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top,$$` 
+corresponding to the `\(d\)` largest eigenvalues.
+
+--
+
+**So far, we have argued by analogy to the OPG case. But is `\(\partial \theta(\chi) /\partial \chi^\top\)` what we should be estimating? Will this work?**
+
+
+
+
+---
+
+# OPCG: Unbiased and Exhaustive 
+
+Some SDR terminology (in statistical functional notation):
+
+- An estimator `\(M(F_n)\)` for a SDR subspace is **unbiased** if `\(M(F_0)\)` is a member of the subspace.
+  
+- An estimator `\(M(F_n)\)` for a SDR subspace is **exhaustive** if `\(M(F_0)\)` generates the subspace.
+  
+--
+&lt;br/&gt;
+
+OPG is unbiased and, under some conditions, exhaustive for `\(\SS_{E(Y|X)}\)`. (Li, 2018). 
+
+
+
+
+---
+
+# OPCG: Unbiased and Exhaustive 
+
+&lt;div class=prop text="Unbiasedness of the gradient"&gt;
+
+If the canonical parameter satisfies \(\theta(\chi)=\theta(\beta^\top\chi)\), then an estimator for the derivative is unbiased for the Central Mean Subspace, i.e.
+
+$$
+\frac{\partial\theta(\chi)}{\partial\chi^{\top}}
+\in \SS_{E(Y|X)}
+.
+$$
+
+&lt;/div&gt;
+--
+
+&lt;div class=prop text="Exhaustiveness of the Outer Product"&gt;
+
+If the canonical parameter \(\theta(\beta^\top\chi)\) is convexly supported in \(\beta^\top\chi\), then an estimator for the outer product of the derivative is exhaustive for the Central Mean Subspace, i.e.
+$$
+span\bigg ( \frac{\partial \theta(\chi)}{\partial \chi^{\top}}\frac{\partial \theta(\chi)^{\top}}{\partial \chi} \bigg ) 
+=
+\SS_{E(Y|X)}
+.
+$$
+&lt;/div&gt; 
+
+
+
+---
+class: left, top
+
+# OPCG: Consistency
+
+Consistency requires assumptions including: 
+- compactness of predictor and parameter, 
+- smoothness of the likelihood, 
+- symmetric kernels with finite moments,
+- convergence rates on the bandwidth.  
+
+These assumptions, referred to as Assumptions 1-8, are in an appendix at the end.
+
+--
+
+&lt;div class="theorem" text="Consistency of OPCG"&gt;
+  Suppose Assumptions 1-8 hold. Then, as \( n \to \infty\), we have
+  \begin{align*} 
+  \| \hat \beta_{opcg}  - \beta \|_F = O_{a.s}(h + h^{-1}\delta_{ph})
+  ,
+  \end{align*}
+  where \(\delta_{ph} = \sqrt{ \frac{\log n}{ nh^p} }\), \(  h \downarrow 0\), and
+  \( h^{-1}\delta_{ph} \to 0\).
+&lt;/div&gt;
+
+
+---
+class: left, top
+# Minimum Average Deviance Estimator (MADE)
+
+Recall the dimension reduction assumption: `\(\theta(\chi) = \theta (\beta^\top \chi)\)`. 
+
+Then the derivative satisfies:
+$$ \frac{\partial \theta(\chi)}{\partial \chi^{\top}} = \frac{\partial \theta(u)}{\partial u^{\top}} \beta $$
+--
+
+- What if we substitute into the negative log-likelihood and estimate `\(\beta\)` directly?
+
+  - In the Linear Regression case with OPG, this method is the Minimum Average          Variance Estimator (MAVE) (Xia, Tong, Li, et al., 2002).
+  
+
+---
+class: left, top
+# The Minimum Average Deviance Estimator (MADE)
+
+We can estimate `\(\beta\)` directly by minimizing the full negative local linear log-likelihood:
+
+`\begin{align*}
+&amp; L(\beta, a_1,..,a_n, B_1,...,B_n; X_{1:n}, Y_{1:n}) \\
+= &amp; -\frac 1n \sum_{j=1}^n l(a_j, B_j; X_j, X_{1:n}, Y_{1:n}) \\ 
+= &amp; -\frac {1}{n^2} \sum_{j,i=1}^n
+K \bigg ( \frac{X_i - X_j}{h} \bigg )\\
+&amp; \times 
+\{[a_{j} + B_{j}^\top \beta^\top (X_i - X_j)]^\top Y_i - 
+b(a_{j} + B_{j}^\top \beta^\top (X_i - X_j)) \} 
+.
+\end{align*}`
+
+--
+
+Minimization can be performed by alternating between minimizing `\(\beta\)` and `\(a_1,...,a_n, B_1,...,B_n\)`.
+
+We refer to the resulting estimator `\(\hat \beta_{made}\)` the **Minimum Average Deviance Estimator** (MADE) for `\(\beta\)`.
+
+
+---
+class: left, top
+# Minimum Average Deviance Estimator (MADE)
+
+- Our definition of MADE differs from Adragni's (2018)
+
+  - Our definition of MADE is analogous to MAVE, while Adragni's is more akin to an     rMAVE.
+
+- The alternating minimization for `\(\beta\)` in MADE incurs an additional computational cost relative to OPCG, like MAVE to OPG.
+
+  - But MAVE (i.e. Linear Regression setting) estimates `\(\beta\)` more efficiently. 
+  (Xia, 2006; Xia and others, 2007)
+
+  - We expect MADE to be more efficient compared to OPCG.
+
+
+---
+class: left, top
+# Implementation/Algorithm
+## OPCG 
+
+For fixed `\(X_j\)`, we make use of vectorization opteration, i.e. "vec", to get  
+`\begin{align*}
+a_j + B_j^\top(X-X_j) =  [\nu(X_i - X_j)]^\top c_{j}
+\end{align*}`
+where
+`\begin{align*}
+c_j = &amp; 
+\left ( \begin{matrix}
+a_j \\
+{\mathrm{vec} }(B_j^\top) 
+\end{matrix} \right )
+\in \R^{m(p+1)}
+\\
+\nu(X-X_j) = &amp; \left (
+\left ( \begin{matrix}
+1 \\
+X-X_j
+\end{matrix} \right )  
+\otimes I_m \right )
+\in \R^{m(p+1) \times m}
+\end{align*}`
+--
+
+The negative local linear log-likelihood about `\(X_j\)` becomes
+`\begin{align*}
+&amp; l(a_{j}, B_{j}; X_j, X_{1:n}, Y_{1:n}) \\
+= &amp;
+\frac 1n \sum_{i=1}^n
+K \bigg ( \frac{X_i - X_j}{h} \bigg )
+\{c_{j}^\top [\nu(X_i - X_j)] Y_i - 
+b([\nu(X_i - X_j)]^\top c_{j} \} 
+\end{align*}`
+
+
+---
+class: left, top
+# Implementation/Algorithm
+## OPCG 
+
+0. Given `\((Y_{1:n},X_{1:n})\)`, initial values `\(c_{1:n}^{(0)}\)`, and tolerance level `\(\varepsilon &gt; 0\)`.
+
+For each `\(j=1,...,n\)`
+1. Substitute `\(\hat c^{(r)}\)` into the objective ,
+
+2. and compute
+	`\(\hat \a_j^{(r+1)} = \hat \a_j^{(r)} + J_j^{-1} (\hat \a_j^{(r)} ) S_j(\hat \a_j^{(r)})\)`;
+	Repeat until $\frac{ || \hat \a_j^{(r+1)} - \hat \a_j^{(r+1)} ||_2 }{ ||\hat \a_j^{(r)} ||_2 } &lt; \vep $ and denote the final estimate by `\(\hat \a_j^*\)`; 
+	Construct matrix estimate `\(\hat D_j\)` as the `\(2,...,p+1\)` rows of the matrix $ \hat A_j = mat(\hat \a_j^*) \in \R^{(p+1) \times m}$, for all `\(j=1,...,n\)`;  
+	Form $\hat G = \frac 1n \sum_{j=1}^n  \hat D_j \hat D_j^{\top} $ ;  
+	Take first `\(d\)` eigenvectors of `\(\hat G\)`, `\(v_1,...,v_d\)`, to be the estimates for dimension reduction directions `\(\hat B_{OPCG} = (v_1,....,v_d)\)`;
+
+---
+class: left, top
+# Implementation/Algorithm
+## MADE 
+
+---
+class: left, top
+# Implementation/Algorithm
+## MADE 
+
+---
+class: left, top
+# Refined OPCG and MADE
+ 
+
+
+---
+class: left, top
+# Order Determination
+ 
+OPCG - Ladle, Parameter Augmentation; should work but not part of their cases
+
+MADE - CV and sequential tests
+
+
+
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# Classification and Tuning
+
+---
+class: left, top
+# Sufficient Dimension Reduction for Classification
+
+&lt;div class="lemma"&gt;
+If \(Y|X\) is a linear exponential family with canonical parameter \(\theta(X)\), then the Central Mean Subspace coincides with the Central Subspace, i.e. \(\SS_{Y \indep X} = \SS_{E(Y|X)}\).
+&lt;/div&gt;
+
+---
+class: left, top
+# Multinomial/Categorical Response
+
+---
+class: left, top
+# Ordinal Response
+ 
+ 
+---
+class: left, top
+# Tuning the bandwidth
+ 
+   
+---
+class: left, top
+# Tuning the bandwidth
+
+---
+class: left, top
+# Alternative approaches
+
+GSIM
+
+MADE
+
+KDR
+  
+
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# Simulations and Data Analyses
+
+
+---
+class: left, top
+# Simulations
+
+
+---
+class: left, top
+# .left[Tuning HTML Widget]
+
+&lt;iframe src="tuning.html" width="1800" height="550" frameborder="0" &gt;&lt;/iframe&gt;
+&lt;!-- &lt;iframe src="images/tuning2.html" width="1800" height="500" frameborder="0"&gt;&lt;/iframe&gt; --&gt;
+&lt;!-- htmltools::tags$iframe(src="images/tuning.html" width="800" height="400") --&gt;
+ 
+
+---
+class: left, top
+# USPS Digit
+
+
+---
+class: left, top
+# Wine Quality
+ 
+---
+class: left, top
+# ISOLET
+
+---
+class: left, top
+# Anuran Frogs
+
+---
+class: left, top
+# Amazon Commerce Reviews
+
+---
+class: left, top
+# Conclusion
+ 
+Provided a clear framework for forward regression alternatives to inverse SDR methods  
+ 
+Provided a Tuning approach
+
+
+---
+layout: false
+# References
+
+Adragni, K. P. (2018). "Minimum average deviance estimation for
+sufficient dimension reduction". In: _Journal of Statistical
+Computation and Simulation_ 88.3, pp. 411-431.
+
+Lambert-Lacroix, S. and J. Peyre (2006). "Local likelihood regression
+in generalized linear single-index models with applications to
+microarray data". In: _Computational statistics &amp; data analysis_ 51.3,
+pp. 2091-2113.
+
+Li, B. (2018). _Sufficient Dimension Reduction: Methods and
+Applications with R_. CRC Press.
+
+Li, K. (1991). "Sliced inverse regression for dimension reduction". In:
+_Journal of the American Statistical Association_ 86.414, pp. 316-327.
+
+Wang, H. and Y. Xia (2008). "Sliced regression for dimension
+reduction". In: _Journal of the American Statistical Association_
+103.482, pp. 811-821.
+
+---
+layout: false
+# References
+
+Xia, Y. (2006). "Asymptotic distributions for two estimators of the
+single-index model". In: _Econometric Theory_ 22.6, pp. 1112-1137.
+
+Xia, Y. and others (2007). "A constructive approach to the estimation
+of dimension reduction directions". In: _The Annals of Statistics_
+35.6, pp. 2654-2690.
+
+Xia, Y, H. Tong, W. Li, et al. (2002). "An adaptive estimation of
+dimension reduction space". In: _Journal of the Royal Statistical
+Society: Series B (Statistical Methodology)_ 64.3, pp. 363-410.
+
+Yin, X, B. Li, and R. D. Cook (2008). "Successive direction extraction
+for estimating the central subspace in a multiple-index regression".
+In: _Journal of Multivariate Analysis_ 99.8, pp. 1733-1757.
+
+Yin, X, B. Li, and others (2011). "Sufficient dimension reduction based
+on an ensemble of minimum average variance estimators". In: _The Annals
+of Statistics_ 39.6, pp. 3392-3416.
+
+&lt;!-- --- --&gt;
+&lt;!-- layout: false --&gt;
+&lt;!-- # References --&gt;
+
+&lt;!-- ```{r, echo=FALSE, results="asis"} --&gt;
+&lt;!-- PrintBibliography(bib_sdr, start=11) --&gt;
+&lt;!-- ``` --&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

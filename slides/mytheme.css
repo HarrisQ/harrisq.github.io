@@ -1,0 +1,74 @@
+.defn {
+  display: block;
+  font-style: normal;
+  font-size: 24px;
+  /*font-family: "Times New Roman";*/
+  color: black;
+}
+.defn::before {
+  content: "Definition. ";
+  font-weight: bold;
+  font-style: normal;
+}
+.defn[text]::before {
+  content: "Definition (" attr(text) "). ";
+}
+.defn p {
+  display: inline; 
+}
+.prop {
+  display: block;
+  font-style: italic;
+  font-size: 24px;
+  /*font-family: "Times New Roman";*/
+  color: black;
+}
+.prop::before {
+  content: "Proposition. ";
+  font-weight: bold;
+  font-style: normal;
+}
+.prop[text]::before {
+  content: "Proposition (" attr(text) "). ";
+}
+.prop p {
+  display: inline;
+}
+/**/
+.theorem {
+  display: block;
+  font-style: italic;
+  font-size: 24px;
+  /*font-family: "Times New Roman";*/
+  color: black;
+}
+.theorem::before {
+  content: "Theorem. ";
+  font-weight: bold;
+  font-style: normal;
+}
+.theorem[text]::before {
+  content: "Theorem (" attr(text) "). ";
+}
+.theorem p {
+  display: inline;
+}
+/**/
+.lemma {
+  display: block;
+  font-style: italic;
+  font-size: 24px;
+  /*font-family: "Times New Roman";*/
+  color: black;
+}
+.lemma::before {
+  content: "Lemma. ";
+  font-weight: bold;
+  font-style: normal;
+}
+.lemma[text]::before {
+  content: "Lemma (" attr(text) "). ";
+}
+.lemma p {
+  display: inline;
+}
