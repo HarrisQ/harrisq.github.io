@@ -534,8 +534,8 @@ footer .copyright {
 }*/
 
 /* Small Devices, Tablets */
-/*@media only screen and (max-width: 768px) {
-  .sidebar {
+@media only screen and (max-width: 768px) {
+  /*.sidebar {
     position: relative; /* position is now relative  
     display: -webkit-box;
     display: -webkit-flex;
