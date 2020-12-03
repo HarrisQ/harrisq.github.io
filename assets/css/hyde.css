@@ -612,7 +612,7 @@ footer .copyright {
     padding: 10px;
   }
     
-  .sidebar footer {
+/*  .sidebar footer {
     margin-bottom: 10px;
   }
   .about {
@@ -648,7 +648,8 @@ footer .copyright {
   }
   .contact-title, .copyright {
     display: none;
-  }
+  }*/
+    
   /*.post {
     width: 98%;
     max-width: 100%;
