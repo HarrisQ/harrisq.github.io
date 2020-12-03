@@ -2,4 +2,4 @@ My personal website.
 
 This is created from the Hyde/Poole template and incorporates aspects of the Flexible template's sidebar. 
 
-This is hacksawed together, so the code is sloppy with comments pointing to a lot of sections with trial and error.  
+The code is filled with comments that explain what I think parts of the code does through trial and error.  
