@@ -1,9 +1,7 @@
 ---
-title: Home
+title: Introduction
 layout: default
----
-
-# Introduction
+--- 
 
 <!-- CV + About Me -->
 I am a Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/).
