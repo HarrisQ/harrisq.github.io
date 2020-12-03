@@ -3,6 +3,8 @@ title: Introduction
 layout: default
 --- 
 
+<h1 class="page-title">Introduction</h1>
+
 <!-- CV + About Me -->
 I am a Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/).
 
