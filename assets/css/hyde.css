@@ -535,8 +535,9 @@ footer .copyright {
 
 /* Small Devices, Tablets */
 @media only screen and (max-width: 768px) {
-  /*.sidebar {
-    position: relative; /* position is now relative  
+  .sidebar {
+    /* position is now relative so that it shows at top on phone*/
+    position: relative;  
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
