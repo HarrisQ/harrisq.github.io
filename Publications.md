@@ -6,9 +6,11 @@ title: Research
 Research Interests
 ---
 
-Broadly, my research interest is in dimension reduction and information extraction. My current focus is on theoretical and applied aspects of forward Sufficient Dimension Reduction (SDR). I have dabbled in applications of SDR with Approximate Bayesian Computations, Indirect Inference and Optimal Transport.      
+My research interest is in dimension reduction and information extraction. My current focus is on theoretical and applied aspects of forward Sufficient Dimension Reduction (SDR). 
+<!-- I have dabbled in applications of SDR for generating summary statistics in Approximate Bayesian Computations and Indirect Inference, and have explored how Optimal Transport may remedy violations of distributional assumptions for inverse SDR methods.      
+ -->
 
-Prior to my doctoral studies at Penn State, I experimented with applications of higher-order likelihood approximations (which is another perspective for dimension reduction) at Toronto.
+Prior to my doctoral studies at Penn State, I experimented with applications of higher-order likelihood approximations (which is another perspective of dimension reduction) at Toronto.
 
 
 <!-- Publications
@@ -21,6 +23,8 @@ Prior to my doctoral studies at Penn State, I experimented with applications of 
 
 Talks + Presentations
 ---
+<!-- * Generalized Forward Sufficient Dimension Reduction for Classification, 2020. 
+	*Stochastic Modelling And Computing* Seminar (Penn State) &nbsp;[Slides](/slides/opcg_slides_pdf.pdf). -->
 
 * Accurate Confidence Intervals for Clustered Data and Small Samples, 2017. 
 	*The Annual Statistical Society of Canada Conference.* Meeting (Winnipeg, Canada). (Talk; Masters Work) (Was not able to attend)
@@ -28,6 +32,12 @@ Talks + Presentations
 * An Investigation of Composite Likelihood and Indirect Inference, 2016
 	*The 4th Annual Statistical Society of Canada Student Conference.* Meeting (St. Catherines, Canada). (Poster; Masters Work)
 
+
+Code + Packages
+---
+<!-- * Linear Sufficient Dimension Reduction. [Link](https://github.com/HarrisQ/linearsdr).
+	* Contains R Code for Linear Forward SDR (OPG, MAVE, OPCG, MADE) as well as code for Linear Inverse SDR methods (SIR, SAVE, DR).
+ -->
 <!-- <p class="message">
   Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!
 </p>
