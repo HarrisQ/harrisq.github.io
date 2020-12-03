@@ -562,10 +562,10 @@ footer .copyright {
     /*bottom: 0;*/ /* doesn't seem to do anything */
     /*width: 21rem; */ /* position is now relative, get rid of this */
     /*height: 100%;*/ /* doesn't seem to do anything */
-    /*padding: 20px 10px;*/ /* doesn't seem to do anything  
+    /*padding: 20px 10px;*/ /* doesn't seem to do anything  */
     background-color: #202020;  
-    /*color: rgba(255,255,255,.5); 
-  } */
+    /*color: rgba(255,255,255,.5); */
+  } 
   .sidebar footer {
     margin-bottom: 10px;
   }
