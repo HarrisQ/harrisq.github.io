@@ -47,7 +47,7 @@ Programming Languages
 * Rudimentary:
     * MATLAB, Python, HTML
 
-Work Experience
+Related Experience
 ---
 * Winter 2021: Research Assistant
   * Pennsylvania State University
