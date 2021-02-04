@@ -13,8 +13,8 @@ My research interest is in dimension reduction and information extraction. My cu
 Prior to my doctoral studies at Penn State, I experimented with applications of higher-order likelihood approximations (which is another perspective of dimension reduction) at Toronto.
 
 
-<!-- Publications
---- -->
+Publications
+---
 <ul>
     <li> Generalized Forward Regression for Sufficient Dimension Reduction in Classification Problems. *In Process of Submission* </li>
     <!-- <li> Paper 2</li> 
