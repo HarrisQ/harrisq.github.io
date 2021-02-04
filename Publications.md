@@ -15,11 +15,11 @@ Prior to my doctoral studies at Penn State, I experimented with applications of 
 
 <!-- Publications
 --- -->
-<!-- <ul>
-    <li> Paper 1</li>
-    <li> Paper 2</li> 
-    Kim, K., Li, B., Yu, Z., & Li, L. (2020). On post dimension reduction statistical inference. Annals of Statistics, 48(3), 1567-1592.
-</ul> -->
+<ul>
+    <li> Generalized Forward Regression for Sufficient Dimension Reduction in Classification Problems. *In Process of Submission* </li>
+    <!-- <li> Paper 2</li> 
+    Kim, K., Li, B., Yu, Z., & Li, L. (2020). On post dimension reduction statistical inference. Annals of Statistics, 48(3), 1567-1592. -->
+</ul>
 
 Talks + Presentations
 ---
@@ -35,9 +35,9 @@ Talks + Presentations
 
 Code + Packages
 ---
-<!-- * Linear Sufficient Dimension Reduction. [Link](https://github.com/HarrisQ/linearsdr).
-	* Contains R Code for Linear Forward SDR (OPG, MAVE, OPCG, MADE) as well as code for Linear Inverse SDR methods (SIR, SAVE, DR).
- -->
+* Linear Sufficient Dimension Reduction. [Link](https://github.com/HarrisQ/linearsdr).
+	* Contains R Code for a variety of Linear SDR methods: OPG, MAVE, OPCG, MADE, SIR, SAVE, DR.
+
 <!-- <p class="message">
   Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!
 </p>
