@@ -15,11 +15,13 @@ Prior to my doctoral studies at Penn State, I experimented with applications of 
 
 Publications
 ---
-<ul>
-    <li> Generalized Forward Regression for Sufficient Dimension Reduction in Classification Problems. *In Process of Submission* </li>
-    <!-- <li> Paper 2</li> 
-    Kim, K., Li, B., Yu, Z., & Li, L. (2020). On post dimension reduction statistical inference. Annals of Statistics, 48(3), 1567-1592. -->
-</ul>
+* Generalized Forward Regression for Sufficient Dimension Reduction in Classification Problems. *In Process of Submission*.
+
+<!-- <ul>
+    <li>  </li>
+    <li> Paper 2</li> 
+    Kim, K., Li, B., Yu, Z., & Li, L. (2020). On post dimension reduction statistical inference. Annals of Statistics, 48(3), 1567-1592.
+</ul> -->
 
 Talks + Presentations
 ---
