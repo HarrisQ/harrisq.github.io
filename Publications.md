@@ -15,7 +15,7 @@ Prior to my doctoral studies at Penn State, I experimented with applications of 
 
 Publications
 ---
-* Generalized Forward Regression for Sufficient Dimension Reduction in Classification Problems. *In Process of Submission*.
+* Generalized Forward Regression for Sufficient Dimension Reduction in Classification Problems. *Preparing for Submission*. [arxiv](https://arxiv.org/abs/2102.06002).
 
 <!-- <ul>
     <li>  </li>
