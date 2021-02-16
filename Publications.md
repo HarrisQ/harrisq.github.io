@@ -15,7 +15,7 @@ Prior to my doctoral studies at Penn State, I experimented with applications of 
 
 Publications
 ---
-* Generalized Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses. *Preparing for Submission*. [arxiv](https://arxiv.org/abs/2102.06002).
+* Generalized Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses. *Preparing for Submission*. [arxiv](https://arxiv.org/abs/2102.06002). [supplement](files/supplementary_materials.pdf)
 
 <!-- <ul>
     <li>  </li>
