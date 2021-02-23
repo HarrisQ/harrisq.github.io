@@ -38,7 +38,7 @@ MathJax.Hub.Config({
 &lt;!-- # .bg-text[Generalized Forward Sufficient Dimension Reduction for Classification] --&gt;
 &lt;!-- &lt;hr width="700" align="left" /&gt; --&gt;
 &lt;hr/&gt;
-## Harris Quach (joint work with Bing Li) &lt;br/&gt; Date: 2021-03-05 (updated: 2021-02-22)
+## Harris Quach (joint work with Bing Li) &lt;br/&gt; Date: 2021-03-05 (updated: 2021-02-23)
 
 ---
 # Outline
@@ -252,7 +252,7 @@ class: left, top
 class: left, top  
 
 # Forward Regression for SDR
-## Outer Product of Gradients (OPG) (Xia, Tong, Li, et al., 2002)
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, and Zhu, 2002)
 
 .center[
 &lt;img class="image" src="images/fsdr_plot1.png" width="55%"&gt;
@@ -425,7 +425,7 @@ Suppose `\(Y\)` is a categorical variable taking values in `\(\{1,...,m\}\)` nom
 
 --
 
-The mean and variance of `\(S\)` are
+Let `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` vector of probabilities for each category.  The mean and variance of `\(S\)` are
 `\begin{align*}
 E(S) =  p , 
 \quad 
@@ -439,7 +439,7 @@ class: left, top
 # Categorical Response
 
 The canonical link is the multivariate logistic function. 
-Let `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` vector of probabilities. The multivariate logistic link and its inverse are
+The multivariate logistic link and its inverse are
 `\begin{align*}
 \theta(p) = \log \frac{ p }{ 1 - \boldsymbol{1}^{\top} p }
 \qquad
@@ -452,7 +452,7 @@ The density and log-likelihood of `\(S\)` are
 `\begin{align*}
 f(S;p) \propto \prod_{j=1}^{m-1} (p^j)^{S^j},
 \quad  
-\ell(p;S) = \theta^{\top}S - \log ( 1 - \boldsymbol 1^{\top}  e^\theta   )
+\ell(\theta;S) = \theta^{\top}S - \log ( 1 - \boldsymbol 1^{\top}  e^\theta   )
 ,
 \end{align*}`
 where the cumulant generating function is 
@@ -1218,24 +1218,30 @@ Input variables (based on physicochemical tests):
 ---
 class: left, top, inverse
 # .bg-text[Conclusion]
- 
-1. Provide a framework for generalized forward SDR: OPCG, MADE, RADE.
+
+
+1. Provided the Multivariate Link Functions for Categorical and Ordinal Responses.
 
 --
 
-2. Demonstrate the effectiveness of OPCG in categorical and ordinal classification problems.
+2. Provided a framework for generalized forward SDR: OPCG, MADE. 
+
+  - And applied it to categorical and ordinal responses using the multivariate link functions. 
+
+--
+
+3. Introduced a K-means based tuning procedure.
+
+--
+
+4. Demonstrated the effectiveness of OPCG in categorical and ordinal classification problems.
 
   - Can handle multiple labels simultaneously
   
-  - Competitive with some RKHS-based forward SDR methods
+  - Competitive with some contemporary categorical and ordinal classification methods.
+
 
 --
-
-3. Provide a K-means based tuning method for classification problems
-
---
-
-4. Provide a ridge and LASSO option for generalized forward SDR that is computationally appealing 
 
 
 
@@ -1245,66 +1251,70 @@ class: left, top, inverse
 layout: false
 # References
 
-Adragni, K. P. (2018). "Minimum average deviance estimation for sufficient dimension
-reduction". In: _Journal of Statistical Computation and Simulation_ 88.3, pp.
-411-431.
+Adragni, K. P. (2018). "Minimum average deviance estimation for
+sufficient dimension reduction". In: _Journal of Statistical
+Computation and Simulation_ 88.3, pp. 411-431.
 
-Agresti, A. (2010). _Analysis of ordinal categorical data_. Vol. 656. John Wiley &amp;
-Sons.
+Agresti, A. (2010). _Analysis of ordinal categorical data_. Vol. 656.
+John Wiley &amp; Sons.
 
 Agresti, A. (2013). _Categorical Data Analysis_. 3rd ed. Wiley.
 
-Cook, R. D. and B. Li (2002). "Dimension reduction for conditional mean in
-regression". In: _The Annals of Statistics_ 30.2, pp. 455-474.
+Cook, R. D. and B. Li (2002). "Dimension reduction for conditional mean
+in regression". In: _The Annals of Statistics_ 30.2, pp. 455-474.
 
-Fukumizu, K. and C. Leng (2014). "Gradient-based kernel dimension reduction for
-regression". In: _Journal of the American Statistical Association_ 109.505, pp.
-359-370.
+Fukumizu, K. and C. Leng (2014). "Gradient-based kernel dimension
+reduction for regression". In: _Journal of the American Statistical
+Association_ 109.505, pp. 359-370.
 
-Lambert-Lacroix, S. and J. Peyre (2006). "Local likelihood regression in generalized
-linear single-index models with applications to microarray data". In: _Computational
-statistics &amp; data analysis_ 51.3, pp. 2091-2113.
-
----
-layout: false
-# References
-
-Li, B. (2018). _Sufficient Dimension Reduction: Methods and Applications with R_.
-CRC Press.
-
-Li, K. (1991). "Sliced inverse regression for dimension reduction". In: _Journal of
-the American Statistical Association_ 86.414, pp. 316-327.
-
-Luo, W. and B. Li (2016). "Combining eigenvalues and variation of eigenvectors for
-order determination". In: _Biometrika_ 103.4, pp. 875-887.
-
-Luo, W. and B. Li (2020). "On order determination by predictor augmentation". In:
-_Biometrika_.
-
-Wang, H. and Y. Xia (2008). "Sliced regression for dimension reduction". In:
-_Journal of the American Statistical Association_ 103.482, pp. 811-821.
-
-Xia, Y. (2007). "A constructive approach to the estimation of dimension reduction
-directions". In: _The Annals of Statistics_ 35.6, pp. 2654-2690.
+Lambert-Lacroix, S. and J. Peyre (2006). "Local likelihood regression
+in generalized linear single-index models with applications to
+microarray data". In: _Computational statistics &amp; data analysis_ 51.3,
+pp. 2091-2113.
 
 ---
 layout: false
 # References
 
-Xia, Y. (2006). "Asymptotic distributions for two estimators of the single-index
-model". In: _Econometric Theory_ 22.6, pp. 1112-1137.
+Li, B. (2018). _Sufficient Dimension Reduction: Methods and
+Applications with R_. CRC Press.
 
-Xia, Y., H. Tong, W. Li, et al. (2002). "An adaptive estimation of dimension
-reduction space". In: _Journal of the Royal Statistical Society: Series B
-(Statistical Methodology)_ 64.3, pp. 363-410.
+Li, K. (1991). "Sliced inverse regression for dimension reduction". In:
+_Journal of the American Statistical Association_ 86.414, pp. 316-327.
 
-Yin, X., B. Li, and R. D. Cook (2008). "Successive direction extraction for
-estimating the central subspace in a multiple-index regression". In: _Journal of
-Multivariate Analysis_ 99.8, pp. 1733-1757.
+Luo, W. and B. Li (2016). "Combining eigenvalues and variation of
+eigenvectors for order determination". In: _Biometrika_ 103.4, pp.
+875-887.
 
-Yin, X., B. Li, and others (2011). "Sufficient dimension reduction based on an
-ensemble of minimum average variance estimators". In: _The Annals of Statistics_
-39.6, pp. 3392-3416.
+Luo, W. and B. Li (2020). "On order determination by predictor
+augmentation". In: _Biometrika_.
+
+Wang, H. and Y. Xia (2008). "Sliced regression for dimension
+reduction". In: _Journal of the American Statistical Association_
+103.482, pp. 811-821.
+
+Xia, Y. (2007). "A constructive approach to the estimation of dimension
+reduction directions". In: _The Annals of Statistics_ 35.6, pp.
+2654-2690.
+
+---
+layout: false
+# References
+
+Xia, Y. (2006). "Asymptotic distributions for two estimators of the
+single-index model". In: _Econometric Theory_ 22.6, pp. 1112-1137.
+
+Xia, Y., H. Tong, W. Li, et al. (2002). "An adaptive estimation of
+dimension reduction space". In: _Journal of the Royal Statistical
+Society: Series B (Statistical Methodology)_ 64.3, pp. 363-410.
+
+Yin, X., B. Li, and R. D. Cook (2008). "Successive direction extraction
+for estimating the central subspace in a multiple-index regression".
+In: _Journal of Multivariate Analysis_ 99.8, pp. 1733-1757.
+
+Yin, X., B. Li, and others (2011). "Sufficient dimension reduction
+based on an ensemble of minimum average variance estimators". In: _The
+Annals of Statistics_ 39.6, pp. 3392-3416.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
