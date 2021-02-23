@@ -34,31 +34,27 @@
   --code-font-family: 'Source Code Pro';
   --code-font-is-google: 1;
   --base-font-size: 20px;
-  --text-font-size: 16pt;
+  --text-font-size: 1rem;
   --code-font-size: 0.9rem;
   --code-inline-font-size: 1em;
-  --header-h1-font-size: 24pt;
-  --header-h2-font-size: 18pt;
-  --header-h3-font-size: 1.75rem;
+  --header-h1-font-size: 1.5rem;
+  --header-h2-font-size: 1.25rem;
+  --header-h3-font-size: 1.25rem;
 
   /* Colors */
-  --text-color: #000000;
-  --header-color: #035AA6;
-  --background-color: #ffffff;
-  --link-color: #035AA6;
-  --text-bold-color: #03A696;
+  --text-color: #000;
+  --header-color: #2d60ba;
+  --background-color: #FFF;
+  --link-color: rgb(249, 38, 114);
+  --text-bold-color: #2d60ba;
   --code-highlight-color: rgba(255,255,0,0.5);
-  --inverse-text-color: #000000;
-  --inverse-background-color: #03A696;
-  --inverse-header-color: #000000;
-  --title-slide-background-color: #035AA6;
-  --title-slide-text-color: #FFFFFF;
-  --header-background-color: #035AA6;
-  --header-background-text-color: #ffffff;
-  --primary: #035AA6;
-  --secondary: #03A696;
-  --white: #FFFFFF;
-  --black: #000000;
+  --inverse-text-color: #d6d6d6;
+  --inverse-background-color: #1e407c;
+  --inverse-header-color: #f3f3f3;
+  --title-slide-background-color: #1e407c;
+  --title-slide-text-color: #d6d6d6;
+  --header-background-color: #2d60ba;
+  --header-background-text-color: #FFF;
 }
 
 html {
@@ -77,7 +73,7 @@ h1, h2, h3 {
 }
 .remark-slide-content {
   background-color: var(--background-color);
-  font-size: 16pt;
+  font-size: 1rem;
   padding: 16px 64px 16px 64px;
   width: 100%;
   height: 100%;
@@ -99,10 +95,10 @@ h1, h2, h3 {
 }
 .remark-inline-code {
   font-size: var(--code-inline-font-size);
-  color: #035AA6;
+  color: #000;
 }
 .remark-slide-number {
-  color: #035AA6;
+  color: #1e407c;
   opacity: 1;
   font-size: 0.9em;
 }
@@ -144,10 +140,10 @@ a, a > code {
   float: left;
 }
 .left-column h2, .left-column h3 {
-  color: #035AA699;
+  color: #777;
 }
 .left-column h2:last-of-type, .left-column h3:last-child {
-  color: #035AA6;
+  color: #000;
 }
 .right-column {
   width: 75%;
@@ -169,7 +165,7 @@ img, video, iframe {
   max-width: 100%;
 }
 blockquote {
-  border-left: solid 5px #03A69680;
+  border-left: solid 5px lightgray;
   padding-left: 1em;
 }
 .remark-slide table {
@@ -184,7 +180,7 @@ th, td {
   padding: 5px;
 }
 .remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even) {
-  background: #CCEDEA;
+  background: #eee;
 }
 table.dataTable tbody {
   background-color: var(--background-color);
@@ -194,7 +190,7 @@ table.dataTable.display tbody tr.odd {
   background-color: var(--background-color);
 }
 table.dataTable.display tbody tr.even {
-  background-color: #CCEDEA;
+  background-color: #eee;
 }
 table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.5);
@@ -234,44 +230,10 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   }
 }
 
-.primary {
-  color: var(--primary);
-}
-.bg-primary {
-  background-color: var(--primary);
-}
-.secondary {
-  color: var(--secondary);
-}
-.bg-secondary {
-  background-color: var(--secondary);
-}
-.white {
-  color: var(--white);
-}
-.bg-white {
-  background-color: var(--white);
-}
-.black {
-  color: var(--black);
-}
-.bg-black {
-  background-color: var(--black);
-}
 
 
 
 /* Extra CSS */
 h2 {
-  color: #03A696;
-}
-.title-slide h1 {
-  font-size: 52pt;
-}
-.caption {
-  text-align: center;
-  font-size: 10pt;
-}
-.image-50 img {
-  width: 50%;
+  color: #9ab6e7;
 }

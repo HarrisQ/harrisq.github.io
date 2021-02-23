@@ -1,0 +1,1322 @@
+--- 
+title: "Generalized Forward Sufficient Dimension Reduction for Classification"
+# subtitle: "with Multinomial Response"
+author: "Harris Quach"
+institute: "Pennsylvania State University"
+date: "2021/03/05 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [xaringan-themer.css, "mytheme.css"]
+    # "hygge-duke","cols.css", "ninjutsu" ,"assets/ninpo.css", 
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      # beforeInit: "my_macros.js" # Macros File
+      # For Live Preview, run xaringan::inf_mr() in console
+    # toc: true
+    # toc_depth: 3
+    includes:
+      before_body: local_tex.html
+    seal: false
+   
+# "rutgers-fonts","rutgers", "hygge", "shinobi"
+
+---
+
+```{r xaringan-themer, include = FALSE}
+
+library(xaringanthemer)
+
+style_xaringan(
+  text_color = "#000",
+  header_color = "#2d60ba",
+  background_color = "#FFF",
+  link_color = "rgb(249, 38, 114)",
+  text_bold_color = "#2d60ba", 
+  padding = "16px 64px 16px 64px", 
+  code_highlight_color = "rgba(255,255,0,0.5)",
+  code_inline_color = "#000",
+  code_inline_background_color = NULL,
+  code_inline_font_size = "1em",
+  inverse_background_color = "#1e407c",
+  inverse_text_color = "#d6d6d6",
+  inverse_text_shadow = FALSE, 
+  footnote_color = NULL,
+  footnote_font_size = "0.9em",
+  footnote_position_bottom = "60px",
+  left_column_subtle_color = "#777",
+  left_column_selected_color = "#000",
+  blockquote_left_border_color = "lightgray",
+  table_border_color = "#666",
+  table_row_border_color = "#ddd",
+  table_row_even_background_color = "#eee",
+  base_font_size = "20px",
+  text_font_size = "1rem",
+  header_h1_font_size = "1.5rem",
+  header_h2_font_size = "1.25rem",
+  header_h3_font_size = "1.25rem", 
+  header_background_ignore_classes = c("normal", "inverse", "title", "middle",
+                                       "bottom"),
+  text_slide_number_font_size = "0.9em", 
+  extra_css = list("h2" = list("color" = "#9ab6e7")  #03A696;
+  ), 
+  outfile = "xaringan-themer.css"
+)
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+library(RefManageR)
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear",
+           cite.style = "text",
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+bib_sdr <- ReadBib("bib_sdr.bib",
+                   check = FALSE)
+bib_opg <- ReadBib("bib_opg.bib",
+                   check = FALSE)
+```
+ 
+
+<!-- class: title-slide -->
+
+# Generalized Forward Sufficient Dimension Reduction for Classification
+<!-- # .bg-text[Generalized Forward Sufficient Dimension Reduction for Classification] -->
+<!-- <hr width="700" align="left" /> -->
+<hr/>
+## Harris Quach (joint work with Bing Li) <br/> Date: 2021-03-05 (updated: `r Sys.Date()`)
+
+---
+# Outline
+
+1. Sufficient Dimension Reduction (SDR)
+  - Inverse Regression for SDR
+  - Forward Regression for SDR
+  
+2. Multivariate Categorical and Ordinal Canonical Link functions
+
+3. Generalized Forward Regression for SDR
+  - Outer Product of Canonical Gradients (OPCG)
+  - Minimum Average Deviance Estimator (MADE) and Refinements 
+  
+4. Tuning the bandwidth via K-means 
+
+4. Simulations and Data Analysis
+  - Simulations
+  - Wine Quality
+  - USPS Digits
+  - ISOLET
+  <!-- - Amazon Commerce Reviews -->
+  <!-- - Anuran Frogs -->
+
+---
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# What is Sufficient Dimension Reduction?
+
+A Sufficient Dimension Reduction (SDR) method extracts a lower dimensional function of the predictors that "preserves" relationships of interest between the predictors and response.
+
+Let $Y \in \R^m$ be a response and $X \in \R^p$ be a predictor. 
+
+- Linear SDR seeks a linear function $s(X) = \beta^\top X$, where $\beta \in \R^{p \times d}$ with $d < p$.
+
+  - We focus mainly on Linear SDR.
+
+---
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# What is Sufficient Dimension Reduction?
+
+
+- If we want to preserve all relevant information available in $X$ about $Y$, then the goal of SDR is to find $\beta$ so that $Y \indep X \; | \; \beta^\top X$.
+
+  - For any $\beta$ such that $Y \indep X \; | \; \beta^\top X$, the $span(\beta)$     is a _Sufficient Dimension Reduction Subspace_.
+  
+  - Under mild conditions, a _minimial_ Sufficient Dimension Reduction Subspace exists (`r Citet(bib_sdr, title="Successive")`)
+  
+      - This is the **Central Subspace (CS)** and is denoted $\SS_{Y \indep X}$.
+
+---
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# What is Sufficient Dimension Reduction?
+
+- If we want to preserve all relevant information available in $X$ about the _regression relation_ $E(Y|X)$, then the goal is to find $\beta$ so that 
+$Y \indep E(Y|X) \; | \; \beta^\top X$.
+
+  - The dimension reduction for the regression relation can be phrased as finding       $\beta$ such that $E(Y|X) = E(Y | \beta^\top X )$
+  
+  - The minimial Sufficient Dimension Reduction Subspace for the regression            relation is the **Central Mean Subspace (CMS)** and is denoted $\SS_{E(Y | X)}$.
+  
+  - In general, the CMS is a subspace of the CS: $\SS_{E(Y | X)} \leq \SS_{Y \indep X}$
+   
+<div class=prop text="CMS=CS">
+If \(Y\) depends on \(X\) only through the Conditional Mean, 
+i.e. \(Y \indep X \;|\; E(Y|X)\), then \(\SS_{E(Y | X)} = \SS_{Y \indep X}\).
+</div>
+
+<!-- - This framework can be applied broadly to define the Central Median Subspace, Central Quantile Subspace, Central $k^{th}$-Moment Subspace, and so on. -->
+
+<!-- $\Xcal$ and $\water$ and $\braket{4}$ and $\Abs{4}{3}$. -->    
+ 
+---
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# Motivating Example: 
+
+Given response $Y$ and predictor $X = (X_1, X_2) \in [0,1]^2$, let $Y=X_1^2$.
+So $Y= (\beta^\top X)^2$, where $\beta = (1,0) \in \R^2$. 
+
+.center[
+<img align="centered" class="image" src="images/sdr_plot.png" width="50%">
+]
+
+- we want to recover $span(\beta)$.
+
+---
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression `r Cite(bib_sdr, author="Li", title="Sliced", year="1991")`
+
+.center[
+<img align="centered" class="image" src="images/sir_plot1.png" width="55%">
+]
+
+<!-- <iframe src="images/almost_sir.html" width="90%" height="90%" frameborder="0"></iframe> -->
+
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression `r Cite(bib_sdr, author="Li", title="Sliced", year="1991")`
+
+.center[
+<img align="centered" class="image" src="images/sir_plot2.png" width="55%">
+]
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression `r Cite(bib_sdr, author="Li", title="Sliced", year="1991")`
+
+.center[
+<img align="centered" class="image" src="images/sir_plot3.png" width="55%">
+]
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression `r Cite(bib_sdr, author="Li", title="Sliced", year="1991")`
+
+.center[
+<img align="centered" class="image" src="images/sir_plot4.png" width="55%">
+]
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression `r Cite(bib_sdr, author="Li", title="Sliced", year="1991")`
+
+.center[
+<img align="centered" class="image" src="images/sir_plot5.png" width="55%">
+]
+---
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+<img align="centered" class="image" src="images/sir_plot5.png" width="55%">
+]
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+<img class="image" src="images/bad_sir_plot1.png" width="55%">
+] 
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+<img class="image" src="images/bad_sir_plot2.png" width="55%">
+] 
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+<img class="image" src="images/bad_sir_plot3.png" width="55%">
+] 
+--
+- Inverse methods require assumptions on the support of the predictor.
+
+---
+class: left, top  
+
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) `r Cite(bib_sdr, author="Xia", title="adaptive")`
+
+.center[
+<img class="image" src="images/fsdr_plot1.png" width="55%">
+] 
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) `r Cite(bib_sdr, author="Xia", title="adaptive")`
+
+
+.center[
+<img class="image" src="images/fsdr_plot2.png" width="55%">
+] 
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) `r Cite(bib_sdr, author="Xia", title="adaptive")`
+ 
+
+.center[
+<img class="image" src="images/fsdr_plot3.png" width="55%">
+] 
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) `r Cite(bib_sdr, author="Xia", title="adaptive")`
+ 
+
+.center[
+<img class="image" src="images/fsdr_plot3-1.png" width="55%">
+] 
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) `r Cite(bib_sdr, author="Xia", title="adaptive")`
+
+
+.center[
+<img class="image" src="images/fsdr_plot4.png" width="55%">
+] 
+
+---
+count: false
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) `r Cite(bib_sdr, author="Xia", title="adaptive")`
+
+
+.center[
+<img class="image" src="images/fsdr_plot5.png" width="55%">
+]  
+
+ 
+---
+class: left, top
+# Forward Regression for SDR 
+
+- OPG can only estimate dimension reduction for the regression relationship $E(Y|X)$
+
+  - OPG can only recover $\SS_{E(Y|X)}$
+  
+  - Extensions exist to recover $\SS_{Y|X}$ 
+  
+      - dOPG `r Cite(bib_sdr, author=c("Xia"),title=c("Constructive"))`; 
+        Ensemble OPG `r Cite(bib_sdr, author=c("Li"),title=c("Ensemble"))`; 
+        Sliced Regression `r Cite(bib_sdr, author=c("Xia"),title=c("Sliced"))`
+
+
+---
+class: left, top
+# Generalized Forward Regression for SDR 
+
+
+- OPG does not work for categorical responses since we can not take derivatives of $Y$.
+  
+- Idea: Estimate a GLM locally instead of a Linear Regression.
+<br/><br/>
+
+--
+
+Existing extensions of Forward SDR:
+
+1. Generalized Single Index Model (GSIM): `r Citet(bib_sdr, author=c("Lambert"),title=c("Local"))`
+  - Local Linear Single Index GLM with specified link to estimate the Average Derivative of the Conditional Mean
+
+2. Minium Average Deviance Estimation (MADE): `r Citet(bib_sdr, author=c("adragni"),title=c("Minimum"))`
+  - Local Linear GLM for scalar response
+  
+3. gradient Kernel Dimension Reducion (gKDR): `r Citet(bib_sdr, author=c("fukumizu"),title=c("gradient"))`
+  - Estimate the gradients via spline approximation using RKHS
+
+---
+class: inverse, center, middle
+
+<!-- inverse makes the background black and text white -->
+
+# .bg-text[Multivariate Link functions]  
+
+
+---
+class: left, top
+# Sufficient Dimension Reduction for Classification
+
+Multinomial distributions are linear exponential family and are characterized entirely by their means through the canonical parameter $\theta$. 
+
+  - This includes *categorical* responses and *ordinal* responses
+
+--
+
+<div class="prop">`r Cite(bib_sdr, author=c("cook"), title="mean")`
+If \(Y\) depends on \(X\) solely through the canonical parameter \(\theta(X)\), then the Central Mean Subspace coincides with the Central Subspace, i.e. \(\SS_{Y|X} = \SS_{E(Y|X)}\). 
+</div>
+
+So extending OPG to categorical responses will recover $\SS_{E(Y|X)}=\SS_{Y|X}$.
+
+---
+class: left, top
+# Sufficient Dimension Reduction for Classification
+
+Our idea is to fit local linear GLMs instead of local linear regression.
+
+- But to fit local linear GLMs, we need the cumulant generating function $b(\cdot)$ to evaluate the log-likelihoods for our optimization algorithms.
+
+- For $b(\cdot)$, we need the inverse canonical link function that maps the mean to the canonical parameter $\theta$, and the inverse canonical link.
+
+--
+
+- We can also use the canonical link to construct initial values for an optimization algorithm via the regression
+\begin{align*}
+\theta(S) = a + B^\top X + \varepsilon,
+\end{align*}
+with $\varepsilon \sim N(0,I_{m-1})$.
+
+
+
+---
+class: left, top
+# Categorical Response
+
+Suppose $Y$ is a categorical variable taking values in $\{1,...,m\}$ nominal categories. 
+
+- We can represent $Y$ as a vector $S = (S^1,...,S^{m-1}) \in \{0,1\}^{m-1}$ with $S^m = 1 - \sum_{j=1}^{m-1} S^m$.
+
+  - If $Y=k$, then $S^k = 1$ and $S^j=0$ for $j \neq k$. 
+
+  - e.g. If $m=3$ and $Y = 2$, then $S = (0,1)$; if $Y=3$, then $S=(0,0)$. 
+
+--
+
+Let $p = (p^1,...p^{m-1})$ be the $m-1$ vector of probabilities for each category.  The mean and variance of $S$ are
+\begin{align*}
+E(S) =  p , 
+\quad 
+Var(S)
+= \left [ Diag \left ( \frac{  e^{\theta   } }{ 1 + \boldsymbol 1^{\top}e^{\theta } }\right ) - \frac{ e^{\theta }  (e^{\theta }  )^{\top} }{ [1 + \boldsymbol 1^{\top}e^{\theta} ]^2 }  \right ]
+,
+\end{align*}
+
+---
+class: left, top
+# Categorical Response
+
+The canonical link is the multivariate logistic function. 
+The multivariate logistic link and its inverse are
+\begin{align*}
+\theta(p) = \log \frac{ p }{ 1 - \boldsymbol{1}^{\top} p }
+\qquad
+p(\theta) =  \frac { \exp(\theta) } {  1 - \boldsymbol{1}^{\top} \exp( \theta) } 
+\end{align*}
+
+--
+
+The density and log-likelihood of $S$ are 
+\begin{align*}
+f(S;p) \propto \prod_{j=1}^{m-1} (p^j)^{S^j},
+\quad  
+\ell(\theta;S) = \theta^{\top}S - \log ( 1 - \boldsymbol 1^{\top}  e^\theta   )
+,
+\end{align*}
+where the cumulant generating function is 
+$b(\theta) = -\log( 1 - \boldsymbol{1}^{\top} e^{  \theta }  )$.
+
+
+---
+class: left, top
+# Ordinal Response
+
+Suppose $Y$ is an ordinal categorical variable, taking value in $\{1,...,m\}$ ordered categories. 
+
+- We can represent $Y$ as a vector $S = (S^1,...S^{m-1}) \in \{0,1\}^{m}$ as for categorical $Y$. 
+
+- We can represent $S$ as a vector $T = (T^1,...T^{m-1}) \in \{0,1\}^{m-1}$ with  $T^{m} = 0$ and $T^0=1$. 
+  
+  - If $Y = k$, then $T^j = 1$ for $j \leq {k-1}$ and $T^j=0$ for $j > k-1$. 
+
+  - If $m=5$ and $Y=3$, then $T=(1,1,0,0)$; if $Y=1$, then $T=(0,0,0,0)$
+
+
+---
+class: left, top
+# Ordinal Response
+
+Let 
+
+ - $p = (p^1,...p^{m-1})$ be the $m-1$ vector of probabilities,
+ - $\gamma = (p^1, p^1 + p^2, ..., p^1 + \cdots + p^{m-1})$ be the $m-1$ vector of cumulative sum of probabilities, and
+ - $\tau = 1 - \gamma$. 
+
+The mean and variance of $T$ is
+\begin{align*}
+E(T) = \tau, \quad 
+Var(T) = \Gamma - \tau  \tau^{\top} ,
+\end{align*}
+where
+\begin{align*}
+\Gamma = \left ( \begin{matrix}
+\tau^{1}  & \tau^{2}  & \cdots & \tau^{m-2}& \tau^{m-1} \\
+\tau^{2}  & \tau^{2}  & \cdots & \tau^{m-2} & \tau^{m-1} \\
+\vdots & \vdots  & \cdots  & \cdots & \vdots \\
+\tau^{m-2} & \tau^{m-2} & \cdots & \tau^{m-2}  & \tau^{m-1} \\
+\tau^{m-1} & \tau^{m-1}  & \cdots & \tau^{m-1} & \tau^{m-1 } \end{matrix} \right )
+\end{align*}
+
+---
+class: left, top
+# Ordinal Response
+
+We define the canonical parameter as $\theta(\tau) = (\theta(\tau)^1,...,\theta(\tau)^{m-1} )$, where the $j^{th}$ entry of $\theta(\tau)$ is
+\begin{align*}
+\theta(\tau)^j
+=
+\log \bigg ( \frac{ p^{j+1} }{p^{j} } \bigg )
+%= 
+%\log \bigg ( \frac{ \gamma^{j+1} - \gamma^{j} }{ \gamma^{j} - \gamma^{j-1}  } \bigg ) 
+=
+\log \bigg ( \frac{  \tau^{j} - \tau^{j+1} }{  \tau^{j-1} - \tau^{j}  } \bigg )
+.
+\end{align*}
+
+The canonical link corresponds to the "Adjacent-Categories Logit Model for cumulative probabilities" `r Cite(bib_sdr, author=c("agresti"), title="data")`. 
+
+--
+
+Letting $\phi(\theta) = (\phi^{1}(\theta),...,\phi^{m-1}(\theta) )$ with entries $\phi^{j} (\theta) = \sum_{r=1}^j \exp \left \{ \sum_{s=1}^{r}  \theta^{s}  \right \}$,
+<!-- \begin{align*} -->
+<!-- \phi^{j} (\theta) = \sum_{r=1}^j \exp \left \{ \sum_{s=1}^{r}  \theta^{s}  \right \} -->
+<!-- , -->
+<!-- \end{align*} -->
+the inverse canonical link is
+\begin{align*}
+\tau(\theta) =
+\bigg [ -I_{m-1}   - 
+\frac{ \{\boldsymbol 1  + e_1 + P \phi(\theta) \} e_1^{\top} } { 1 - e_1^{\top} \{\boldsymbol 1  + e_1 + P \phi(\theta) \}  } 
+\bigg ] 
+P \phi(\theta) 
+=\frac{QP\phi(\theta)}{1 + e_1^{\top} P \phi(\theta)}
+,
+\end{align*}
+where $P$ is a permutation matrix that maps vectors $(a^1,...,a^m) \mapsto (a^m, a^1...,a^{m-1})$.
+
+---
+class: left, top
+# Ordinal Response
+
+From $S$, the density of $T$ is 
+\begin{align*}
+f(S;p) 
+\propto  & \prod_{j=1}^{m} (p^j)^{S^j} \\
+=  &
+p^1
+\bigg ( \frac{ p^2 }{p^1} \bigg )^{T^1} 
+\bigg ( \frac{ p^3 }{p^2} \bigg )^{T^2} 
+\bigg ( \frac{ p^4 }{p^3} \bigg )^{T^3} 
+\bigg ( \frac{ p^5 }{p^4} \bigg )^{T^4} 
+\cdots 
+\bigg ( \frac{ p^{m-1} }{p^{m-2}} \bigg )^{T^{m-2} } 
+\bigg ( \frac{ p^{m} }{p^{m-1}} \bigg )^{T^{m-1} } 
+%(p^m)^{0}  
+.
+\end{align*}
+
+The log-likelihood for $T$ is 
+\begin{align*}
+\ell(\theta; T)
+% = & \sum_{j=1}^{m-1} T^j \log \bigg ( \frac{ p^{j+1} }{p^{j} } \bigg ) + \log ( p^1  ) 
+= \theta^{\top} T - [ - \log ( 1 - e_{1}^{\top}  \tau(\theta)  ) ] 
+,
+\end{align*}
+where the cumulant generating function is $b(\theta) = -\log \{ 1 - e_{1}^{\top}  \tau(\theta) \}$. 
+
+---
+class: left, top
+# Ordinal Response
+
+- The Adjacent-Categories Model is not as popular as other alternative link functions for ordinal responses, such as 
+
+  - the Cumulative Logit, $\psi(\tau) = \log\{ ( 1 - \tau)/\tau \}$
+  - the Cumulative Probit, $\psi(\tau) = \Phi^{-1} (1 - \tau)$
+  - the Complementary Log-Log, $\psi(\tau) = \log \{ - \log(\tau) \}$
+
+- We can estimate $\psi$ using the inverse canonical link function $\tau(\theta)$.
+
+--
+
+
+- Since $T$ is a linear exponential family, the derivative of the mean satisfies
+\begin{align*}
+\frac{\partial \tau(\theta)}{\partial \theta} 
+= 
+\frac{\partial^2 b^{-1} (\theta)}{\partial \theta \partial \theta^{\top}} 
+= V\{\tau(\theta)\}
+= \Gamma(\theta) - \tau(\theta) \tau(\theta)^{\top},
+\end{align*}
+
+
+- And so we can also estimate the derivative of $\psi$ with respect to $\theta$ using
+\begin{align*}
+\frac{\partial \psi(\theta) }{\partial \theta^{\top}} 
+= \frac{\partial \psi\{\tau( \theta)\} }{\partial \tau^{\top}} 
+\{ \Gamma(\theta) - \tau(\theta) \tau(\theta)^{\top} \}.
+\end{align*}
+
+
+---
+class: inverse, center, middle
+
+<!-- inverse makes the background black and text white -->
+
+# .bg-text[Outer Product of Canonical Gradients (OPCG)]  
+
+---
+class: left, top <!-- formatting the slide -->
+
+<!-- the title --> 
+ 
+# Generalized Forward Regression for SDR
+
+.center[
+<img class="image" src="images/fsdr_plot3-1.png" width="40%">
+]  
+
+- In OPG, we assume that $Y$ depends on $X$ at least through $E(Y|X)$ 
+  - we fit a linear regression about $\chi$, $Y = a + B^\top(X-\chi) +                  \varepsilon$ and estimate $\partial E(Y|X)/ \partial \chi^\top$ using 
+    $$\hat B = \frac{ \widehat{ \partial E(Y|\chi)} }{\partial \chi^\top}.$$
+
+
+---
+class: left, top 
+ 
+# Generalized Forward Regression for SDR
+
+.center[
+<img class="image" src="images/fsdr_plot3-1.png" width="40%">
+]  
+
+- For generalized Forward SDR, we fit a linear exponential family about $x_0$, where a single observation of the local log-likelihood given by
+$$
+\ell_0(\theta;y,x,x_0) = \theta(x-x_0)^\top y - b[ \theta(x-x_0) ] 
+$$ 
+
+
+
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+- In OPG, the dimension reduction assumption is $E(Y|X) = E(Y|\beta^\top X)$
+
+- With GLMs, the dimension reduction assumption is on the canonical parameter         $\theta(X) = \theta(\beta^\top X) \in \R^m$
+
+  - Since the canonical parameter is the inverse canonical link applied to            $E(Y|X)$, i.e. $\theta(X) = g^{-1}(E(Y|X))$, the dimension reduction             assumption coincides with that of OPG.
+  
+--
+
+- As in OPG, we want to estimate the direction of change in $\theta(x)$ about $x_0$, i.e. $\partial \theta(x_0) /\partial x^\top$.
+
+- To achieve this, we fit a linear function to the canonical parameter about $x_0$, giving the local-linear likelihood
+$$
+\ell_0(a, B; y,x,x_0) = [a + B^\top(x-x_0)]^\top y - b[ a + B^\top(x-x_0) ] 
+$$ 
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+The local linear log-likelihood for the linear exponential family about $\chi$ is
+\begin{align*}
+& l(a_{\chi}, B_{\chi}; \chi, X_{1:n}, Y_{1:n}) \\
+= &
+\frac 1n \sum_{i=1}^n
+K \bigg ( \frac{X_i - \chi}{h} \bigg )
+\{[a_{\chi} + B_{\chi}^\top (X_i - \chi)]^\top Y_i - 
+b(a_{\chi} + B_{\chi}^\top (X_i - \chi)) \} 
+\end{align*}
+where $b(\cdot)$ is the corresponding cumulant generating function, and $K(\cdot)$ is a kernel weight with bandwidth $h$. 
+
+--
+
+We estimate $\partial \theta(\chi) /\partial \chi^\top$ using
+$$\hat B_\chi = \frac{ \widehat{ \partial \theta(\chi) } }{\partial \chi^\top}.$$
+
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+We estimate a GLM about each $\chi=X_j$ for $j=1,...,n$ by minimizing the full negative local linear log-likelihood:
+
+\begin{align*}
+& L(a_1,..,a_n, B_1,...,B_n; X_{1:n}, Y_{1:n}) \\
+= & -\frac 1n \sum_{j=1}^n l(a_j, B_j; X_j, X_{1:n}, Y_{1:n}) \\ 
+= & -\frac {1}{n^2} \sum_{j,i=1}^n
+K \bigg ( \frac{X_i - X_j}{h} \bigg )\\
+& \times 
+\{[a_{j} + B_{j}^\top (X_i - X_j)]^\top Y_i - 
+b(a_{j} + B_{j}^\top (X_i - X_j)) \} 
+.
+\end{align*}
+
+--
+
+<!-- This provides estimates $\hat B_1,...\hat B_n$. -->
+
+Given our estimates $\hat B_j$, for $j=1,..,n$, we construct the average outer product
+$$\hat \Lambda_n = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top.$$ 
+
+---
+class: left, top
+
+# The OPCG Estimator
+
+The **Outer Product of Canonical Gradients (OPCG) Estimator** for $\beta$, $\hat \beta_{opcg}$, is the first $d$ eigenvectors of 
+$$\hat \Lambda_n = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top,$$ 
+corresponding to the $d$ largest eigenvalues.
+
+--
+
+**So far, we have argued by analogy to the OPG case. But is $\partial \theta(\chi) /\partial \chi^\top$ what we should be estimating? Will this work?**
+
+
+
+
+---
+
+# OPCG: Unbiased and Exhaustive 
+
+Some SDR terminology (in statistical functional notation):
+
+- An estimator $M(F_n)$ for a SDR subspace is **unbiased** if $M(F_0)$ is a member of the subspace.
+  
+- An estimator $M(F_n)$ for a SDR subspace is **exhaustive** if $M(F_0)$ generates the subspace.
+  
+--
+<br/>
+
+OPG is unbiased and, under some conditions, exhaustive for $\SS_{E(Y|X)}$. `r Cite(bib_sdr, author=c("Li"),title=c("Applications"), .opts=list(max.names=1))`. 
+
+
+
+
+---
+
+# OPCG: Unbiased and Exhaustive 
+
+<div class=prop text="Unbiasedness of the canonical gradient">
+
+If the canonical parameter satisfies \(\theta(\chi)=\theta(\beta^\top\chi)\), then an estimator for the derivative is unbiased for the Central Mean Subspace, i.e.
+
+$$
+\frac{\partial\theta(\chi)}{\partial\chi^{\top}}
+\in \SS_{E(Y|X)}
+.
+$$
+
+</div>
+--
+
+<div class=prop text="Exhaustiveness of the Outer Product">
+
+If the canonical parameter \(\theta(\beta^\top\chi)\) is convexly supported in \(\beta^\top\chi\), then an estimator for the outer product of the derivative is exhaustive for the Central Mean Subspace, i.e.
+$$
+span\bigg ( \frac{\partial \theta(\chi)}{\partial \chi^{\top}}\frac{\partial \theta(\chi)^{\top}}{\partial \chi} \bigg ) 
+=
+\SS_{E(Y|X)}
+.
+$$
+</div> 
+
+
+
+---
+class: left, top
+
+# OPCG: Consistency
+
+Consistency requires assumptions including: 
+- compactness of predictor and parameter, 
+- smoothness of the likelihood, 
+- symmetric kernels with finite moments,
+- convergence rates on the bandwidth.  
+
+These assumptions, referred to as Assumptions 1-9, are in an appendix at the end.
+
+--
+
+<div class="theorem" text="Consistency of OPCG">
+  Suppose Assumptions 1-9 hold. Then, as \( n \to \infty\), we have
+  \begin{align*} 
+  \| \hat \beta_{opcg}  - \beta \|_F = O_{a.s}
+  ( h + h^{-1} \delta_{ph} + \delta_{n} )
+  ,
+  \end{align*}
+  <!-- \bigg( h + \sqrt{ \frac{\log n}{ nh^p} } + \sqrt{ \frac{\log n}{ n } } \bigg) -->
+  where \(\delta_{ph} = \sqrt{ \frac{\log n}{ nh^p} }\),
+  \(\delta_{n} = \sqrt{ \frac{\log n}{ n } }\),
+  \(  h \downarrow 0\), and
+  \( h^{-1}\delta_{ph} \to 0\).
+</div>
+
+---
+class: left, top
+# Order Determination
+
+"Order Determination" refers to estimating "$d$", the dimension of the minimal SDR subspace.  
+
+1. An advantage of OPCG is compatibility with recent methods based on eigen variation. We focus on the following methods for OPCG:
+
+  - Ladle Estimator  `r Cite(bib_sdr, author=c("luo"), title="combining")` 
+  - Predictor Augmentation `r Cite(bib_sdr, author=c("luo"), title="augmentation")`
+
+
+
+
+---
+class: inverse, center, middle
+
+<!-- inverse makes the background black and text white -->
+
+# .bg-text[Improvements to OPCG:]
+## Minimum Average Deviance Estimator (MADE), refined OPCG (rOPCG), refined MADE (rMADE) 
+
+---
+class: left, top
+# Minimum Average Deviance Estimator (MADE)
+
+Recall the dimension reduction assumption: $\theta(\chi) = \theta (\beta^\top \chi)$. 
+
+Then the derivative satisfies:
+$$ \frac{\partial \theta(\chi)}{\partial \chi^{\top}} = \frac{\partial \theta(u(\chi) )}{\partial u^{\top}} \beta^\top $$
+where $u(\chi)=\beta^\top \chi$. 
+
+--
+
+- How can we make use of this property explicitly?
+
+  - What if we substitute into the negative log-likelihood and estimate $\beta$         directly?
+
+  - In the Linear Regression case with OPG, this method is the Minimum Average          Variance Estimator (MAVE) `r Cite(bib_sdr, author="Xia", title="adaptive")`.
+  
+
+---
+class: left, top
+# The Minimum Average Deviance Estimator (MADE)
+
+We can estimate $\beta$ directly by minimizing the full negative local linear log-likelihood:
+
+\begin{align*}
+& L(\beta, a_1,..,a_n, B_1,...,B_n; X_{1:n}, Y_{1:n}) \\
+= & -\frac 1n \sum_{j=1}^n l(a_j, B_j; X_j, X_{1:n}, Y_{1:n}) \\ 
+= & -\frac {1}{n^2} \sum_{j,i=1}^n
+K \bigg ( \frac{X_i - X_j}{h} \bigg )\\
+& \times 
+\{[a_{j} + B_{j}^\top \beta^\top (X_i - X_j)]^\top Y_i - 
+b(a_{j} + B_{j}^\top \beta^\top (X_i - X_j)) \} 
+.
+\end{align*}
+
+--
+
+Minimization can be performed by alternating between two steps until convergence:
+1. (MADE-1 step) For fixed $\beta$, minimize $a_1,...,a_n, B_1,...,B_n$, 
+2. (MADE-2 step) For fixed $a_1,...,a_n, B_1,...,B_n$, minimize $\beta$. 
+
+We refer to the resulting estimator $\hat \beta_{made}$ the **Minimum Average Deviance Estimator** (MADE) for $\beta$.
+
+
+
+---
+class: left, top
+# Refined OPCG (rOPCG) and Refined MADE (rMADE)
+ 
+Once we have the estimators from OPCG and MADE, 
+<!-- $\hat \beta_{opcg}$ and $\hat \beta_{made}$,  -->
+we can replace the kernel weights in their respective objective functions by
+\begin{align*}
+K[(X - \chi)/h] \mapsto
+K[\hat \beta_{opcg}^\top(X - \chi)/h], \\
+K[(X - \chi)/h] \mapsto
+K[\hat \beta_{made}^\top(X - \chi)/h].
+\end{align*}
+
+
+--
+
+Then re-estimate $\beta$ using the refined objective functions in the same way, to obtain $\hat \beta_{ropcg}$ and $\hat \beta_{rmade}$, respectively.
+
+---
+class: left, top
+# Minimum Average Deviance Estimator (MADE)
+
+- Our definition of MADE differs from Adragni's (2018)
+
+  - Our definition of MADE is analogous to MAVE, while Adragni's definition is our rMADE.
+
+- The alternating minimization for $\beta$ in MADE incurs an additional computational cost relative to OPCG, like MAVE to OPG.
+
+  - But MAVE (i.e. Linear Regression setting) estimates $\beta$ more efficiently. 
+  `r Cite(bib_sdr, author="Xia", title=c("single", "constructive"))`
+
+  - We expect MADE to be more efficient compared to OPCG.
+
+---
+class: left, top
+# Implementation 
+
+For fixed $X_j$, we make use of vectorization operation, i.e. "vec", to get
+\begin{align*}
+a_j + B_j^\top(X-X_j) = 
+\left ( 
+\left ( \begin{matrix}
+1 \\
+X-X_j
+\end{matrix} \right )
+\otimes I_m \right ) 
+\left ( \begin{matrix}
+a_j \\
+{\mathrm{vec} }(B_j^\top)
+\end{matrix} \right ) 
+\end{align*}
+<!-- = [\nu(X_i - X_j)]^\top c_{j} -->
+<!-- where -->
+<!-- \begin{align*} -->
+<!-- c_j = & -->
+<!-- \left ( \begin{matrix} -->
+<!-- a_j \\ -->
+<!-- {\mathrm{vec} }(B_j^\top) -->
+<!-- \end{matrix} \right ) -->
+<!-- \in \R^{m(p+1)} -->
+<!-- \\ -->
+<!-- \nu(X-X_j) = & \left ( -->
+<!-- \left ( \begin{matrix} -->
+<!-- 1 \\ -->
+<!-- X-X_j -->
+<!-- \end{matrix} \right ) -->
+<!-- \otimes I_m \right ) -->
+<!-- \in \R^{m(p+1) \times m} -->
+<!-- \end{align*} -->
+--
+
+This reformulates OPCG and MADE-1 into a local-linear GLM:
+
+  - Under identifiability assumptions, the objective functions are strictly convex
+
+
+--
+
+For fixed $X_j$ in MADE-2, vectorization gives
+\begin{align*}
+a_j + B_j^\top\beta^\top(X-X_j) = 
+a_j + [ (X - X_j)^\top \otimes B_j^\top ]^\top \mathrm{vec}(\beta^\top)
+,
+\end{align*}
+
+--
+
+This reformulates MADE-2 into a convex objective:
+
+  - Without identifiability of $\beta$, we lose strict convexity in the objective
+
+---
+class: left, top
+# Implementation
+
+For OPCG and MADE, we can use Fisher-Scoring/Newton-Raphson:
+
+  - OPCG and MADE-1, we have good initial values; 
+  
+    - but still slow for $p \approx 20$ and $n \approx 1000$; 
+
+--
+
+  - For MADE-2, we don't have a systematic approach finding initial values for $\beta$, other than using the OPCG estimate, $\hat \beta_{opg}$; 
+   
+    - Estimation is extraordinarily slow for MADE-2; 
+    
+    - With OPCG as the initial value, only a few iterations are needed.
+    
+--
+
+We implement a Conjugate Gradient Algorithm written in Rcpp
+
+  - Works very well for OPCG and MADE-1, which can be computed in parallel 
+
+  - Still slow for MADE-2, but much faster than Newton
+
+<!-- --- -->
+<!-- class: left, top -->
+<!-- # Implementation/Algorithm -->
+<!-- ## OPCG  -->
+
+
+
+<!-- The negative local linear log-likelihood about $X_j$ becomes -->
+<!-- \begin{align*} -->
+<!-- & l(a_{j}, B_{j}; X_j, X_{1:n}, Y_{1:n}) \\ -->
+<!-- = & -->
+<!-- \frac 1n \sum_{i=1}^n -->
+<!-- K \bigg ( \frac{X_i - X_j}{h} \bigg ) -->
+<!-- \{c_{j}^\top [\nu(X_i - X_j)] Y_i -  -->
+<!-- b([\nu(X_i - X_j)]^\top c_{j} \}  -->
+<!-- \end{align*} -->
+
+
+<!-- --- -->
+<!-- class: left, top -->
+<!-- # Implementation/Algorithm -->
+<!-- ## OPCG  -->
+
+<!-- 0. Given $(Y_{1:n},X_{1:n})$, initial values $c_{1:n}^{(0)}$, and tolerance level $\varepsilon > 0$. -->
+
+<!-- For each $j=1,...,n$ -->
+<!-- 1. Substitute $\hat c^{(r)}$ into the objective , -->
+
+<!-- 2. and compute -->
+<!-- 	$\hat \a_j^{(r+1)} = \hat \a_j^{(r)} + J_j^{-1} (\hat \a_j^{(r)} ) S_j(\hat \a_j^{(r)})$; -->
+<!-- 	Repeat until $\frac{ || \hat \a_j^{(r+1)} - \hat \a_j^{(r+1)} ||_2 }{ ||\hat \a_j^{(r)} ||_2 } < \vep $ and denote the final estimate by $\hat \a_j^*$;  -->
+<!-- 	Construct matrix estimate $\hat D_j$ as the $2,...,p+1$ rows of the matrix $ \hat A_j = mat(\hat \a_j^*) \in \R^{(p+1) \times m}$, for all $j=1,...,n$;   -->
+<!-- 	Form $\hat G = \frac 1n \sum_{j=1}^n  \hat D_j \hat D_j^{\top} $ ;   -->
+<!-- 	Take first $d$ eigenvectors of $\hat G$, $v_1,...,v_d$, to be the estimates for dimension reduction directions $\hat B_{OPCG} = (v_1,....,v_d)$ ; -->
+
+<!-- --- -->
+<!-- class: left, top -->
+<!-- # Implementation/Algorithm -->
+<!-- ## MADE  -->
+
+<!-- --- -->
+<!-- class: left, top -->
+<!-- # Implementation/Algorithm -->
+<!-- ## MADE  -->
+
+---
+class: left, top
+# Order Determination
+
+"Order Determination" refers to estimating "$d$", the dimension of the minimal SDR subspace.  
+
+1. An advantage of OPCG is compatibility with existing methods based on eigen variation. We focus on the following methods for OPCG:
+
+  - Ladle Estimator  `r Cite(bib_sdr, author=c("luo"), title="combining")` 
+  - Predictor Augmentation `r Cite(bib_sdr, author=c("luo"), title="augmentation")`
+
+--
+
+2. For MADE, the standard cross-validation methods can be applicable from MAVE `r Cite(bib_sdr, author=c("xia"), title="adaptive")`
+<!-- and Adragni's MADE `r Cite(bib_sdr, author=c("adragni"), title="average")`   -->
+
+
+
+
+
+
+---
+class: inverse, center, middle
+
+<!-- inverse makes the background black and text white -->
+
+# .bg-text[Tuning]
+
+
+---
+class: left, top
+# Tuning the bandwidth, $h$.
+ 
+We need to tune $h$ in OPCG (and MADE):
+
+  - But Cross Validation can be computationally intensive and costly
+
+  - Can choose $h$ to be the optimal bandwidth $h^{opt} = cn^{-\frac{1}{p_{opt}}}$, but choosing the proportional constant $c$ can be difficult
+
+
+For classification problems, we propose using a K-means clustering approach. This does not require us to select a prediction method.  
+
+---
+class: left, top
+# Tuning the bandwidth, $h$.
+
+Main idea: For each $h$, 
+
+1. Estimate $\hat B_{opcg}$ and construct the sufficient predictors $\hat B_{opcg}^\top X$.
+
+2. Apply K-means to $\hat B_{opcg}^\top X$ to get estimated clusters and corresponding F-ratio, i.e. the Within Sums-of-Squares (WSS) over Between Sums-of-Squares (BSS)
+
+3. Select $h$ that minimizes the F-ratio from K-means.
+
+--
+
+But: We ought to incorporate the class/label information available.
+
+
+---
+class: left, top
+# Tuning the bandwidth, $h$.
+
+Improved idea: For each $h$, 
+
+1. For each class/label, 
+
+  a. Estimate $\hat B_{opcg}$ and construct the sufficient predictors $\hat B_{opcg}^\top X$.
+
+  b. Apply K-means to $\hat B_{opcg}^\top X$ to get estimated clusters and corresponding  WSS and  BSS
+
+2. Compute the "Supervised WSS" (SWSS) and "Supervised BSS" (SBSS) as the aggregate WSS and BSS over all classes, respectively. 
+
+3. Select $h$ that minimizes the "supervised F-ratio" $\frac{SWSS}{SBSS}$.
+
+--
+
+But: We ought to incorporate the label information available.
+
+
+---
+class: left, top
+# Alternative approaches
+
+1. Generalized Single Index Model (GSIM):
+
+  - Estimates the conditional mean directly; 
+  - Applies GSIM to each label of the response;  
+  - Applies ridge penalty on the gradient of the conditional mean; 
+
+--
+
+2. Adragni's MADE:
+
+  - Only available for scalar $Y$;
+  - Restricted to binary classification; suggests pairwise computations over all labels
+  
+--
+
+3. gradient Kernel Dimension Reduction (gKDR):
+
+  - Same idea of using an eigen-decomposition of the outer product of estimated local gradients 
+  - local gradients of the conditional mean are estimated via RKHS
+
+---
+class: inverse, center, middle
+
+<!-- inverse makes the background black and text white -->
+
+# .bg-text[Simulations and Data Analyses]
+
+
+---
+class: left, top
+# Simulations
+
+
+---
+class: ani-slide
+# Tuning HTML Widget
+ 
+<iframe src="tuning.html" width="100%" height="95%" frameborder="0" ></iframe>
+
+count: false
+class: left, top
+# Wine Quality
+
+---
+class: left, top
+# USPS Digit
+
+---
+count: false
+class: left, top
+# USPS Digit
+ 
+---
+class: left, top
+# ISOLET
+
+---
+count: false
+class: left, top
+# ISOLET
+
+
+---
+class: left, top
+# Red Wine Quality
+
+Input variables (based on physicochemical tests):
+<!-- 1 - fixed acidity -->
+<!-- 2 - volatile acidity -->
+<!-- 3 - citric acid -->
+4 - residual sugar 
+<!-- 5 - chlorides -->
+<!-- 6 - free sulfur dioxide -->
+7 - total sulfur dioxide
+<!-- 8 - density -->
+<!-- 9 - pH -->
+10 - sulphates
+11 - alcohol
+
+# Output variable (based on sensory data): 
+12 - quality (score between 0 and 10)
+
+
+---
+class: left, top
+# Boston Housing Prices
+
+Input variables (based on physicochemical tests):
+<!-- 1 - fixed acidity -->
+<!-- 2 - volatile acidity -->
+<!-- 3 - citric acid -->
+4 - residual sugar 
+<!-- 5 - chlorides -->
+<!-- 6 - free sulfur dioxide -->
+7 - total sulfur dioxide
+<!-- 8 - density -->
+<!-- 9 - pH -->
+10 - sulphates
+11 - alcohol
+
+# Output variable (based on sensory data): 
+12 - quality (score between 0 and 10)
+---
+
+---
+class: left, top, inverse
+# .bg-text[Conclusion]
+
+
+1. Provided the Multivariate Link Functions for Categorical and Ordinal Responses.
+
+--
+
+2. Provided a framework for generalized forward SDR: OPCG, MADE. 
+
+  - And applied it to categorical and ordinal responses using the multivariate link functions. 
+
+--
+
+3. Introduced a K-means based tuning procedure.
+
+--
+
+4. Demonstrated the effectiveness of OPCG in categorical and ordinal classification problems.
+
+  - Can handle multiple labels simultaneously
+  
+  - Competitive with some contemporary categorical and ordinal classification methods.
+
+
+--
+
+
+
+
+
+---
+layout: false
+# References
+
+```{r, echo=FALSE, results="asis"}
+PrintBibliography(bib_sdr, start=1, end=6)
+```
+
+---
+layout: false
+# References
+
+```{r, echo=FALSE, results="asis"}
+PrintBibliography(bib_sdr, start=7, end=12)
+```
+
+---
+layout: false
+# References
+
+```{r, echo=FALSE, results="asis"}
+PrintBibliography(bib_sdr, start=13)
+```
+
