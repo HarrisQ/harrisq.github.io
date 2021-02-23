@@ -16,6 +16,7 @@ _site
 *~
 
 # OS or Editor folders
+slides_testing
 .DS_Store
 ._*
 Thumbs.db
@@ -24,7 +25,6 @@ Thumbs.db
 .settings
 .tmproj
 *.esproj
-opcg2
 *.sublime-project
 *.sublime-workspace
 .idea
