@@ -26,19 +26,19 @@ Publications
 Talks + Presentations
 ---
 <!-- * Generalized Forward Sufficient Dimension Reduction for Classification, 2020. 
-	*Stochastic Modelling And Computing* Seminar (Penn State) &nbsp;[Slides](/slides/opcg_slides_pdf.pdf). -->
+  *Stochastic Modelling And Computing* Seminar (Penn State) &nbsp;[Slides](/slides/opcg/opcg_xslides#1)  -->
 
 * Accurate Confidence Intervals for Clustered Data and Small Samples, 2017. 
-	*The Annual Statistical Society of Canada Conference.* Meeting (Winnipeg, Canada). (Talk; Masters Work) (Was not able to attend)
+  *The Annual Statistical Society of Canada Conference.* Meeting (Winnipeg, Canada). (Talk; Masters Work) (Was not able to attend)
 
 * An Investigation of Composite Likelihood and Indirect Inference, 2016
-	*The 4th Annual Statistical Society of Canada Student Conference.* Meeting (St. Catherines, Canada). (Poster; Masters Work)
+  *The 4th Annual Statistical Society of Canada Student Conference.* Meeting (St. Catherines, Canada). (Poster; Masters Work)
 
 
 Code + Packages
 ---
 * Linear Sufficient Dimension Reduction. [Link](https://github.com/HarrisQ/linearsdr).
-	* Contains R Code for a variety of Linear SDR methods: OPG, MAVE, OPCG, MADE, SIR, SAVE, DR.
+  * Contains R Code for a variety of Linear SDR methods: OPG, MAVE, OPCG, MADE, SIR, SAVE, DR.
 
 <!-- <p class="message">
   Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!
