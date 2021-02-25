@@ -821,7 +821,7 @@ class: left, top
 
 # OPCG: Consistency
 
-Consistency requires assumptions including: 
+Our assumptions for Consistency include: 
 - compactness of predictor and parameter, 
 - smoothness of the likelihood, 
 - symmetric kernels with finite moments,
@@ -1111,41 +1111,68 @@ class: left, top
  
 We need to tune $h$ in OPCG (and MADE):
 
-  - But Cross Validation can be computationally intensive and costly
+  - But Cross Validation can be computationally intensive and relative performance may vary between prediction methods. 
 
-  - Can choose $h$ to be the optimal bandwidth $h^{opt} = cn^{-\frac{1}{p_{opt}}}$, but choosing the proportional constant $c$ can be difficult
-
-
-For classification problems, we propose using a K-means clustering approach. This does not require us to select a prediction method.  
-
----
-class: left, top
-# Tuning the bandwidth, $h$.
-
-Main idea: For each $h$, 
-
-1. Estimate $\hat B_{opcg}$ and construct the sufficient predictors $\hat B_{opcg}^\top X$.
-
-2. Apply K-means to $\hat B_{opcg}^\top X$ to get estimated clusters and corresponding F-ratio, i.e. the Within Sums-of-Squares (WSS) over Between Sums-of-Squares (BSS)
-
-3. Select $h$ that minimizes the F-ratio from K-means.
+  - Can choose $h$ to be the optimal bandwidth, such as $h^{opt} = cn^{-\frac{1}{p^{opt}}}$, but choosing the proportional constant $c$ requires tuning when recommended values do not work.
 
 --
 
-But: We ought to incorporate the class/label information available.
+For classification problems, we propose using a K-means clustering procedure for tuning $h$.
+
+Let $Y \in \{1,...,m\}$ be categorical response, $(Y, X)_{1:n}$ be our sample predictors for estimation, $(Y,X)_{1:n_2}^{tune}$ be our sample predictors for Tuning.
+
+---
+class: left, top
+# Tuning the bandwidth, $h$.
+
+
+
+Main idea: For each $h$, 
+
+1. Estimate $\hat \beta_{opcg}$ on $(Y,X)_{1:n}$ and construct the sufficient predictors $\hat \beta_{opcg}^\top X_{1:n_2}^{tune}$.
+
+2. Apply K-means to $\hat \beta_{opcg}^\top X_{1:n_2}^{tune}$ for $m$ clusters.
+
+  - This returns $m$ estimated clusters and the F-ratio corresponding to $h$, i.e. the Within Sums-of-Squares (WSS) over Between Sums-of-Squares (BSS)
+
+3. Select $h$ that minimizes the F-ratio from K-means. 
+
+--
+
+But ...
+
+- We assume that there are only $m$ clusters; i.e. 1 cluster per class.
+
+- We ought to incorporate the class/label information from $Y_{1:n}^{tune}$, when available.
+
 
 
 ---
 class: left, top
 # Tuning the bandwidth, $h$.
 
-Improved idea: For each $h$, 
+Improvements:
 
-1. For each class/label, 
+1. For K-means, instead of estimating $m$ clusters, we can estimate $M_1+\cdots+M_m$ clusters, where $M_j$ are the number of clusters for class $j$.
 
-  a. Estimate $\hat B_{opcg}$ and construct the sufficient predictors $\hat B_{opcg}^\top X$.
+  - We set $M_j = M \in \{1,2,3\}$ in our examples.
+  
+  - Our procedure seems robust to the number of clusters per class.  
+  
+  - Still does not incoporate information from $Y_{1:n_2}^{tune}$.
 
-  b. Apply K-means to $\hat B_{opcg}^\top X$ to get estimated clusters and corresponding  WSS and  BSS
+---
+class: left, top
+# Tuning the bandwidth, $h$.
+
+Improvements:
+
+
+2. For each $h$, for each class/label$m$, 
+
+  a. Estimate $\hat \beta_{opcg}$ using $(Y,X)_{1:n}$ and construct the sufficient predictors $\hat \beta_{opcg}^\top X_{1:n_2}^{tune}$.
+
+  b. Apply K-means to $\hat \beta_{opcg}^\top X_{1:n_2}^{tune}$ to get estimated clusters and corresponding  WSS and  BSS
 
 2. Compute the "Supervised WSS" (SWSS) and "Supervised BSS" (SBSS) as the aggregate WSS and BSS over all classes, respectively. 
 
@@ -1156,29 +1183,29 @@ Improved idea: For each $h$,
 But: We ought to incorporate the label information available.
 
 
----
-class: left, top
-# Alternative approaches
+<!-- --- -->
+<!-- class: left, top -->
+<!-- # Alternative approaches -->
 
-1. Generalized Single Index Model (GSIM):
+<!-- 1. Generalized Single Index Model (GSIM): -->
 
-  - Estimates the conditional mean directly; 
-  - Applies GSIM to each label of the response;  
-  - Applies ridge penalty on the gradient of the conditional mean; 
+<!--   - Estimates the conditional mean directly;  -->
+<!--   - Applies GSIM to each label of the response;   -->
+<!--   - Applies ridge penalty on the gradient of the conditional mean;  -->
 
---
+<!-- -- -->
 
-2. Adragni's MADE:
+<!-- 2. Adragni's MADE: -->
 
-  - Only available for scalar $Y$;
-  - Restricted to binary classification; suggests pairwise computations over all labels
-  
---
+<!--   - Only available for scalar $Y$; -->
+<!--   - Restricted to binary classification; suggests pairwise computations over all labels -->
 
-3. gradient Kernel Dimension Reduction (gKDR):
+<!-- -- -->
 
-  - Same idea of using an eigen-decomposition of the outer product of estimated local gradients 
-  - local gradients of the conditional mean are estimated via RKHS
+<!-- 3. gradient Kernel Dimension Reduction (gKDR): -->
+
+<!--   - Same idea of using an eigen-decomposition of the outer product of estimated local gradients  -->
+<!--   - local gradients of the conditional mean are estimated via RKHS -->
 
 ---
 class: inverse, center, middle
