@@ -34,11 +34,11 @@ MathJax.Hub.Config({
 
 &lt;!-- class: title-slide --&gt;
 
-# Generalized Forward Sufficient Dimension Reduction for Classification
+# Generalized Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses
 &lt;!-- # .bg-text[Generalized Forward Sufficient Dimension Reduction for Classification] --&gt;
 &lt;!-- &lt;hr width="700" align="left" /&gt; --&gt;
 &lt;hr/&gt;
-## Harris Quach (joint work with Bing Li) &lt;br/&gt; Date: 2021-03-05 (updated: 2021-02-24)
+## Harris Quach (joint work with Bing Li) &lt;br/&gt; Date: 2021-03-05 (updated: 2021-02-27)
 
 ---
 # Outline
@@ -1177,71 +1177,136 @@ class: ani-slide
  
 &lt;iframe src="images/tuning_sc.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
 
-count: false
-class: left, top
-# Wine Quality
 
 ---
 class: left, top
-# USPS Digit
+# Categorical Data Analysis  
+
+We analyze three categorical response datasets: 
+
+  1. Handwritten Digits (Pendigit)
+
+    - p=16; m=0,1,2,...,9; n=1000; n_test = 1000;
+  
+  2. USPS Handwritten Digits (USPS)
+
+    - p=256; m=0,1,2,...,9; n=1000; n_test=1007;
+  
+  3. ISOLET
+  
+    - p=618; m=1,2,...,26 (i.e. a,b,c,...,x,y,z); n=6238; n_test=1559;
+
+---
+class: left, top
+# Categorical Classification Error
+
+&lt;img align="centered" class="image" src="images/cat_class_table.png" width="95%"&gt;
+
 
 ---
 count: false
 class: left, top
-# USPS Digit
- 
+# Pen Digit - SIR/DR - 0-9 - 1,2,6,7,9
+&lt;iframe src="images/dr_pendigit10.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
+
 ---
+count: false
+class: left, top
+# Pen Digit - OPCG - 0-9 - 1,2,6,7,9
+
+&lt;iframe src="images/opcg_pendigit10.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
+
+---
+count: false
+class: left, top
+# Pen Digit - SIR/DR - 1,2,6,7,9
+&lt;iframe src="images/dr_pendigit5.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
+
+---
+count: false
+class: left, top
+# Pen Digit - OPCG - 1,2,6,7,9
+
+&lt;iframe src="images/opcg_pendigit5.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
+
+
+---
+
+class: left, top
+# USPS Digit
+
+
+---
+
 class: left, top
 # ISOLET
 
 ---
-count: false
 class: left, top
-# ISOLET
+# Ordinal-Categorical Data Analysis
+
+We analyze four ordinal-categorical response datasets: 
+
+  1. Red Wine Quality (quality)
+
+    - p=11; m=(3,4,5), 6, (7,8); n=1599; 
+    - Ordinal response - Wine Quality Score from 1-10;
+  
+  2. Coronary Artery Disease (hearth)
+  
+    - p=10; m=1,2,3,4,5; n=294; 
+    - Ordinal response - severity of coronary artery disease (1 = no disease; 2 = degree 1; 3 = degree 2; 4 = degree 3; 5 = degree 4)
+  
+  3. Boston Housing Prices (Boston)
+
+    - p=13; m=1,2,3,4,5; n=506
+    - Ordinal response - Median value of owner-occupied homes;
+    
+  4. Panel Study of Income Dynamics 1976 (psid76)
+  
+    - p=20; m=1,2,3,4,5; n=753
+    - Ordinal response - Family Income;
+  
+  5. Abalone 
+  
+    - p=7; m=1,2,3,4,5; n=1018 
+
+---
+class: left, top
+# Ordinal Classification Error
+
+&lt;img align="centered" class="image" src="images/ord_class_table.png" width="100%"&gt;
+
+
 
 
 ---
+count: false
 class: left, top
 # Red Wine Quality
 
-Input variables (based on physicochemical tests):
-&lt;!-- 1 - fixed acidity --&gt;
-&lt;!-- 2 - volatile acidity --&gt;
-&lt;!-- 3 - citric acid --&gt;
-4 - residual sugar 
-&lt;!-- 5 - chlorides --&gt;
-&lt;!-- 6 - free sulfur dioxide --&gt;
-7 - total sulfur dioxide
-&lt;!-- 8 - density --&gt;
-&lt;!-- 9 - pH --&gt;
-10 - sulphates
-11 - alcohol
 
-# Output variable (based on sensory data): 
-12 - quality (score between 0 and 10)
-
+&lt;img align="centered" class="image" src="images/opcg_wine_preds.png" width="100%"&gt;
 
 ---
 class: left, top
 # Boston Housing Prices
 
-Input variables (based on physicochemical tests):
-&lt;!-- 1 - fixed acidity --&gt;
-&lt;!-- 2 - volatile acidity --&gt;
-&lt;!-- 3 - citric acid --&gt;
-4 - residual sugar 
-&lt;!-- 5 - chlorides --&gt;
-&lt;!-- 6 - free sulfur dioxide --&gt;
-7 - total sulfur dioxide
-&lt;!-- 8 - density --&gt;
-&lt;!-- 9 - pH --&gt;
-10 - sulphates
-11 - alcohol
+&lt;img align="centered" class="image" src="images/opcg_house_preds.png" width="100%"&gt;
 
-# Output variable (based on sensory data): 
-12 - quality (score between 0 and 10)
 ---
+class: left, top
+# PSID 76
 
+&lt;img align="centered" class="image" src="images/opcg_psid_preds.png" width="100%"&gt;
+
+---
+class: left, top
+# Hearth 
+
+
+&lt;img align="centered" class="image" src="images/opcg_hearth_preds.png" width="100%"&gt;
+ 
 ---
 class: left, top, inverse
 # .bg-text[Conclusion]
