@@ -41,105 +41,350 @@ MathJax.Hub.Config({
 ## Harris Quach (joint work with Dr. Bing Li) &lt;br/&gt; Date: 2021-03-05
 
 ---
-# Outline
+# Overview
 
-1. Sufficient Dimension Reduction (SDR)
+1. Multivariate Categorical and Ordinal Link functions for GLMs
+
+  - Categorical Variable
+  - Ordinal-Categorical Variable
+
+2. Motivation
   - Inverse Regression for SDR
   - Forward Regression for SDR
   
-2. Multivariate Categorical and Ordinal Canonical Link functions
-
-3. Generalized Forward Regression for SDR
-  - Outer Product of Canonical Gradients (OPCG)
-  - Minimum Average Deviance Estimator (MADE) 
+3. Outer Product of Canonical Gradients (OPCG) 
   
 4. Tuning the bandwidth via K-means 
 
-4. Simulations and Data Analysis
+5. Simulations and Data Analysis
   - Simulations
-  - Categorical Data  
   - Ordinal Data 
+  - Categorical Data  
 
 ---
-class: left, top &lt;!-- formatting the slide --&gt;
+class: inverse, center, middle
 
-&lt;!-- the title --&gt; 
+&lt;!-- inverse makes the background black and text white --&gt;
 
-# What is Sufficient Dimension Reduction?
-
-Sufficient Dimension Reduction (SDR) extracts a lower dimensional function of the predictors that "preserves" relationships of interest between the predictors and response.
-
---
-
-"Preservation" is formulated as conditional independence.
-
---
-
-Let `\(Y \in \R^m\)` be a response and `\(X \in \R^p\)` be a predictor. 
-
-- Linear SDR finds a linear function `\(s(X) = \beta^\top X\)`, where `\(\beta \in \R^{p \times d}\)` with `\(d &lt; p\)`, such that
-
-`$$Y \indep X \; | \; \beta^\top X$$`
+# .bg-text[Multivariate Link functions]  
 
 
 ---
-class: left, top &lt;!-- formatting the slide --&gt;
+class: left, top
+# Multivariate Links for Linear Exponential Families
 
-&lt;!-- the title --&gt; 
+The crux of our proposed method is fitting multivariate Generalized Linear Model to categorical or ordinal response variables.
 
-# What is Sufficient Dimension Reduction?
+- Categorical and Ordinal responses, `\(Y\)`, can be derived from a multinomial distribution.
 
+- Multinomials are a linear exponential family, with log-likelihood of the form
 
-- For any `\(\beta\)` such that `\(Y \indep X \; | \; \beta^\top X\)`, the `\(span(\beta)\)`     is a _Sufficient Dimension Reduction Subspace_.
+`\begin{align*}
+\ell(\theta;y) = \theta^\top Y - b(\theta);   
+\end{align*}`
 
---
+- They are characterized by their means `\(\mu\)`, through the canonical parameter `\(\theta\)`, 
 
-- Under mild conditions, a _minimial_ Sufficient Dimension Reduction (SDR) Subspace exists (Yin, Li, and Cook (2008))
+- The canonical link function `\(\theta( \cdot ): \mu \mapsto \theta\)`; the inverse canonical link maps `\(\theta\)` to `\(\mu\)` via `\(\mu(\cdot): \theta \mapsto \mu\)`
 
-  - This is the **Central Subspace (CS)** and is denoted `\(\SS_{Y \indep X}\)`.
+---
+class: left, top
+# Multivariate Links for Linear Exponential Families
+
+  - Inverse canonical link is useful for 
+    
+    - determining the function `\(b(\cdot)\)` that specifies the linear exponential family
+    
+    - evaluating the Mean and Variance as functions of the canonical parameter
+      
+    - estimate parameters for alternative link functions
+
+  - Canonical link is useful for constructing starting values for optimization algorithms via the projection
   
-  - `\(\SS_{Y \indep X}\)` is minimial in that `\(\SS_{Y \indep X} \leq span(\beta)\)`, for any other SDR subspace.
+`\begin{align*}
+X(X X^\top)^{-1} X \theta(Y)     
+\end{align*}`
+
+
+- So we show explicitly the categorical and ordinal-categorical variables are linear exponential families. 
 
 ---
-class: left, top &lt;!-- formatting the slide --&gt;
+class: left, top
+# Categorical Response
 
-&lt;!-- the title --&gt; 
+Suppose `\(Y \in \{1,...,m\}\)` is a categorical variable for `\(m\)` nominal categories. 
 
-# What is Sufficient Dimension Reduction?
+- We can represent `\(Y\)` as a vector `\(S = (S^1,...,S^{m-1}) \in \{0,1\}^{m-1}\)`, where we set `\(S^m = 1 - \sum_{j=1}^{m-1} S^m\)`.
 
-- If we want to preserve &lt;!--all relevant information available in `\(X\)` about--&gt; 
-the _regression relation_ `\(E(Y|X)\)`, then SDR finds `\(\beta\)` such that 
-`$$Y \indep E(Y|X) \; | \; \beta^\top X$$`
+  - If `\(Y=k\)`, then `\(S^k = 1\)` and `\(S^j=0\)` for `\(j \neq k\)`. 
 
-  - Equivalent to finding `\(\beta\)` such that `\(E(Y|X) = E(Y | \beta^\top X )\)` (Cook and Li (2002))
-  
-  - The minimial SDR Subspace for `\(E(Y|X)\)` is the **Central Mean Subspace (CMS)**, `\(\SS_{E(Y | X)}\)`.
-  
-  - In general, the `\(\SS_{E(Y | X)} \leq \SS_{Y \indep X}\)`.
+  - Eg. `\(m=3\)`; if `\(Y = 2\)`, then `\(S = (0,1)\)`; if `\(Y=3\)`, then `\(S=(0,0)\)`. 
 
 --
 
-&lt;div class=prop text="CMS=CS"&gt;
-(Cook and Li (2002))
-If \(Y\) depends on \(X\) only through the Conditional Mean, 
-i.e. \(Y \indep X \;|\; E(Y|X)\), then \(\SS_{E(Y | X)} = \SS_{Y \indep X}\).
-&lt;/div&gt;
+Let `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` vector of probabilities for each category. 
 
-&lt;!-- - This framework can be applied broadly to define the Central Median Subspace, Central Quantile Subspace, Central `\(k^{th}\)`-Moment Subspace, and so on. --&gt;
+Then
+`\begin{align*}
+E(S) =  p , 
+\quad 
+Var(S)
+= Diag(p) - p p^\top
+%\left [ Diag \left ( \frac{  e^{\theta   } }{ 1 + \boldsymbol 1^{\top}e^{\theta } } \right ) - \frac{ e^{\theta }  (e^{\theta }  )^{\top} }{ [1 + \boldsymbol 1^{\top}e^{\theta} ]^2 }  \right ]
+,
+\end{align*}`
 
-&lt;!-- `\(\Xcal\)` and `\(\water\)` and `\(\braket{4}\)` and `\(\Abs{4}{3}\)`. --&gt;    
- 
+
 ---
-class: left, top &lt;!-- formatting the slide --&gt;
+class: left, top
+# Categorical Response
 
-&lt;!-- the title --&gt; 
+  - The canonical link and its inverse is the multivariate logistic link and its inverse:
+  
+`\begin{align*}
+\theta(p) = \log \frac{ p }{ 1 - \boldsymbol{1}^{\top} p }
+\qquad
+p(\theta) =  \frac { \exp(\theta) } {  1 - \boldsymbol{1}^{\top} \exp( \theta) } 
+\end{align*}`
 
+The density and log-likelihood of `\(S\)` are 
+`\begin{align*}
+f(S;p) \propto \prod_{j=1}^{m-1} (p^j)^{S^j},
+\quad  
+\ell(\theta;S) = \theta^{\top}S - \log ( 1 - \boldsymbol 1^{\top}  e^\theta   )
+,
+\end{align*}`
+where 
+`\(b(\theta) = \log( 1 - \boldsymbol{1}^{\top} e^{  \theta }  )\)`.
+
+
+---
+class: left, top
+# Ordinal Response
+
+Suppose `\(Y \in \{1,...,m\}\)` is an ordinal-categorical variable for `\(m\)` ordered categories.  
+
+- We can represent `\(Y\)` as a vector `\(S = (S^1,...S^{m-1}) \in \{0,1\}^{m}\)` as for categorical `\(Y\)`. 
+
+- We can represent `\(S\)` as a vector `\(T = (T^1,...T^{m-1}) \in \{0,1\}^{m-1}\)`, and we set `\(T^{m} = 0\)` and `\(T^0=1\)`. 
+  
+  - If `\(Y = k\)`, then `\(T^j = 1\)` for `\(j \leq {k-1}\)` and `\(T^j=0\)` for `\(j &gt; k-1\)`. 
+
+  - Eg. `\(m=5\)`; if `\(Y=3\)`, then `\(T=(1,1,0,0)\)`; if `\(Y=1\)`, then `\(T=(0,0,0,0)\)`
+
+
+---
+class: left, top
+# Ordinal Response
+
+Let 
+
+ - `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` vector of probabilities,
+ - `\(\gamma = (p^1, p^1 + p^2, ..., p^1 + \cdots + p^{m-1})\)` be the `\(m-1\)` vector of cumulative probabilities, 
+ - `\(\tau = 1 - \gamma\)`. 
+
+--
+
+The mean and variance of `\(T\)` is
+`\begin{align*}
+E(T) = \tau, \quad 
+Var(T) = \Gamma - \tau  \tau^{\top} ,
+\end{align*}`
+where
+`\begin{align*}
+\Gamma = \left ( \begin{matrix}
+\tau^{1}  &amp; \tau^{2}  &amp; \cdots &amp; \tau^{m-2}&amp; \tau^{m-1} \\
+\tau^{2}  &amp; \tau^{2}  &amp; \cdots &amp; \tau^{m-2} &amp; \tau^{m-1} \\
+\vdots &amp; \vdots  &amp; \cdots  &amp; \cdots &amp; \vdots \\
+\tau^{m-2} &amp; \tau^{m-2} &amp; \cdots &amp; \tau^{m-2}  &amp; \tau^{m-1} \\
+\tau^{m-1} &amp; \tau^{m-1}  &amp; \cdots &amp; \tau^{m-1} &amp; \tau^{m-1 } \end{matrix} \right )
+\end{align*}`
+
+---
+class: left, top
+# Ordinal Response
+
+We define the canonical parameter as `\(\theta(\tau) = (\theta(\tau)^1,...,\theta(\tau)^{m-1} )\)`, with
+`\begin{align*}
+\theta(\tau)^j
+=
+\log \bigg ( \frac{  \tau^{j} - \tau^{j+1} }{  \tau^{j-1} - \tau^{j}  } \bigg )
+=
+\log \bigg ( \frac{ p^{j+1} }{p^{j} } \bigg )
+%= 
+%\log \bigg ( \frac{ \gamma^{j+1} - \gamma^{j} }{ \gamma^{j} - \gamma^{j-1}  } \bigg ) 
+.
+\end{align*}`
+
+This canonical link corresponds to the "Adjacent-Categories Logit Model for cumulative probabilities" (Agresti, 2010; Agresti, 2013). 
+
+--
+
+Let `\(P\)` a permutation matrix that maps `\((a^1,...,a^m) \mapsto (a^m, a^1...,a^{m-1})\)`. Then 
+
+`\begin{align*}
+\theta(\tau) 
+=
+\log \left\{ \frac{ (I-P) \tau }{ (P^{-1} - I)\tau } \right \}.
+\end{align*}`
+
+--
+
+The Adjacent-Categories Model is usually re-expressed as a logistic multinomial in practice. 
+
+Instead, we derive a closed form for the inverse link and `\(b(\cdot)\)` function to explicitly show that categorical-ordinal variable `\(T\)` is distributed according to a linear exponential family.  
+
+
+---
+class: left, top
+# Ordinal Response
+
+&lt;!-- Let `\(\phi(\theta) = (\phi^{1}(\theta),...,\phi^{m-1}(\theta) )\)` with `\(\phi^{j} (\theta) = \sum_{r=1}^j \exp \left \{ \sum_{s=1}^{r}  \theta^{s}  \right \}\)`. --&gt;
+
+  &lt;!-- - Then `\(\phi(\theta) = L \exp (L \theta )\)`, with `\(L\)` a lower triangular matrix of `\(1\)`'s.  --&gt;
+
+Let `\(L\)` a lower triangular matrix of `\(1\)`'s.
+The inverse canonical link is
+`\begin{align*}
+\tau(\theta) =
+\bigg [ -I_{m-1}   - 
+\frac{ \{\boldsymbol 1  + e_1 + P L \exp (L \theta ) \} e_1^{\top} } { 1 - e_1^{\top} \{\boldsymbol 1  + e_1 + P L \exp (L \theta ) \}  } 
+\bigg ] 
+P L \exp (L \theta ) 
+.
+\end{align*}`
+
+--
+
+Letting `\(Q = \{-I_{m-1} + \boldsymbol 1e_1^\top  + e_1 e_1^\top \}\)`, the inverse canonical link is
+`\begin{align*}
+\tau(\theta)
+=\frac{Q P  L \exp (L \theta ) }{1 + e_1^{\top} P   L \exp (L \theta ) }
+,
+\end{align*}`
+
+--
+
+Since `\(S^j = T^{j+1} - T^j\)`, from the density of `\(S\)`, 
+the log-likelihood for `\(T\)` is 
+`\begin{align*}
+\ell(\theta; T)
+= \theta^{\top} T - \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )  
+,
+\end{align*}`
+with `\(b(\theta) = \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )\)`. 
+
+--
+
+We say `\(T\)` has a **ordinal-categorical (Or-Cat)** distribution.
+The ordinal-categorical distribution is a linear exponential family with the **adjacent-categories (Ad-Cat)** link function. 
+
+
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Ordinal Response --&gt;
+
+&lt;!-- Since `\(S^j = T^{j+1} - T^j\)`, from the density of `\(S\)`,  --&gt;
+&lt;!-- the density of `\(T\)` is  --&gt;
+&lt;!-- \begin{align*} --&gt;
+&lt;!-- f(S;p)  --&gt;
+&lt;!-- \propto  &amp; \prod_{j=1}^{m} (p^j)^{S^j} \\ --&gt;
+&lt;!-- =  &amp; --&gt;
+&lt;!-- p^1 --&gt;
+&lt;!-- \bigg ( \frac{ p^2 }{p^1} \bigg )^{T^1}  --&gt;
+&lt;!-- \bigg ( \frac{ p^3 }{p^2} \bigg )^{T^2}  --&gt;
+&lt;!-- \bigg ( \frac{ p^4 }{p^3} \bigg )^{T^3}  --&gt;
+&lt;!-- \bigg ( \frac{ p^5 }{p^4} \bigg )^{T^4}  --&gt;
+&lt;!-- \cdots  --&gt;
+&lt;!-- \bigg ( \frac{ p^{m-1} }{p^{m-2}} \bigg )^{T^{m-2} }  --&gt;
+&lt;!-- \bigg ( \frac{ p^{m} }{p^{m-1}} \bigg )^{T^{m-1} }  --&gt;
+&lt;!-- %(p^m)^{0}   --&gt;
+&lt;!-- . --&gt;
+&lt;!-- \end{align*} --&gt;
+&lt;!-- the log-likelihood for `\(T\)` is  --&gt;
+&lt;!-- \begin{align*} --&gt;
+&lt;!-- \ell(\theta; T) --&gt;
+&lt;!-- % = &amp; \sum_{j=1}^{m-1} T^j \log \bigg ( \frac{ p^{j+1} }{p^{j} } \bigg ) + \log ( p^1  )  --&gt;
+&lt;!-- = \theta^{\top} T - \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )   --&gt;
+&lt;!-- , --&gt;
+&lt;!-- \end{align*} --&gt;
+&lt;!-- where `\(b(\theta) = \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )\)`.  --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- We say `\(T\)` has a *ordinal-categorical (Or-Cat)* distribution.  --&gt;
+&lt;!-- The ordinal-categorical distribution is a linear exponential family with the *adjacent-categories (Ad-Cat)* link function.  --&gt;
+
+
+---
+class: left, top
+# Ordinal Response
+
+- The Ad-Cat link is not as popular as other alternative link functions, `\(\psi\)`, for the cumulative probabilities, such as 
+
+  - the Cumulative Logit, `\(\psi(\tau) = \log\{ ( 1 - \tau)/\tau \}\)`
+  - the Cumulative Probit, `\(\psi(\tau) = \Phi^{-1} (1 - \tau)\)`
+  - the Complementary Log-Log, `\(\psi(\tau) = \log \{ - \log(\tau) \}\)`
+
+- We can estimate `\(\psi\)` using the inverse canonical link function `\(\hat \psi =\psi\{ \tau(\hat \theta) \}\)`.
+
+--
+
+
+- Since `\(T\)` is a linear exponential family,
+`\begin{align*}
+\frac{\partial \tau(\theta)}{\partial \theta} 
+= 
+\frac{\partial^2 b^{-1} (\theta)}{\partial \theta \partial \theta^{\top}} 
+= V\{\tau(\theta)\}
+= \Gamma(\theta) - \tau(\theta) \tau(\theta)^{\top},
+\end{align*}`
+
+
+- We can estimate the derivative of `\(\psi\)` via chain rule
+`\begin{align*}
+\frac{\partial \psi(\hat \theta) }{\partial \theta^{\top}} 
+= \frac{\partial \psi\{\tau( \hat \theta)\} }{\partial \tau^{\top}} 
+\{ \Gamma( \hat \theta) - \tau( \hat \theta) \tau( \hat \theta)^{\top} \}.
+\end{align*}`
+
+---
+class: top, left
+# Summary so far:
+
+  - Categorical variables are a linear exponential family
+  
+  - Ordinal-Categorical variables are also a linear exponential family
+  
+    - The Ad-Cat link and the inverse Ad-Cat link are
+`\begin{align*}
+\theta
+= \log \left\{ \frac{ (I-P) \tau }{ (P^{-1} - I)\tau } \right \},
+\qquad
+\tau(\theta)
+=\frac{Q P  L \exp (L \theta ) }{1 + e_1^{\top} P   L \exp (L \theta ) }
+,
+\end{align*}`
+
+    - `\(b(\theta) = \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )\)`. 
+
+  - From the Ord-Cat distribution, we can estimate any alternative link `\(\psi\)` and its derivatives `\(\partial \psi (\theta) / \partial \theta\)`.
+  
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text[Inverse and Forward Linear SDR]  
+
+---
+class: left, top
 # Motivating Example: 
 
 Given response `\(Y\)` and predictor `\(X = (X_1, X_2) \in [0,1]^2\)`. 
 Let `\(Y=X_1^2\)`.
 Then `\(Y= (\beta^\top X)^2\)`, where `\(\beta = (1,0) \in \R^2\)`. 
-- we want to recover `\(span(\beta)\)`.
+- we want to recover `\(span(\beta) = \{ (c,0): c \in \R\}\)`.
 .center[
 &lt;img align="centered" class="image" src="images/sdr_plot.png" width="50%"&gt;
 ]
@@ -212,6 +457,10 @@ class: left, top &lt;!-- formatting the slide --&gt;
 .center[
 &lt;img align="centered" class="image" src="images/sir_plot5.png" width="55%"&gt;
 ]
+--
+
+  - 'Inverse' because we estimate `\(E(X|Y)\)`.
+
 ---
 class: left, top &lt;!-- formatting the slide --&gt;
 
@@ -297,6 +546,8 @@ class: left, top &lt;!-- formatting the slide --&gt;
 &lt;img class="image" src="images/fsdr_plot3.png" width="55%"&gt;
 ] 
 
+
+
 ---
 count: false
 class: left, top &lt;!-- formatting the slide --&gt;
@@ -310,6 +561,9 @@ class: left, top &lt;!-- formatting the slide --&gt;
 .center[
 &lt;img class="image" src="images/fsdr_plot3-1.png" width="55%"&gt;
 ] 
+
+--
+- "Forward" Regression because we are estimating `\(E(Y|x)\)` and `\(\partial E(Y|x)/\partial x^\top\)`
 
 ---
 count: false
@@ -344,300 +598,43 @@ class: left, top &lt;!-- formatting the slide --&gt;
 class: left, top
 # Forward Regression for SDR 
 
-- OPG can only recover `\(\SS_{E(Y|X)}\)`
+&lt;!-- - OPG can only preserve information on the regression relation  --&gt;
+&lt;!-- recover `\(\SS_{E(Y|X)}\)` --&gt;
   
-  - Extensions exist to recover `\(\SS_{Y|X}\)` 
-  
-    - dOPG (Xia, 2007); 
-      Ensemble OPG (Yin, Li, and others, 2011); 
-      Sliced Regression (Wang and Xia, 2008)
+&lt;!--   - Extensions exist to recover `\(\SS_{Y|X}\)`  --&gt;
+
+&lt;!--     - dOPG (Xia, 2007);  --&gt;
+&lt;!--       Ensemble OPG (Yin, Li, and others, 2011);  --&gt;
+&lt;!--       Sliced Regression (Wang and Xia, 2008) --&gt;
+
+&lt;!-- -- --&gt;
+
+
+- OPG developed for scalar `\(Y\)`; does not work as well for categorical `\(Y\)`.
 
 --
 
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Generalized Forward Regression for SDR  --&gt;
 
-- OPG developed for scalar `\(Y\)`; does not work for well for categorical `\(Y\)`.
-
-
----
-class: left, top
-# Generalized Forward Regression for SDR 
-  
 - Idea: Estimate a GLM locally instead of a Linear Regression.
-&lt;br/&gt;&lt;br/&gt;
+&lt;!-- &lt;br/&gt;&lt;br/&gt; --&gt;
 
 --
 
 Existing extensions of Forward SDR:
 
 1. Generalized Single Index Model (GSIM): Lambert-Lacroix and Peyre (2006)
-  - Local Linear Single Index GLM with specified link to estimate the Average Derivative of the Conditional Mean
-  - More similar to ADE than OPG; ADE has known drawbacks relative to OPG
+  - Local Linear GLM for scalar Y; 
+  - Uses Average Derivative of Conditional Mean; more similar to Average Derivative Estimator (ADE) than OPG; 
+  - ADE has known drawbacks; e.g. gradient has non-zero mean. 
 
 2. Minium Average Deviance Estimation (MADE): Adragni (2018)
-  - Local Linear GLM for scalar response
+  - Local Linear GLM for scalar `\(Y\)` to generalize the Minimum Average Variance Estimator of Xia, Tong, Li, et al. (2002) 
   
 3. gradient Kernel Dimension Reducion (gKDR): Fukumizu and Leng (2014)
   - Estimate the gradients via spline approximation using RKHS
-
----
-class: inverse, center, middle
-
-&lt;!-- inverse makes the background black and text white --&gt;
-
-# .bg-text[Multivariate Link functions]  
-
-
----
-class: left, top
-# Sufficient Dimension Reduction for Classification
-
-- Multinomial distributions is  alinear exponential family.
-
-- Characterized entirely by their means through the canonical parameter `\(\theta\)`. 
-
-  - This includes *categorical* responses and *ordinal* `\(Y\)`. 
-
-
---
-
-&lt;div class="prop"&gt;
-If \(Y\) depends on \(X\) solely through the canonical parameter \(\theta(X)\), then the \(\SS_{Y|X} = \SS_{E(Y|X)}\). 
-&lt;/div&gt;
-
---
-
-So extending OPG to categorical and ordinal responses will recover `\(\SS_{E(Y|X)}=\SS_{Y|X}\)`.
-
-
----
-class: left, top
-# Sufficient Dimension Reduction for Classification
-
-Our idea is to fit local linear GLMs.
-
-  - Need the canonical link function that maps `\(\mu \mapsto \theta\)`, and the inverse canonical link that maps `\(\theta \mapsto \mu\)`.
-
---
-    - Inverse canonical link is needed to 
-    
-      - determine the cumulant generating function `\(b(\cdot)\)`, specify the linear exponential family, evaluate the log-likelihood in optimization algorithms
-      
-      - estimate parameters for alternative link functions
-
---
-    - Canonical link is used to construct starting values for algorithms via the regression
-    
-`\begin{align*}
-\theta(Y) = a + B^\top X + \varepsilon,
-\end{align*}`
-with `\(\varepsilon \sim N(0,I_{m-1})\)`.
-
-
----
-class: left, top
-# Categorical Response
-
-Suppose `\(Y\)` is a categorical variable taking values in `\(\{1,...,m\}\)` nominal categories. 
-
-- We can represent `\(Y\)` as a vector `\(S = (S^1,...,S^{m-1}) \in \{0,1\}^{m-1}\)`, where we set `\(S^m = 1 - \sum_{j=1}^{m-1} S^m\)`.
-
-  - If `\(Y=k\)`, then `\(S^k = 1\)` and `\(S^j=0\)` for `\(j \neq k\)`. 
-
-  - Eg. `\(m=3\)`; if `\(Y = 2\)`, then `\(S = (0,1)\)`; if `\(Y=3\)`, then `\(S=(0,0)\)`. 
-
---
-
-Let `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` vector of probabilities for each category.  The mean and variance of `\(S\)` are
-`\begin{align*}
-E(S) =  p , 
-\quad 
-Var(S)
-= Diag(p) - p p^\top
-%\left [ Diag \left ( \frac{  e^{\theta   } }{ 1 + \boldsymbol 1^{\top}e^{\theta } } \right ) - \frac{ e^{\theta }  (e^{\theta }  )^{\top} }{ [1 + \boldsymbol 1^{\top}e^{\theta} ]^2 }  \right ]
-,
-\end{align*}`
-
----
-class: left, top
-# Categorical Response
-
-  - The canonical link is the multivariate logistic function. 
-
-  - The multivariate logistic link and its inverse are
-`\begin{align*}
-\theta(p) = \log \frac{ p }{ 1 - \boldsymbol{1}^{\top} p }
-\qquad
-p(\theta) =  \frac { \exp(\theta) } {  1 - \boldsymbol{1}^{\top} \exp( \theta) } 
-\end{align*}`
-
---
-
-The density and log-likelihood of `\(S\)` are 
-`\begin{align*}
-f(S;p) \propto \prod_{j=1}^{m-1} (p^j)^{S^j},
-\quad  
-\ell(\theta;S) = \theta^{\top}S - \log ( 1 - \boldsymbol 1^{\top}  e^\theta   )
-,
-\end{align*}`
-where the cumulant generating function is 
-`\(b(\theta) = -\log( 1 - \boldsymbol{1}^{\top} e^{  \theta }  )\)`.
-
-
----
-class: left, top
-# Ordinal Response
-
-Suppose `\(Y\)` is an ordinal categorical variable, taking value in `\(\{1,...,m\}\)` ordered categories. 
-
-- We can represent `\(Y\)` as a vector `\(S = (S^1,...S^{m-1}) \in \{0,1\}^{m}\)` as for categorical `\(Y\)`. 
-
-- We can represent `\(S\)` as a vector `\(T = (T^1,...T^{m-1}) \in \{0,1\}^{m-1}\)`, and we set `\(T^{m} = 0\)` and `\(T^0=1\)`. 
-  
-  - If `\(Y = k\)`, then `\(T^j = 1\)` for `\(j \leq {k-1}\)` and `\(T^j=0\)` for `\(j &gt; k-1\)`. 
-
-  - Eg. `\(m=5\)`; if `\(Y=3\)`, then `\(T=(1,1,0,0)\)`; if `\(Y=1\)`, then `\(T=(0,0,0,0)\)`
-
-
----
-class: left, top
-# Ordinal Response
-
-Let 
-
- - `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` vector of probabilities,
- - `\(\gamma = (p^1, p^1 + p^2, ..., p^1 + \cdots + p^{m-1})\)` be the `\(m-1\)` vector of cumulative probabilities, 
- - `\(\tau = 1 - \gamma\)`. 
-
---
-
-The mean and variance of `\(T\)` is
-`\begin{align*}
-E(T) = \tau, \quad 
-Var(T) = \Gamma - \tau  \tau^{\top} ,
-\end{align*}`
-where
-`\begin{align*}
-\Gamma = \left ( \begin{matrix}
-\tau^{1}  &amp; \tau^{2}  &amp; \cdots &amp; \tau^{m-2}&amp; \tau^{m-1} \\
-\tau^{2}  &amp; \tau^{2}  &amp; \cdots &amp; \tau^{m-2} &amp; \tau^{m-1} \\
-\vdots &amp; \vdots  &amp; \cdots  &amp; \cdots &amp; \vdots \\
-\tau^{m-2} &amp; \tau^{m-2} &amp; \cdots &amp; \tau^{m-2}  &amp; \tau^{m-1} \\
-\tau^{m-1} &amp; \tau^{m-1}  &amp; \cdots &amp; \tau^{m-1} &amp; \tau^{m-1 } \end{matrix} \right )
-\end{align*}`
-
----
-class: left, top
-# Ordinal Response
-
-We define the canonical parameter as `\(\theta(\tau) = (\theta(\tau)^1,...,\theta(\tau)^{m-1} )\)`, where the `\(j^{th}\)` entry of `\(\theta(\tau)\)` is
-`\begin{align*}
-\theta(\tau)^j
-=
-\log \bigg ( \frac{ p^{j+1} }{p^{j} } \bigg )
-%= 
-%\log \bigg ( \frac{ \gamma^{j+1} - \gamma^{j} }{ \gamma^{j} - \gamma^{j-1}  } \bigg ) 
-=
-\log \bigg ( \frac{  \tau^{j} - \tau^{j+1} }{  \tau^{j-1} - \tau^{j}  } \bigg )
-.
-\end{align*}`
-
-The canonical link corresponds to the "Adjacent-Categories Logit Model for cumulative probabilities" (Agresti, 2010; Agresti, 2013). 
-
----
-class: left, top
-# Ordinal Response
-
-Let `\(\phi(\theta) = (\phi^{1}(\theta),...,\phi^{m-1}(\theta) )\)` with entries `\(\phi^{j} (\theta) = \sum_{r=1}^j \exp \left \{ \sum_{s=1}^{r}  \theta^{s}  \right \}\)`.
-
-  - Then `\(\phi(\theta) = L \exp (L \theta )\)`, with `\(L\)` a lower triangular matrix of `\(1\)`'s. 
-
-The inverse canonical link is
-`\begin{align*}
-\tau(\theta) =
-\bigg [ -I_{m-1}   - 
-\frac{ \{\boldsymbol 1  + e_1 + P \phi(\theta) \} e_1^{\top} } { 1 - e_1^{\top} \{\boldsymbol 1  + e_1 + P \phi(\theta) \}  } 
-\bigg ] 
-P \phi(\theta) 
-,
-\end{align*}`
-where `\(P\)` is a permutation matrix that maps `\((a^1,...,a^m) \mapsto (a^m, a^1...,a^{m-1})\)`.
-
---
-
-Letting `\(Q = \{-I_{m-1} + \boldsymbol 1e_1^\top  + e_1 e_1^\top \}\)`, the inverse canonical link can be simplified to
-`\begin{align*}
-\tau(\theta)
-=\frac{Q P  L \exp (L \theta ) }{1 + e_1^{\top} P   L \exp (L \theta ) }
-,
-\end{align*}`
-
----
-class: left, top
-# Ordinal Response
-
-From `\(S\)`, the density of `\(T\)` is 
-`\begin{align*}
-f(S;p) 
-\propto  &amp; \prod_{j=1}^{m} (p^j)^{S^j} \\
-=  &amp;
-p^1
-\bigg ( \frac{ p^2 }{p^1} \bigg )^{T^1} 
-\bigg ( \frac{ p^3 }{p^2} \bigg )^{T^2} 
-\bigg ( \frac{ p^4 }{p^3} \bigg )^{T^3} 
-\bigg ( \frac{ p^5 }{p^4} \bigg )^{T^4} 
-\cdots 
-\bigg ( \frac{ p^{m-1} }{p^{m-2}} \bigg )^{T^{m-2} } 
-\bigg ( \frac{ p^{m} }{p^{m-1}} \bigg )^{T^{m-1} } 
-%(p^m)^{0}  
-.
-\end{align*}`
-
-The log-likelihood for `\(T\)` is 
-`\begin{align*}
-\ell(\theta; T)
-% = &amp; \sum_{j=1}^{m-1} T^j \log \bigg ( \frac{ p^{j+1} }{p^{j} } \bigg ) + \log ( p^1  ) 
-= \theta^{\top} T - \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )  
-,
-\end{align*}`
-where the cumulant generating function is `\(b(\theta) = \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )\)`. 
-
---
-
-We say `\(T\)` has a *ordinal-categorical* distribution. 
-The ordinal-categorical distribution is a linear exponential family with the *adjacent-categories* canonical link. 
-
-
----
-class: left, top
-# Ordinal Response
-
-- The Adjacent-Categories Model is not as popular as other alternative link functions for ordinal responses, such as 
-
-  - the Cumulative Logit, `\(\psi(\tau) = \log\{ ( 1 - \tau)/\tau \}\)`
-  - the Cumulative Probit, `\(\psi(\tau) = \Phi^{-1} (1 - \tau)\)`
-  - the Complementary Log-Log, `\(\psi(\tau) = \log \{ - \log(\tau) \}\)`
-
-- We can estimate `\(\psi\)` using the inverse canonical link function `\(\hat \psi =\tau(\hat \theta)\)`.
-
---
-
-
-- Since `\(T\)` is a linear exponential family,
-`\begin{align*}
-\frac{\partial \tau(\theta)}{\partial \theta} 
-= 
-\frac{\partial^2 b^{-1} (\theta)}{\partial \theta \partial \theta^{\top}} 
-= V\{\tau(\theta)\}
-= \Gamma(\theta) - \tau(\theta) \tau(\theta)^{\top},
-\end{align*}`
-
-
-- We can estimate the derivative of `\(\psi\)` via chain rule
-`\begin{align*}
-\frac{\partial \psi(\hat \theta) }{\partial \theta^{\top}} 
-= \frac{\partial \psi\{\tau( \hat \theta)\} }{\partial \tau^{\top}} 
-\{ \Gamma( \hat \theta) - \tau( \hat \theta) \tau( \hat \theta)^{\top} \}.
-\end{align*}`
 
 
 ---
@@ -658,7 +655,11 @@ class: left, top &lt;!-- formatting the slide --&gt;
 &lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
 ]  
 
-- In OPG, we fit a linear regression about `\(x_0\)`, i.e. `\(Y = a + B^\top(X-x_0) + \varepsilon\)`, and estimate `\(\partial E(Y|x_0)/ \partial x^\top\)` using `\(\hat B_0\)`. 
+- In OPG, we fit a linear regression about `\(x_0\)`, i.e. we minimize
+`\begin{align*}
+\{Y - a_0 + B_0^\top(X-x_0) \}^\top \{Y - a_0 + B_0^\top(X-x_0) \} 
+\end{align*}`
+and estimate `\(\partial E(Y|x_0)/ \partial x^\top\)` using `\(\hat B_0\)`. 
     &lt;!-- `$$\hat B_0 = \frac{ \widehat{ \partial E(Y|x_0)} }{\partial x^\top}.$$` --&gt;
 
 
@@ -671,54 +672,54 @@ class: left, top
 &lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
 ]  
 
-- For generalized Forward SDR, we fit a linear exponential family about `\(x_0\)`, where the likelihood contribution of a single observation is
-$$
-\ell_0(a_0, B_0;y,x,x_0) = [a_0 + B_0^\top(x-x_0)]^\top y - b[a_0 + B_0^\top(x-x_0)] 
-$$ 
-
-
+- Instead, fit a linear exponential family about `\(x_0\)`, i.e. minimize
+`\begin{align*}
+  -\ell_0(a_0, B_0;Y,X,x_0)  = - [a_0 + B_0^\top(x-x_0)]^\top y + b[a_0 + B_0^\top(x-x_0)]  
+\end{align*}`
+and use the estimate `\(\hat B_0\)`. 
 
 ---
 class: left, top
 
 # Outer Product of Canonical Gradients (OPCG)
 
-- In OPG, the dimension reduction assumption is `\(E(Y|X) = E(Y|\beta^\top X)\)`
-
-- With GLMs, the dimension reduction assumption is on the canonical parameter, i.e. `\(\theta(X) = \theta(\beta^\top X) \in \R^m\)`
-
-  - But for linear exponential families, `\(\theta(X) = link^{-1}(E(Y|X))\)`, so the dimension reduction assumption coincides with that of OPG.
+  - In OPG, the dimension reduction assumption is `\(E(Y|X) = E(Y|\beta^\top X)\)`
+  
+  - In GLMs, 
+  
+    - the predictor `\(X\)` relates to `\(Y\)` through the canonical parameter `\(\theta(X)\)`
+  
+    - the dimension reduction assumption is on the canonical parameter, i.e. `\(\theta(X) = \theta(\beta^\top X) \in \R^m\)`
+  
+      - But for linear exponential families, `\(\theta(X) = link^{-1}(E(Y|X))\)`, so the dimension reduction assumption coincides with that of OPG.
   
 --
 
-- Like in OPG, we want to estimate the change in direction of `\(\theta(x)\)` at `\(x_0\)`, i.e. `\(\partial \theta(x_0) /\partial x^\top\)`.
+- Like in OPG, we want to estimate the gradient of `\(\theta(x)\)` at `\(x_0\)`, i.e. `\(\partial \theta(x_0) /\partial x^\top\)`.
 
-- To achieve this, we fit a local linear GLM about `\(x_0\)`.
+- `\(\hat B_0\)` obtained from
+`\begin{align*}
+-\ell_0(a_0, B_0;y,x,x_0) = -[a_0 + B_0^\top(x-x_0)]^\top y + b[a_0 + B_0^\top(x-x_0)]
+\end{align*}`
+estimates `\(\partial \theta(x_0) /\partial x^\top\)`.
 
-&lt;!-- - To achieve this, we fit a linear function to the canonical parameter about `\(x_0\)`, giving the local-linear likelihood --&gt;
-&lt;!-- $$ --&gt;
-&lt;!-- \ell_0(a_0, B_0;y,x,x_0) = [a_0 + B_0^\top(x-x_0)]^\top y - b[a_0 + B_0^\top(x-x_0)] --&gt;
-&lt;!-- $$  --&gt;
 
 ---
 class: left, top
 
 # Outer Product of Canonical Gradients (OPCG)
 
-The local linear log-likelihood for the linear exponential family about `\(x_0\)` is
+Given a random sample `\(Y_{1:n}\)`, `\(X_{1:n}\)`, fit a local linear log-likelihood about `\(x_0\)` by minimizing
 `\begin{align*}
-&amp; \ell_0 (a_{0}, B_{0}; x_0, X_{1:n}, Y_{1:n}) \\
+&amp; -\ell_0 (a_{0}, B_{0}; x_0, X_{1:n}, Y_{1:n}) \\
 = &amp;
 \frac 1n \sum_{i=1}^n
 K \bigg ( \frac{X_i - x_0}{h} \bigg )
-\{[a_{0} + B_{0}^\top (X_i - x_0)]^\top Y_i - 
-b[a_{0} + B_{0}^\top (X_i - x_0) ] \} 
+\{-[a_{0} + B_{0}^\top (X_i - x_0)]^\top Y_i + b[a_{0} + B_{0}^\top (X_i - x_0) ] \}
 \end{align*}`
-where `\(b(\cdot)\)` is the associated cumulant generating function, and `\(K(\cdot)\)` is a kernel weight with bandwidth `\(h\)`. 
+where `\(b(\cdot)\)` determines the GLM, and `\(K(\cdot)\)` is a kernel weight with bandwidth `\(h\)`. 
 
---
-
-We minimizing `\(-\ell_0 (a_{0}, B_{0}; x_0, X_{1:n}, Y_{1:n})\)` to obtain `\(\hat a_0\)` and `\(\hat B_0\)`, and estimate `\(\partial \theta(x_0) /\partial x^\top\)` using `\(\hat B_0\)`.
+The minimizer `\(\hat B_0\)` is used to estimate `\(\partial \theta(x_0) /\partial x^\top\)`.
 
 ---
 class: left, top
@@ -729,7 +730,7 @@ We fit a local linear GLM about each `\(X_j\)`, for `\(j=1,...,n\)`, by minimizi
 
 `\begin{align*}
 &amp; L(a_1,..,a_n, B_1,...,B_n; X_{1:n}, Y_{1:n}) \\
-= &amp; -\frac 1n \sum_{j=1}^n l(a_j, B_j; X_j, X_{1:n}, Y_{1:n}) \\ 
+= &amp; -\frac 1n \sum_{j=1}^n \ell_j (a_j, B_j; X_j, X_{1:n}, Y_{1:n}) \\ 
 = &amp; -\frac {1}{n} \sum_{j,i=1}^n
 K \bigg ( \frac{X_i - X_j}{h} \bigg )\\
 &amp; \times 
@@ -738,9 +739,7 @@ b(a_{j} + B_{j}^\top (X_i - X_j)) \}
 .
 \end{align*}`
 
---
-
-This provides estimates `\(\hat B_j\)`, which we use to construct the average outer product
+This provides minimizers `\(\hat B_j\)` that estimate `\(\partial \theta(X_j)/\partial x^\top\)`, which we use to construct the average outer product
 `$$\hat \Lambda_n = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top.$$` 
 
 ---
@@ -752,10 +751,593 @@ The **Outer Product of Canonical Gradients (OPCG) Estimator** for `\(\beta\)`, `
 `$$\hat \Lambda_n = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top,$$` 
 corresponding to the `\(d\)` largest eigenvalues.
 
+---
+class: left, top 
+# Properties related to OPCG
+
+  - The canonical gradients are *unbiased*; their outer product is *exhaustive*.
+
+  - OPCG is consistent under some assumptions:
+  
+  &lt;div class="theorem" text="Consistency of OPCG"&gt;
+  Suppose Assumptions 1-9 hold. Then, as \( n \to \infty\), we have
+  \begin{align*} 
+  \| \hat \beta_{opcg}  - \beta \|_F = O_{a.s}
+  ( h + h^{-1} \delta_{ph} + \delta_{n} )
+  ,
+  \end{align*} 
+  where \(\delta_{ph} = \sqrt{ \frac{\log n}{ nh^p} }\),
+  \(\delta_{n} = \sqrt{ \frac{\log n}{ n } }\),
+  \(  h \downarrow 0\), and
+  \( h^{-1}\delta_{ph} \to 0\).
+  &lt;/div&gt;
+  
+  - Can be implemented using Newton-Raphson
+
+  - Ladle and Predictor Augmentation methods are fast, eigen-based methods that can be applied to estimate `\(d\)`. (Luo and Li, 2020; Luo and Li, 2016)
+
 --
 
-**So far, we have argued by analogy to OPG. But is `\(\partial \theta(\chi) /\partial \chi^\top\)` what we should be estimating? Will this work?**
+**What about the bandwidth `\(h\)`?**
 
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text[Tuning]
+
+
+---
+class: left, top
+# Tuning the bandwidth, `\(h\)`.
+ 
+We need to tune `\(h\)` in OPCG:
+
+  - But Cross Validation can be computationally intensive and relative performance may vary between prediction methods. 
+
+  - Can choose `\(h\)` according to optimal bandwidth, such as `\(h^{opt} = cn^{-\frac{1}{(p+6)}}\)` (Xia, 2007), but suggested `\(c\)` does not always work.
+
+--
+
+For classification problems, we propose using a K-means clustering procedure for tuning `\(h\)`.
+
+Our motivation: 
+
+  - SDR should make classification easier, and classification is easiest when the dimension reduced predictors `\(\hat \beta^\top X\)` are clustered into their respective labels.
+
+---
+class: left, top
+# Tuning the bandwidth, `\(h\)`.
+
+Let `\(Y \in \{1,...,m\}\)` be categorical response, `\((Y, X)_{1:n}\)` be our sample predictors for estimation, `\((Y,X)_{1:n_2}^{tune}\)` be our sample predictors for Tuning.
+
+--
+
+Main idea: For each `\(h\)`, 
+
+1. Estimate `\(\hat \beta_{opcg}\)` on `\((Y,X)_{1:n}\)` and construct the sufficient predictors `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)`.
+
+2. Apply K-means to `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)` for `\(m\)` clusters.
+
+  - This returns `\(m\)` estimated clusters and the F-ratio corresponding to `\(h\)`, i.e. the Within Sums-of-Squares (WSS) over Between Sums-of-Squares (BSS)
+
+3. Select `\(h\)` that minimizes the F-ratio from K-means. 
+
+
+---
+count: false
+class: left, top 
+# Tuning the bandwidth, `\(h\)`.
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
+]  
+
+  - `\(h\)` too small means 
+    - likelihood is undersmoothed 
+    - noisy gradient estimates
+    - noisy dimension reduction; no separation
+
+
+---
+count: false
+class: left, top 
+# Tuning the bandwidth, `\(h\)`.
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
+]  
+
+  - `\(h\)` too large means 
+      - likelihood is oversmoothed, 
+      - gradient estimates can give only some separation of classes
+        - large enough `\(h\)` to include the entire sample means fitting the same glm centered differently; recover at most one dimension;
+  - as `\(h \to \infty\)`, all information is washed out and we recover noise
+
+---
+count: false
+class: left, top 
+# Tuning the bandwidth, `\(h\)`.
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
+]  
+
+  - Goal: find `\(h\)` not too small and not too large; just enough to separate all classes 
+
+---
+class: left, top
+# Tuning the bandwidth, `\(h\)`.
+ 
+But 
+ - Estimating `\(m\)` clusters implicitly assumes 1 cluster per class
+ - we ought to incorporate the class/label information from `\(Y_{1:n}^{tune}\)`, when available.
+
+Our modifications to K-means:
+
+1. K-means estimates more than 1 cluster per class;
+
+2. "Supervised" K-means: Uses label information from `\(Y_{1:n}^{tune}\)`;
+
+3. K-fold Tuning: Applies k-means, supervised k-means, or an average of both, in a k-fold manner;
+
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Tuning the bandwidth, `\(h\)`. --&gt;
+
+&lt;!-- Improvements: --&gt;
+
+
+&lt;!-- 2. For each `\(h\)`,  --&gt;
+
+&lt;!--   a. Estimate `\(\hat \beta_{opcg}\)` using `\((Y,X)_{1:n}\)` and construct the sufficient predictors `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)`. --&gt;
+
+&lt;!--   b. For each class/label in `\((Y,X)_{1:n_2}^{tune}\)`,  --&gt;
+&lt;!--     - apply K-means to those `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)` belonging that class to estimate `\(M\)` clusters  --&gt;
+&lt;!--     - Compute the corresponding WSS and BSS for that class in the tuning set --&gt;
+
+&lt;!-- 2. Compute the "Supervised WSS" (SWSS) and "Supervised BSS" (SBSS) by summing the WSS and BSS over all classes, respectively.  --&gt;
+
+&lt;!-- 3. Select `\(h\)` that minimizes the "supervised F-ratio" `\(\frac{SWSS}{SBSS}\)`. --&gt;
+
+
+
+
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text[Simulations and Data Analyses]
+
+--
+.left[
+
+1. Goal: generalize OPG to Categorical and Ordinal-Categorical Responses
+
+2. Propose: OPCG that generalizes OPG to linear exponential families
+
+3. Categorical and Ordinal-Categorical variables are linear exponential families, so we can apply OPCG to Categorical and Ordinal-Categorical data
+  
+]
+
+---
+class: left, top
+# OPCG Procedure
+
+Given data:
+
+  1. Split into three sets: 
+  
+    - Training set used for estimating `\(\hat \beta_{opcg}\)`; 
+    
+      - Can use for estimating `\(d\)` as well.
+      
+    - Tuning set used for tuning bandwidth `\(h\)`
+    
+    - Testing set used for assessing performance
+  
+  2. Split into two sets:
+  
+    - Training set used for estimating `\(\hat \beta_{opcg}\)`; 
+    
+      - Can use for estimating `\(d\)` as well.
+      
+      - Use K-fold tuning for tuning bandwidth `\(h\)`
+      
+    - Testing set used for assessing performance
+
+
+---
+class: left, top
+# Simulations
+
+
+Our predictor will be `\(X=(X^1,X^2,X^3,...,X^{10}) \in \R^{10}\)`.
+
+  - `\((X^1, X^2) \sim N(\mu, \sigma^2 I_2)\)`, with `\(\sigma^2=.25\)` and `\(\mu \in \{ (0,0), (3,3), (-3,-3), (-2,2),(2,-2)\}\)`; there are 5 clusters total
+
+  - Augmented with 8 standard normals for random noise, `\((X^3,...,X^{10})\)`
+
+
+The clusters with centers `\((-2,2),(2,-2)\)` are labeled 1; `\((3,3),(-3,-3)\)` labeled 2 and `\((0,0)\)` is labeled 3.
+  
+  - Draw a total of 550 observations; 110 from each cluster  
+  
+We split into three sets evenly across all 5 clusters, i.e. clusters are all balanced in each set.
+  
+  - 250 for training; 150 for tuning; 150 for testing
+  
+---
+class: left, top
+# Simulations
+
+So `\(Y \in \{1,2,3\}\)` is categorical; `\(X \in \R^{10}\)`; and `\(Y\)` is generated by `\((e_1^\top, e_2^\top)^\top \in \R^{10 \times 2}\)`, where `\(d=2\)`.
+
+  - we shuffle the 10 predictors so that so that `\(Y\)` is generated by `\(\beta^\top X\)`, where 
+  
+`\begin{align*}
+  \beta =  \left( \begin{matrix}
+  0&amp;0&amp;1&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0 \\
+  0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;1&amp;0&amp;0&amp;0
+  \end{matrix} \right )^\top \in \R^{10 \times 2}
+\end{align*}`
+
+---
+count: false
+class: left, top
+# Simulations - Ladle, PA 
+
+
+&lt;img align="center" class="image" src="images/opcg_sim_ladle.png" width="49%"&gt;
+&lt;img align="center" class="image" src="images/opcg_sim_pa.png" width="49%"&gt;
+
+Used `\(h=1\)` for order determination, 200 samples for Ladle and PA.
+
+
+
+---
+class: ani-slide
+# K-mean Tuning for `\(h\)`
+ 
+&lt;iframe src="images/tuning_sc.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
+
+
+
+---
+count: false
+class: left, top
+# Simulations - tuning and estimation
+
+Conventional suggestion: `\(h = 2.34 n^{-1/(p+6)} \approx 1.66\)`;
+
+K-fold K-means Tuning: `\(h \approx 1.25\)`;
+
+
+--
+
+Using `\(h \approx 1.25\)` to estimate OPCG `\(\hat \beta_{opcg}\)`:
+
+&lt;img align="centered" class="image" src="images/sim_dist_table2.png" width="100%"&gt;
+
+--
+
+  - PW-OPCG estimates 2 SDR directions per pair of classes \{1,2\}, \{1,3\}, and \{2,3\}, for 6 total, and selects the 2 that explain the most variation. 
+
+    - Adragni's suggestion for multi-class problems.
+    
+  - DR is Directional Regression (Li and Wang, 2007)  
+---
+count: false
+class: left, top
+# Simulations - Sufficient Predictors `\(\hat \beta^\top X^{test}\)`
+
+&lt;img align="center" class="image" src="images/opcg_sim_test-opg.png" width="100%"&gt;
+
+
+---
+class: left, top
+# Ordinal-Categorical Data Analysis
+
+We analyze four ordinal-categorical response datasets: 
+
+  - Red Wine Quality - UCI
+
+    - p=11; n=1599; Ordinal response - Wine Quality Score;
+  
+  &lt;!-- - Wisconsin Eye Disease --&gt;
+
+  &lt;!--   - p=10;  n=294;  --&gt;
+  &lt;!--   - Ordinal response - severity of coronary artery disease (1 = no disease; 2 = degree 1; 3 = degree 2; 4 = degree 3; 5 = degree 4); Classes: 1,2,3,4 --&gt;
+
+  - Boston Housing Prices - 'spData' R package
+
+    - p=13; n=506; resp=Median value of homes; 
+    
+  - Communities and Crime Rate - UCI
+
+    - p=99; n=1994; resp=pop. crime. rate
+
+  - Superconductors - UCI
+
+    - p=81; n=2000; resp=crit. temp. of superconductors
+
+    
+  &lt;!-- - Panel Study of Income Dynamics 1976 (psid76) --&gt;
+
+  &lt;!--   - p=20; n=753 --&gt;
+  &lt;!--   - Ordinal response - Family Income; Classes: 1,2,3,4,5; --&gt;
+
+
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Ordinal Classification Error using MCOSVM --&gt;
+
+&lt;!-- - MCOSVM (Waegeman and Boullart, 2009) : `\(m-1\)` SVMs on all binary classifications `\(I\{ Y &gt; l\}\)`; construct estimated probabilities of `\(P\{Y=l\}\)`; highest probability is predicted class.   --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- &lt;img align="centered" class="image" src="images/ord_class_table2.png" width="100%"&gt; --&gt;
+
+
+---
+count: false
+class: left, top
+# Red Wine Quality
+
+
+&lt;img align="centered" class="image" src="images/opcg_wine_preds2.png" width="100%"&gt;
+
+
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Wisconson Eye Disease  --&gt;
+
+
+&lt;!-- &lt;img align="centered" class="image" src="images/opcg_eye_preds2.png" width="100%"&gt; --&gt;
+
+
+
+---
+class: left, top
+# Boston Housing Prices
+
+&lt;img align="centered" class="image" src="images/opcg_house_preds2.png" width="100%"&gt;
+
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # PSID 76 --&gt;
+
+&lt;!-- &lt;img align="centered" class="image" src="images/opcg_psid_preds2.png" width="100%"&gt; --&gt;
+
+
+---
+class: left, top
+# Communities
+
+&lt;img align="centered" class="image" src="images/opcg_commun_preds2.png" width="100%"&gt;
+
+---
+class: left, top
+# Superconductors
+
+&lt;img align="centered" class="image" src="images/opcg_super_preds2.png" width="100%"&gt;
+
+
+---
+class: left, top
+# Categorical Data Analysis  
+
+We analyze three datasets with categorical responses: 
+
+  - Handwritten Digits (Pendigit) from UCI
+  
+    - p=16; n=2000; resp=0-9
+    
+  - USPS Handwritten Digits (Pendigit) from UCI
+  
+    - p=256; n=2007; resp=0-9
+    
+  - ISOLET from UCI
+  
+    - p=618; n=6334/1553; resp=a-z
+
+---
+class: left, top
+# Categorical Classification Error using SVM
+
+.center[
+&lt;img align="center" class="image" src="images/cat_class_table3.png" width="80%"&gt;
+]
+
+---
+class: ani-slide
+# Pen Digit 10 - SIR/DR - 1,6,7,9
+&lt;iframe src="images/dr_pendigit4.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt;
+
+---
+count: false
+class: ani-slide
+# Pen Digit 10 - OPCG - 1,6,7,9
+
+&lt;iframe src="images/opcg_pendigit4.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt;
+
+---
+class: ani-slide
+# Pen Digit 10 - SIR/DR - 3,5,8,9
+&lt;iframe src="images/dr_pendigit4-2.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt;
+
+---
+count: false
+class: ani-slide
+# Pen Digit 10 - OPCG - 3,5,8,9
+
+&lt;iframe src="images/opcg_pendigit4-2.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt;
+
+
+---
+class: left, top, inverse
+# .bg-text[Conclusion]
+
+
+1. Provided the Multivariate Link Functions for Ordinal-Categorical Responses.
+
+--
+
+2. Generalized OPG to linear exponential families 
+
+--
+
+3. Introduced a K-means tuning procedure for classifcation
+
+--
+
+4. Demonstrated the effectiveness of OPCG in categorical and ordinal classification problems.
+
+  - Can handle multiple labels simultaneously 
+  
+  - Noticeable improvement over OPG for larger `\(p\)` 
+
+
+---
+layout: false
+# References
+
+Adragni, K. P. (2018). "Minimum average deviance estimation for
+sufficient dimension reduction". In: _Journal of Statistical
+Computation and Simulation_ 88.3, pp. 411-431.
+
+Agresti, A. (2010). _Analysis of ordinal categorical data_. Vol. 656.
+John Wiley &amp; Sons.
+
+Agresti, A. (2013). _Categorical Data Analysis_. 3rd ed. Wiley.
+
+Fukumizu, K. and C. Leng (2014). "Gradient-based kernel dimension
+reduction for regression". In: _Journal of the American Statistical
+Association_ 109.505, pp. 359-370.
+
+Lambert-Lacroix, S. and J. Peyre (2006). "Local likelihood regression
+in generalized linear single-index models with applications to
+microarray data". In: _Computational statistics &amp; data analysis_ 51.3,
+pp. 2091-2113.
+
+Li, B. and S. Wang (2007). "On directional regression for dimension
+reduction". In: _Journal of the American Statistical Association_
+102.479, pp. 997-1008.
+
+---
+layout: false
+# References
+
+Li, K. (1991). "Sliced inverse regression for dimension reduction". In:
+_Journal of the American Statistical Association_ 86.414, pp. 316-327.
+
+Luo, W. and B. Li (2016). "Combining eigenvalues and variation of
+eigenvectors for order determination". In: _Biometrika_ 103.4, pp.
+875-887.
+
+Luo, W. and B. Li (2020). "On order determination by predictor
+augmentation". In: _Biometrika_.
+
+Wang, H. and Y. Xia (2008). "Sliced regression for dimension
+reduction". In: _Journal of the American Statistical Association_
+103.482, pp. 811-821.
+
+Xia, Y. (2007). "A constructive approach to the estimation of dimension
+reduction directions". In: _The Annals of Statistics_ 35.6, pp.
+2654-2690.
+
+Xia, Y., H. Tong, W. Li, et al. (2002). "An adaptive estimation of
+dimension reduction space". In: _Journal of the Royal Statistical
+Society: Series B (Statistical Methodology)_ 64.3, pp. 363-410.
+
+---
+layout: false
+# References
+
+Yin, X., B. Li, and others (2011). "Sufficient dimension reduction
+based on an ensemble of minimum average variance estimators". In: _The
+Annals of Statistics_ 39.6, pp. 3392-3416.
+
+
+---
+class: left, top, inverse
+# .bg-text[Appendix]
+
+
+ 
+---
+class: left, top 
+# What is Sufficient Dimension Reduction?
+
+Sufficient Dimension Reduction (SDR) extracts a lower dimensional function of the predictors that "preserves" relationships of interest between the predictors and response.
+
+--
+
+"Preservation" is formulated as conditional independence.
+
+--
+
+Let `\(Y \in \R^m\)` be a response and `\(X \in \R^p\)` be a predictor. 
+
+- Linear SDR finds a linear function `\(s(X) = \beta^\top X\)`, where `\(\beta \in \R^{p \times d}\)` with `\(d &lt; p\)`, such that
+
+`$$Y \indep X \; | \; \beta^\top X$$`
+
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# What is Sufficient Dimension Reduction?
+
+
+- For any `\(\beta\)` such that `\(Y \indep X \; | \; \beta^\top X\)`, the `\(span(\beta)\)`     is a _Sufficient Dimension Reduction Subspace_.
+
+--
+
+- Under mild conditions, a _minimial_ Sufficient Dimension Reduction (SDR) Subspace exists (Yin, Li, and Cook (2008))
+
+  - This is the **Central Subspace (CS)** and is denoted `\(\SS_{Y \indep X}\)`.
+  
+  - `\(\SS_{Y \indep X}\)` is minimial in that `\(\SS_{Y \indep X} \leq span(\beta)\)`, for any other SDR subspace.
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# What is Sufficient Dimension Reduction?
+
+- If we want to preserve &lt;!--all relevant information available in `\(X\)` about--&gt; 
+the _regression relation_ `\(E(Y|X)\)`, then SDR finds `\(\beta\)` such that 
+`$$Y \indep E(Y|X) \; | \; \beta^\top X$$`
+
+  - Equivalent to finding `\(\beta\)` such that `\(E(Y|X) = E(Y | \beta^\top X )\)` (Cook and Li (2002))
+  
+  - The minimial SDR Subspace for `\(E(Y|X)\)` is the **Central Mean Subspace (CMS)**, `\(\SS_{E(Y | X)}\)`.
+  
+  - In general, the `\(\SS_{E(Y | X)} \leq \SS_{Y \indep X}\)`.
+
+--
+
+&lt;div class=prop text="CMS=CS"&gt;
+(Cook and Li (2002))
+If \(Y\) depends on \(X\) only through the Conditional Mean, 
+i.e. \(Y \indep X \;|\; E(Y|X)\), then \(\SS_{E(Y | X)} = \SS_{Y \indep X}\).
+&lt;/div&gt;
+
+&lt;!-- - This framework can be applied broadly to define the Central Median Subspace, Central Quantile Subspace, Central `\(k^{th}\)`-Moment Subspace, and so on. --&gt;
+
+&lt;!-- `\(\Xcal\)` and `\(\water\)` and `\(\braket{4}\)` and `\(\Abs{4}{3}\)`. --&gt;    
+ 
+&lt;div class="prop"&gt;
+If \(Y\) depends on \(X\) solely through the canonical parameter \(\theta(X)\), then the \(\SS_{Y|X} = \SS_{E(Y|X)}\). 
+&lt;/div&gt;
+
+So extending OPG to categorical and ordinal responses will recover `\(\SS_{E(Y|X)}=\SS_{Y|X}\)`.
 
 
 
@@ -1038,481 +1620,6 @@ class: left, top
 --
 
 - For MADE, cross-validation methods can be generalized from MAVE (Xia, Tong, Li, et al., 2002)
-
-
-
-
-
-
----
-class: inverse, center, middle
-
-&lt;!-- inverse makes the background black and text white --&gt;
-
-# .bg-text[Tuning]
-
-
----
-class: left, top
-# Tuning the bandwidth, `\(h\)`.
- 
-We need to tune `\(h\)` in OPCG (and MADE):
-
-  - But Cross Validation can be computationally intensive and relative performance may vary between prediction methods. 
-
-  - Can choose `\(h\)` according to optimal bandwidth, such as `\(h^{opt} = cn^{-\frac{1}{(p+6)}}\)` (Xia, 2007), but suggested `\(c\)` does not always work.
-
---
-
-For classification problems, we propose using a K-means clustering procedure for tuning `\(h\)`.
-
-
-
----
-class: left, top
-# Tuning the bandwidth, `\(h\)`.
-
-Let `\(Y \in \{1,...,m\}\)` be categorical response, `\((Y, X)_{1:n}\)` be our sample predictors for estimation, `\((Y,X)_{1:n_2}^{tune}\)` be our sample predictors for Tuning.
-
---
-
-Main idea: For each `\(h\)`, 
-
-1. Estimate `\(\hat \beta_{opcg}\)` on `\((Y,X)_{1:n}\)` and construct the sufficient predictors `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)`.
-
-2. Apply K-means to `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)` for `\(m\)` clusters.
-
-  - This returns `\(m\)` estimated clusters and the F-ratio corresponding to `\(h\)`, i.e. the Within Sums-of-Squares (WSS) over Between Sums-of-Squares (BSS)
-
-3. Select `\(h\)` that minimizes the F-ratio from K-means. 
-
----
-class: left, top
-# Tuning the bandwidth, `\(h\)`.
-
-Our guiding principle/motivation: 
-
-  - SDR should make classification easier, and classification is easiest when the sufficient predictors `\(\hat \beta^\top X\)` are clustered into their respective labels.
-
---
-
-But ...
-
-- We assume that there are only `\(m\)` clusters; i.e. 1 cluster per class.
-
-- We ought to incorporate the class/label information from `\(Y_{1:n}^{tune}\)`, when available.
-
-
-
----
-class: left, top
-# Tuning the bandwidth, `\(h\)`.
-
-Improvements:
-
-1. For K-means, instead of estimating `\(m\)` clusters, we can estimate `\(M_1+\cdots+M_m\)` clusters, where `\(M_j\)` are the number of clusters for class `\(j\)`.
-
-  - We set `\(M_j = M \in \{1,2,3\}\)` in our examples.
-  
-  - Our procedure seems robust to the number of clusters per class.  
-  
-  - Still does not incoporate information from `\(Y_{1:n_2}^{tune}\)`.
-
----
-class: left, top
-# Tuning the bandwidth, `\(h\)`.
-
-Improvements:
-
-
-2. For each `\(h\)`, 
-
-  a. Estimate `\(\hat \beta_{opcg}\)` using `\((Y,X)_{1:n}\)` and construct the sufficient predictors `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)`.
-
-  b. For each class/label in `\((Y,X)_{1:n_2}^{tune}\)`, 
-    - apply K-means to those `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)` belonging that class to estimate `\(M\)` clusters 
-    - Compute the corresponding WSS and BSS for that class in the tuning set
-
-2. Compute the "Supervised WSS" (SWSS) and "Supervised BSS" (SBSS) by summing the WSS and BSS over all classes, respectively. 
-
-3. Select `\(h\)` that minimizes the "supervised F-ratio" `\(\frac{SWSS}{SBSS}\)`.
-
-
----
-class: inverse, center, middle
-
-&lt;!-- inverse makes the background black and text white --&gt;
-
-# .bg-text[Simulations and Data Analyses]
-
-
----
-class: left, top
-# Simulations
-
-- Generate 5 clusters from bivariate normals, `\((X_1, X_2) \sim N(\mu, \sigma^2 I_2)\)`, with `\(\sigma^2=.25\)` and `\(\mu \in \{ (0,0), (3,3), (-3,-3), (-2,2),(2,-2)\}\)`.
-
-- Train/Tune/Test: 50/30/30 per mean for 250/150/150 totals
-
-- Class 1 have means `\((-2,2),(2,-2)\)`; Class 2 have means `\((3,3),(-3,-3)\)`; Class 3 has mean `\((0,0)\)`.
-
-- Generate 8 standard `\(X_3,...,X_{10}\)` normals as noise; 
-
-- `\(p=10\)`, `\(d=2\)`; we shuffle the 10 predictors so that the Central Subspace is spanned by 
-`\begin{align*}
-\beta = 
-\left( \begin{matrix}
-0&amp;0&amp;1&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0 \\
-0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;1&amp;0&amp;0&amp;0
-\end{matrix} \right )^\top \in \R^{10 \times 2}
-%( ( 0,0,1,0,0,0,0,0,0,0 )^{\top}, \\
-%( 0,0,0,0,0,0,1,0,0,0 )^{\top} )^{\top}  \in \R^{10 \times 2}
-\end{align*}`
-
-
-
----
-count: false
-class: left, top
-# Simulations
-
-- Generate 5 clusters from bivariate normals, `\((X_1, X_2) \sim N(\mu, \sigma^2 I_2)\)`, with `\(\sigma^2=.25\)` and `\(\mu \in \{ (0,0), (3,3), (-3,-3), (-2,2),(2,-2)\}\)`.
-
-- Train/Tune/Test: 50/30/30 per mean for 250/150/150 totals
-
-- Class 1 have means `\((-2,2),(2,-2)\)`; Class 2 have means `\((3,3),(-3,-3)\)`; Class 3 has mean `\((0,0)\)`.
-
-
-&lt;img align="centered" class="image" src="images/opcg_sim_true.png" width="100%"&gt;
-
-
----
-count: false
-class: left, top
-# Simulations - Ladle, PA 
-
-
-&lt;img align="center" class="image" src="images/opcg_sim_ladle.png" width="49%"&gt;
-&lt;img align="center" class="image" src="images/opcg_sim_pa.png" width="49%"&gt;
-
-Used `\(h=1\)` for order determination, 200 samples for Ladle and PA.
-
-
-
----
-class: ani-slide
-# K-mean Tuning for `\(h\)`
- 
-&lt;iframe src="images/tuning_sc.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
-
-
-
----
-count: false
-class: left, top
-# Simulations - tuning and estimation
-
-Conventional suggestion: `\(h = 2.34 n^{-1/(p+6)} \approx 1.66\)`;
-
-K-fold K-means Tuning: `\(h \approx 1.25\)`;
-
-
---
-
-Using `\(h \approx 1.25\)` to estimate OPCG `\(\hat \beta_{opcg}\)`:
-
-&lt;img align="centered" class="image" src="images/sim_dist_table.png" width="100%"&gt;
-
---
-
- - PW-OPCG estimates 2 SDR directions per pair of classes \{1,2\}, \{1,3\}, and \{2,3\}, for 6 total, and selects the 2 that explain the most variation. 
-
-    - Adragni's suggestion for multit-class problems.
-    
-  - DR is Directional Regression (Li and Wang, 2007)  
----
-count: false
-class: left, top
-# Simulations - Sufficient Predictors `\(\hat \beta^\top X^{test}\)`
-
-&lt;img align="center" class="image" src="images/opcg_sim_test.png" width="100%"&gt;
-
-
----
-class: left, top
-# Categorical Data Analysis  
-
-We analyze three datasets with categorical responses: 
-
-  - Handwritten Digits (Pendigit) from UCI
-  
-    - p=16 predictors; represent processed image of handwritten digit;
-    
-    - 'Pendigit10': classes: \{0,1,2,...,9\}; train=1000; test = 1000;
-
-      - `\(\hat d_{LA} = 5\)` or `\(\hat d_{PA} = 11\)`, `\(\hat h = 1.05\)` 
-    
-    - 'Pendigit5': classes: \{1,2,6,7,9\}; train=3776; test=1764;
-  
-      - `\(\hat d_{LA} = 4\)` or `\(\hat d_{PA} = 10\)`, `\(\hat h = 1.05\)` 
-
----
-count:false
-class: left, top
-# Categorical Data Analysis  
-
-  - USPS Handwritten Digits (USPS)
-
-    - p=256 predictors representing vectorized `\(16 \times 16\)` images; 
-    - classes: \{0,1,2,...,9\}; train=1000; test=1007; 
-    
-      - `\(\hat d_{LA} = ?\)`, `\(\hat d_{PA} = 9\)`, `\(\hat h = 4.8\)`
-      
-      - Tikonov regularized sample Covariance of `\(X\)` for SIR and DR (Zhong, Zeng, Ma, Liu, and Zhu, 2005)  
-  
-  - ISOLET
-  
-    - p=618 processed features; 
-    
-    - classes: \{a,b,c,...,x,y,z\}, train=6238, test=1559,
-    
-      - Tikonov regularized sample Covariance of `\(X\)` for SIR and DR
-    
-      - Used first 10 classes in training set to determine `\(h \approx 1\)`. 
-
----
-class: left, top
-# Categorical Classification Error using SVM
-
-.center[
-&lt;img align="center" class="image" src="images/cat_class_table2.png" width="55%"&gt;
-]
-
----
-count: false
-class: ani-slide
-# Pen Digit 10 - SIR/DR - 1,2,6,7,9
-&lt;iframe src="images/dr_pendigit10.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
-
----
-count: false
-class: ani-slide
-# Pen Digit 10 - OPCG - 1,2,6,7,9
-
-&lt;iframe src="images/opcg_pendigit10.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
-
----
-count: false
-class: ani-slide
-# Pen Digit 5 - SIR/DR - 1,2,6,7,9
-&lt;iframe src="images/dr_pendigit5.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
-
----
-count: false
-class: ani-slide
-# Pen Digit 5 - OPCG - 1,2,6,7,9
-
-&lt;iframe src="images/opcg_pendigit5.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
-
-
----
-
-class: ani-slide
-# USPS Digit - DR - 1,2,6,7,9
-
-&lt;iframe src="images/dr_usps.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
-
----
-
-class: ani-slide
-# USPS Digit - OPCG - 1,2,6,7,9
-
-&lt;iframe src="images/opcg_usps.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
-
----
-class: left, top
-# Ordinal-Categorical Data Analysis
-
-We analyze four ordinal-categorical response datasets: 
-
-  - Red Wine Quality (quality)
-
-    - p=11; n=1599; 
-    - Ordinal response - Wine Quality Score from 1-10; Classes: (3,4,5), 6, (7,8); 
-  
-  - Coronary Artery Disease (hearth)
-  
-    - p=10;  n=294; 
-    - Ordinal response - severity of coronary artery disease (1 = no disease; 2 = degree 1; 3 = degree 2; 4 = degree 3; 5 = degree 4); Classes: 1,2,3,4,5;
-
----
-count:false
-class: left, top
-# Ordinal-Categorical Data Analysis
-
-  - Boston Housing Prices (Boston)
-
-    - p=13; n=506
-    - Ordinal response - Median value of owner-occupied homes; Classes: 1,2,3,4,5;
-    
-  - Panel Study of Income Dynamics 1976 (psid76)
-  
-    - p=20; n=753
-    - Ordinal response - Family Income; Classes: 1,2,3,4,5;
-  
-  &lt;!-- 5. Abalone  --&gt;
-
-  &lt;!--   - p=7; m=1,2,3,4,5; n=1018  --&gt;
-
----
-class: left, top
-# Ordinal Classification Error using MCOSVM
-
-- MCOSVM (Waegeman and Boullart, 2009) : `\(m-1\)` SVMs on all binary classifications `\(I\{ Y &gt; l\}\)`; construct estimated probabilities of `\(P\{Y=l\}\)`; highest probability is predicted class.  
-
---
-
-&lt;img align="centered" class="image" src="images/ord_class_table2.png" width="100%"&gt;
-
-
-
-
----
-count: false
-class: left, top
-# Red Wine Quality
-
-
-&lt;img align="centered" class="image" src="images/opcg_wine_preds.png" width="100%"&gt;
-
-
----
-class: left, top
-# Hearth 
-
-
-&lt;img align="centered" class="image" src="images/opcg_hearth_preds.png" width="100%"&gt;
- 
-
-
----
-class: left, top
-# Boston Housing Prices
-
-&lt;img align="centered" class="image" src="images/opcg_house_preds.png" width="100%"&gt;
-
----
-class: left, top
-# PSID 76
-
-&lt;img align="centered" class="image" src="images/opcg_psid_preds.png" width="100%"&gt;
-
----
-class: left, top, inverse
-# .bg-text[Conclusion]
-
-
-1. Provided the Multivariate Link Functions for Categorical and Ordinal Responses.
-
---
-
-2. Provided a framework for generalized forward SDR: OPCG, MADE. 
-
-  - And applied it to categorical and ordinal responses using the multivariate link functions. 
-
---
-
-3. Introduced a K-means based tuning procedure.
-
---
-
-4. Demonstrated the effectiveness of OPCG in categorical and ordinal classification problems.
-
-  - Can handle multiple labels simultaneously 
-
-
---
-
-
-
-
-
----
-layout: false
-# References
-
-Adragni, K. P. (2018). "Minimum average deviance estimation for
-sufficient dimension reduction". In: _Journal of Statistical
-Computation and Simulation_ 88.3, pp. 411-431.
-
-Agresti, A. (2010). _Analysis of ordinal categorical data_. Vol. 656.
-John Wiley &amp; Sons.
-
-Agresti, A. (2013). _Categorical Data Analysis_. 3rd ed. Wiley.
-
-Cook, R. D. and B. Li (2002). "Dimension reduction for conditional mean
-in regression". In: _The Annals of Statistics_ 30.2, pp. 455-474.
-
-Fukumizu, K. and C. Leng (2014). "Gradient-based kernel dimension
-reduction for regression". In: _Journal of the American Statistical
-Association_ 109.505, pp. 359-370.
-
-Lambert-Lacroix, S. and J. Peyre (2006). "Local likelihood regression
-in generalized linear single-index models with applications to
-microarray data". In: _Computational statistics &amp; data analysis_ 51.3,
-pp. 2091-2113.
-
----
-layout: false
-# References
-
-Li, B. (2018). _Sufficient Dimension Reduction: Methods and
-Applications with R_. CRC Press.
-
-Li, B. and S. Wang (2007). "On directional regression for dimension
-reduction". In: _Journal of the American Statistical Association_
-102.479, pp. 997-1008.
-
-Li, K. (1991). "Sliced inverse regression for dimension reduction". In:
-_Journal of the American Statistical Association_ 86.414, pp. 316-327.
-
-Luo, W. and B. Li (2016). "Combining eigenvalues and variation of
-eigenvectors for order determination". In: _Biometrika_ 103.4, pp.
-875-887.
-
-Luo, W. and B. Li (2020). "On order determination by predictor
-augmentation". In: _Biometrika_.
-
-Wang, H. and Y. Xia (2008). "Sliced regression for dimension
-reduction". In: _Journal of the American Statistical Association_
-103.482, pp. 811-821.
-
----
-layout: false
-# References
-
-Xia, Y. (2006). "Asymptotic distributions for two estimators of the
-single-index model". In: _Econometric Theory_ 22.6, pp. 1112-1137.
-
-Xia, Y. (2007). "A constructive approach to the estimation of dimension
-reduction directions". In: _The Annals of Statistics_ 35.6, pp.
-2654-2690.
-
-Xia, Y., H. Tong, W. Li, et al. (2002). "An adaptive estimation of
-dimension reduction space". In: _Journal of the Royal Statistical
-Society: Series B (Statistical Methodology)_ 64.3, pp. 363-410.
-
-Yin, X., B. Li, and R. D. Cook (2008). "Successive direction extraction
-for estimating the central subspace in a multiple-index regression".
-In: _Journal of Multivariate Analysis_ 99.8, pp. 1733-1757.
-
-Yin, X., B. Li, and others (2011). "Sufficient dimension reduction
-based on an ensemble of minimum average variance estimators". In: _The
-Annals of Statistics_ 39.6, pp. 3392-3416.
-
-Zhong, W., P. Zeng, P. Ma, et al. (2005). "RSIR: regularized sliced
-inverse regression for motif discovery". In: _Bioinformatics_ 21.22,
-pp. 4169-4175.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
