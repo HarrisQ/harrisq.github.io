@@ -41,7 +41,25 @@ MathJax.Hub.Config({
 ## Harris Quach (joint work with Dr. Bing Li) &lt;br/&gt; Date: 2021-03-05
 
 ---
-# Overview
+class: inverse, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text.center[Overview]  
+
+.md-text[
+  
+  1. We show ordinal variables are linear exponential families
+  
+2. We generalize a popular SDR method to linear exponential families
+  
+3. We proposed a K-means tuning procedure
+  
+]
+---
+count: false
+class: top, left
+# Outline
 
 1. Multivariate Categorical and Ordinal Link functions for GLMs
 
@@ -85,7 +103,7 @@ The crux of our proposed method is fitting multivariate Generalized Linear Model
 
 - They are characterized by their means `\(\mu\)`, through the canonical parameter `\(\theta\)`, 
 
-- The canonical link function `\(\theta( \cdot ): \mu \mapsto \theta\)`; the inverse canonical link maps `\(\theta\)` to `\(\mu\)` via `\(\mu(\cdot): \theta \mapsto \mu\)`
+- The canonical link function `\(\theta( \cdot ): \mu \mapsto \theta\)`; the inverse canonical link `\(\mu(\cdot): \theta \mapsto \mu\)`
 
 ---
 class: left, top
@@ -105,8 +123,9 @@ class: left, top
 X(X X^\top)^{-1} X \theta(Y)     
 \end{align*}`
 
+- Categorical variables are linear exponential families
 
-- So we show explicitly the categorical and ordinal-categorical variables are linear exponential families. 
+- We show explicitly ordinal-categorical variables are also linear exponential families. 
 
 ---
 class: left, top
@@ -114,16 +133,15 @@ class: left, top
 
 Suppose `\(Y \in \{1,...,m\}\)` is a categorical variable for `\(m\)` nominal categories. 
 
-- We can represent `\(Y\)` as a vector `\(S = (S^1,...,S^{m-1}) \in \{0,1\}^{m-1}\)`, where we set `\(S^m = 1 - \sum_{j=1}^{m-1} S^m\)`.
+- We can represent `\(Y\)` as a vector `\(S = (S^1,...,S^{m-1}) \in \{0,1\}^{m-1}\)`
+
+  - we set `\(S^m = 1 - \sum_{j=1}^{m-1} S^m\)`.
 
   - If `\(Y=k\)`, then `\(S^k = 1\)` and `\(S^j=0\)` for `\(j \neq k\)`. 
 
   - Eg. `\(m=3\)`; if `\(Y = 2\)`, then `\(S = (0,1)\)`; if `\(Y=3\)`, then `\(S=(0,0)\)`. 
 
---
-
-Let `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` vector of probabilities for each category. 
-
+Let `\(p = (p^1,...p^{m-1})\)` be the `\(m-1\)` probabilities for each category. 
 Then
 `\begin{align*}
 E(S) =  p , 
@@ -136,10 +154,15 @@ Var(S)
 
 
 ---
+count: false
 class: left, top
 # Categorical Response
 
-  - The canonical link and its inverse is the multivariate logistic link and its inverse:
+Suppose `\(Y \in \{1,...,m\}\)` is a categorical variable for `\(m\)` nominal categories. 
+
+  - We can represent `\(Y\)` as a vector `\(S = (S^1,...,S^{m-1}) \in \{0,1\}^{m-1}\)`
+
+  - The canonical link of and its inverse is :
   
 `\begin{align*}
 \theta(p) = \log \frac{ p }{ 1 - \boldsymbol{1}^{\top} p }
@@ -147,7 +170,7 @@ class: left, top
 p(\theta) =  \frac { \exp(\theta) } {  1 - \boldsymbol{1}^{\top} \exp( \theta) } 
 \end{align*}`
 
-The density and log-likelihood of `\(S\)` are 
+The multinomial density and log-likelihood of `\(S\)` are 
 `\begin{align*}
 f(S;p) \propto \prod_{j=1}^{m-1} (p^j)^{S^j},
 \quad  
@@ -167,6 +190,8 @@ Suppose `\(Y \in \{1,...,m\}\)` is an ordinal-categorical variable for `\(m\)` o
 - We can represent `\(Y\)` as a vector `\(S = (S^1,...S^{m-1}) \in \{0,1\}^{m}\)` as for categorical `\(Y\)`. 
 
 - We can represent `\(S\)` as a vector `\(T = (T^1,...T^{m-1}) \in \{0,1\}^{m-1}\)`, and we set `\(T^{m} = 0\)` and `\(T^0=1\)`. 
+
+  - We can interpret `\(T^j = I\{Y &gt; j\}\)`
   
   - If `\(Y = k\)`, then `\(T^j = 1\)` for `\(j \leq {k-1}\)` and `\(T^j=0\)` for `\(j &gt; k-1\)`. 
 
@@ -228,8 +253,6 @@ Let `\(P\)` a permutation matrix that maps `\((a^1,...,a^m) \mapsto (a^m, a^1...
 \log \left\{ \frac{ (I-P) \tau }{ (P^{-1} - I)\tau } \right \}.
 \end{align*}`
 
---
-
 The Adjacent-Categories Model is usually re-expressed as a logistic multinomial in practice. 
 
 Instead, we derive a closed form for the inverse link and `\(b(\cdot)\)` function to explicitly show that categorical-ordinal variable `\(T\)` is distributed according to a linear exponential family.  
@@ -278,42 +301,6 @@ with `\(b(\theta) = \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )\)`.
 
 We say `\(T\)` has a **ordinal-categorical (Or-Cat)** distribution.
 The ordinal-categorical distribution is a linear exponential family with the **adjacent-categories (Ad-Cat)** link function. 
-
-
-&lt;!-- --- --&gt;
-&lt;!-- class: left, top --&gt;
-&lt;!-- # Ordinal Response --&gt;
-
-&lt;!-- Since `\(S^j = T^{j+1} - T^j\)`, from the density of `\(S\)`,  --&gt;
-&lt;!-- the density of `\(T\)` is  --&gt;
-&lt;!-- \begin{align*} --&gt;
-&lt;!-- f(S;p)  --&gt;
-&lt;!-- \propto  &amp; \prod_{j=1}^{m} (p^j)^{S^j} \\ --&gt;
-&lt;!-- =  &amp; --&gt;
-&lt;!-- p^1 --&gt;
-&lt;!-- \bigg ( \frac{ p^2 }{p^1} \bigg )^{T^1}  --&gt;
-&lt;!-- \bigg ( \frac{ p^3 }{p^2} \bigg )^{T^2}  --&gt;
-&lt;!-- \bigg ( \frac{ p^4 }{p^3} \bigg )^{T^3}  --&gt;
-&lt;!-- \bigg ( \frac{ p^5 }{p^4} \bigg )^{T^4}  --&gt;
-&lt;!-- \cdots  --&gt;
-&lt;!-- \bigg ( \frac{ p^{m-1} }{p^{m-2}} \bigg )^{T^{m-2} }  --&gt;
-&lt;!-- \bigg ( \frac{ p^{m} }{p^{m-1}} \bigg )^{T^{m-1} }  --&gt;
-&lt;!-- %(p^m)^{0}   --&gt;
-&lt;!-- . --&gt;
-&lt;!-- \end{align*} --&gt;
-&lt;!-- the log-likelihood for `\(T\)` is  --&gt;
-&lt;!-- \begin{align*} --&gt;
-&lt;!-- \ell(\theta; T) --&gt;
-&lt;!-- % = &amp; \sum_{j=1}^{m-1} T^j \log \bigg ( \frac{ p^{j+1} }{p^{j} } \bigg ) + \log ( p^1  )  --&gt;
-&lt;!-- = \theta^{\top} T - \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )   --&gt;
-&lt;!-- , --&gt;
-&lt;!-- \end{align*} --&gt;
-&lt;!-- where `\(b(\theta) = \log ( 1 + e_{1}^{\top}  P   L \exp (L \theta ) )\)`.  --&gt;
-
-&lt;!-- -- --&gt;
-
-&lt;!-- We say `\(T\)` has a *ordinal-categorical (Or-Cat)* distribution.  --&gt;
-&lt;!-- The ordinal-categorical distribution is a linear exponential family with the *adjacent-categories (Ad-Cat)* link function.  --&gt;
 
 
 ---
@@ -373,9 +360,24 @@ class: top, left
 ---
 class: inverse, center, middle
 
-&lt;!-- inverse makes the background black and text white --&gt;
-
 # .bg-text[Inverse and Forward Linear SDR]  
+
+---
+class: left, top
+# Why Sufficient Dimension Reduction? 
+
+
+Suppose we have a large dataset with some response `\(Y \in \R^m\)` and predictors `\(X \in \R^p\)`.
+
+  - When `\(p\)` is large, lower dimensional summaries of `\(X\)` are helpful for visualization and application of conventional statistical methods. 
+
+  - Finding linear lower dimensional summary of `\(X\)` means finding `\(\beta \in \R^{p \times d}\)` to construct `\(\beta^\top X\)`, where `\(d &lt; p\)`. 
+  
+  - Sufficient Dimension Reduction (SDR) is a supervised dimension reduction for finding `\(\beta\)` such that `\(\beta^\top X\)` retains all relevant information about `\(Y\)`.
+  
+  - Inverse and Forward SDR are systematic methods for finding such a dimension reduction `\(\beta\)`. 
+
+
 
 ---
 class: left, top
@@ -804,13 +806,13 @@ Our motivation:
 class: left, top
 # Tuning the bandwidth, `\(h\)`.
 
-Let `\(Y \in \{1,...,m\}\)` be categorical response, `\((Y, X)_{1:n}\)` be our sample predictors for estimation, `\((Y,X)_{1:n_2}^{tune}\)` be our sample predictors for Tuning.
+Let `\(Y \in \{1,...,m\}\)` be categorical response, `\((Y, X)_{1:n}\)` be our sample for training/estimation, `\((Y,X)_{1:n_2}^{tune}\)` be our sample for Tuning.
 
 --
 
 Main idea: For each `\(h\)`, 
 
-1. Estimate `\(\hat \beta_{opcg}\)` on `\((Y,X)_{1:n}\)` and construct the sufficient predictors `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)`.
+1. Estimate `\(\hat \beta_{opcg}\)` on `\((Y,X)_{1:n}\)` and construct the dimension reduced predictors `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)`.
 
 2. Apply K-means to `\(\hat \beta_{opcg}^\top X_{1:n_2}^{tune}\)` for `\(m\)` clusters.
 
@@ -818,6 +820,7 @@ Main idea: For each `\(h\)`,
 
 3. Select `\(h\)` that minimizes the F-ratio from K-means. 
 
+  - Small F-ratio means small WSS and large BSS
 
 ---
 count: false
@@ -978,6 +981,16 @@ So `\(Y \in \{1,2,3\}\)` is categorical; `\(X \in \R^{10}\)`; and `\(Y\)` is gen
   \end{matrix} \right )^\top \in \R^{10 \times 2}
 \end{align*}`
 
+--
+
+Simulation Analysis:
+
+  - Estimate `\(\hat \beta\)` on our training set.
+  - Estimate `\(d\)` on our training set.
+  - Tune `\(h\)` on training set using k-fold modification
+  - Tune `\(h\)` on our tuning set
+  - Asses performance of `\(\hat \beta\)` on the testing set
+  
 ---
 count: false
 class: left, top
@@ -1045,9 +1058,9 @@ We analyze four ordinal-categorical response datasets:
   &lt;!--   - p=10;  n=294;  --&gt;
   &lt;!--   - Ordinal response - severity of coronary artery disease (1 = no disease; 2 = degree 1; 3 = degree 2; 4 = degree 3; 5 = degree 4); Classes: 1,2,3,4 --&gt;
 
-  - Boston Housing Prices - 'spData' R package
+  &lt;!-- - Boston Housing Prices - 'spData' R package --&gt;
 
-    - p=13; n=506; resp=Median value of homes; 
+  &lt;!--   - p=13; n=506; resp=Median value of homes;  --&gt;
     
   - Communities and Crime Rate - UCI
 
@@ -1093,11 +1106,11 @@ class: left, top
 
 
 
----
-class: left, top
-# Boston Housing Prices
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Boston Housing Prices --&gt;
 
-&lt;img align="centered" class="image" src="images/opcg_house_preds2.png" width="100%"&gt;
+&lt;!-- &lt;img align="centered" class="image" src="images/opcg_house_preds2.png" width="100%"&gt; --&gt;
 
 &lt;!-- --- --&gt;
 &lt;!-- class: left, top --&gt;
@@ -1142,7 +1155,7 @@ class: left, top
 # Categorical Classification Error using SVM
 
 .center[
-&lt;img align="center" class="image" src="images/cat_class_table4.png" width="80%"&gt;
+&lt;img align="center" class="image" src="images/cat_class_table3-2.png" width="80%"&gt;
 ]
 
 ---
