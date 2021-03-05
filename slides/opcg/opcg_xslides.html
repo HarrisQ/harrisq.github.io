@@ -93,9 +93,9 @@ class: left, top
 
 The crux of our proposed method is fitting multivariate Generalized Linear Model to categorical or ordinal response variables.
 
-- Categorical and Ordinal responses, `\(Y\)`, can be derived from a multinomial distribution.
+We will see that Categorical and Ordinal responses, `\(Y\)`, are linear exponential families.
 
-- Multinomials are a linear exponential family, with log-likelihood of the form
+- Linear exponential families have log-likelihood of the form
 
 `\begin{align*}
 \ell(\theta;y) = \theta^\top Y - b(\theta);   
@@ -123,9 +123,6 @@ class: left, top
 X(X X^\top)^{-1} X \theta(Y)     
 \end{align*}`
 
-- Categorical variables are linear exponential families
-
-- We show explicitly ordinal-categorical variables are also linear exponential families. 
 
 ---
 class: left, top
@@ -1054,7 +1051,7 @@ class: left, top
 class: left, top
 # Ordinal-Categorical Data Analysis
 
-We analyze two ordinal-categorical response datasets: 
+We analyze two continuous response datasets that we discretize in ordinal-categorical response datasets: 
 
   &lt;!-- - Red Wine Quality - UCI --&gt;
 
@@ -1128,13 +1125,13 @@ We analyze two ordinal-categorical response datasets:
 
 ---
 class: left, top
-# Communities
+# Communities and Crime Rate in the US
 
 &lt;img align="centered" class="image" src="images/opcg_commun_preds2.png" width="100%"&gt;
 
 ---
 class: left, top
-# Superconductors
+# Crit. Temperature of Superconductors
 
 &lt;img align="centered" class="image" src="images/opcg_super_preds2.png" width="100%"&gt;
 
