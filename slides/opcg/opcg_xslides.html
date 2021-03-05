@@ -250,7 +250,8 @@ Let `\(P\)` a permutation matrix that maps `\((a^1,...,a^m) \mapsto (a^m, a^1...
 `\begin{align*}
 \theta(\tau) 
 =
-\log \left\{ \frac{ (I-P) \tau }{ (P^{-1} - I)\tau } \right \}.
+\log \left\{ Diag[ (P^{-1} - I)\tau ]^{-1} (P^{-1} - I)\tau \right \}.
+%\log \left\{ \frac{ (I-P) \tau }{ (P^{-1} - I)\tau } \right \}.
 \end{align*}`
 
 The Adjacent-Categories Model is usually re-expressed as a logistic multinomial in practice. 
@@ -313,27 +314,27 @@ class: left, top
   - the Cumulative Probit, `\(\psi(\tau) = \Phi^{-1} (1 - \tau)\)`
   - the Complementary Log-Log, `\(\psi(\tau) = \log \{ - \log(\tau) \}\)`
 
-- We can estimate `\(\psi\)` using the inverse canonical link function `\(\hat \psi =\psi\{ \tau(\hat \theta) \}\)`.
+- We can estimate `\(\psi\)` using the inverse canonical link function `\(\hat \psi =\psi\{ \tau(\hat \theta) \}\)`, and its derivative using chain rule. 
 
---
-
-
-- Since `\(T\)` is a linear exponential family,
-`\begin{align*}
-\frac{\partial \tau(\theta)}{\partial \theta} 
-= 
-\frac{\partial^2 b^{-1} (\theta)}{\partial \theta \partial \theta^{\top}} 
-= V\{\tau(\theta)\}
-= \Gamma(\theta) - \tau(\theta) \tau(\theta)^{\top},
-\end{align*}`
+&lt;!-- -- --&gt;
 
 
-- We can estimate the derivative of `\(\psi\)` via chain rule
-`\begin{align*}
-\frac{\partial \psi(\hat \theta) }{\partial \theta^{\top}} 
-= \frac{\partial \psi\{\tau( \hat \theta)\} }{\partial \tau^{\top}} 
-\{ \Gamma( \hat \theta) - \tau( \hat \theta) \tau( \hat \theta)^{\top} \}.
-\end{align*}`
+&lt;!-- - Since `\(T\)` is a linear exponential family, --&gt;
+&lt;!-- \begin{align*} --&gt;
+&lt;!-- \frac{\partial \tau(\theta)}{\partial \theta}  --&gt;
+&lt;!-- =  --&gt;
+&lt;!-- \frac{\partial^2 b^{-1} (\theta)}{\partial \theta \partial \theta^{\top}}  --&gt;
+&lt;!-- = V\{\tau(\theta)\} --&gt;
+&lt;!-- = \Gamma(\theta) - \tau(\theta) \tau(\theta)^{\top}, --&gt;
+&lt;!-- \end{align*} --&gt;
+
+
+&lt;!-- - We can estimate the derivative of `\(\psi\)` via chain rule --&gt;
+&lt;!-- \begin{align*} --&gt;
+&lt;!-- \frac{\partial \psi(\hat \theta) }{\partial \theta^{\top}}  --&gt;
+&lt;!-- = \frac{\partial \psi\{\tau( \hat \theta)\} }{\partial \tau^{\top}}  --&gt;
+&lt;!-- \{ \Gamma( \hat \theta) - \tau( \hat \theta) \tau( \hat \theta)^{\top} \}. --&gt;
+&lt;!-- \end{align*} --&gt;
 
 ---
 class: top, left
@@ -345,11 +346,10 @@ class: top, left
   
     - The Ad-Cat link and the inverse Ad-Cat link are
 `\begin{align*}
-\theta
-= \log \left\{ \frac{ (I-P) \tau }{ (P^{-1} - I)\tau } \right \},
-\qquad
+\theta 
+= &amp; \log \left\{ Diag[ (P^{-1} - I)\tau ]^{-1} (P^{-1} - I)\tau \right \},\\
 \tau(\theta)
-=\frac{Q P  L \exp (L \theta ) }{1 + e_1^{\top} P   L \exp (L \theta ) }
+=&amp; \frac{Q P  L \exp (L \theta ) }{1 + e_1^{\top} P   L \exp (L \theta ) }
 ,
 \end{align*}`
 
@@ -705,7 +705,7 @@ class: left, top
 
 # Outer Product of Canonical Gradients (OPCG)
 
-Given a random sample `\(Y_{1:n}\)`, `\(X_{1:n}\)`, fit a local linear log-likelihood about `\(x_0\)` by minimizing
+Given a random sample `\(Y_{1:n}\)`, `\(X_{1:n}\)`, fit a local linear GLM about `\(x_0\)` by minimizing
 `\begin{align*}
 &amp; -\ell_0 (a_{0}, B_{0}; x_0, X_{1:n}, Y_{1:n}) \\
 = &amp;
@@ -746,6 +746,10 @@ class: left, top
 The **Outer Product of Canonical Gradients (OPCG) Estimator** for `\(\beta\)`, `\(\hat \beta_{opcg}\)`, is the first `\(d\)` eigenvectors of 
 `$$\hat \Lambda_n = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top,$$` 
 corresponding to the `\(d\)` largest eigenvalues.
+
+.center[
+&lt;img class="image" src="images/fsdr_plot3-1.png" width="40%"&gt;
+]  
 
 ---
 class: left, top 
@@ -925,7 +929,7 @@ class: left, top
 
 Given data:
 
-  1. Split into three sets: 
+  1. Simulations: Data is split into three sets: 
   
     - Training set used for estimating `\(\hat \beta_{opcg}\)`; 
     
@@ -935,7 +939,7 @@ Given data:
     
     - Testing set used for assessing performance
   
-  2. Split into two sets:
+  2. Applications: Data is split into two sets:
   
     - Training set used for estimating `\(\hat \beta_{opcg}\)`; 
     
@@ -959,20 +963,23 @@ Our predictor will be `\(X=(X^1,X^2,X^3,...,X^{10}) \in \R^{10}\)`.
 
 
 The clusters with centers `\((-2,2),(2,-2)\)` are labeled 1; `\((3,3),(-3,-3)\)` labeled 2 and `\((0,0)\)` is labeled 3.
+
+  - Draw a total of 550 observations equally among all 5 clusters; split into three sets evenly across all 5 clusters, i.e. clusters are all balanced in each set.
   
-  - Draw a total of 550 observations; 110 from each cluster  
-  
-We split into three sets evenly across all 5 clusters, i.e. clusters are all balanced in each set.
-  
-  - 250 for training; 150 for tuning; 150 for testing
+
+&lt;!--   - Draw a total of 550 observations; 110 from each cluster   --&gt;
+
+&lt;!-- We split into three sets evenly across all 5 clusters, i.e. clusters are all balanced in each set. --&gt;
+
+&lt;!--   - 250 for training; 150 for tuning; 150 for testing --&gt;
   
 ---
 class: left, top
 # Simulations
 
-So `\(Y \in \{1,2,3\}\)` is categorical; `\(X \in \R^{10}\)`; and `\(Y\)` is generated by `\((e_1, e_2)^\top X \in \R^{10 \times 2}\)`, where `\(d=2\)`.
+So `\(Y \in \{1,2,3\}\)` is categorical; `\(X \in \R^{10}\)`; and `\(Y\)` is determined by `\((e_1, e_2)^\top X \in \R^{10 \times 2}\)`, where `\(d=2\)`.
 
-  - we shuffle the 10 predictors so that so that `\(Y\)` is generated by `\(\beta^\top X\)`, where 
+  - we shuffle the 10 predictors so that so that `\(Y\)` is determined by `\(\beta^\top X\)`, where 
   
 `\begin{align*}
   \beta =  \left( \begin{matrix}
@@ -981,16 +988,16 @@ So `\(Y \in \{1,2,3\}\)` is categorical; `\(X \in \R^{10}\)`; and `\(Y\)` is gen
   \end{matrix} \right )^\top \in \R^{10 \times 2}
 \end{align*}`
 
---
+&lt;!-- -- --&gt;
 
-Simulation Analysis:
+&lt;!-- Simulation Analysis: --&gt;
 
-  - Estimate `\(\hat \beta\)` on our training set.
-  - Estimate `\(d\)` on our training set.
-  - Tune `\(h\)` on training set using k-fold modification
-  - Tune `\(h\)` on our tuning set
-  - Assess performance of `\(\hat \beta\)` on the testing set
-  
+&lt;!--   - Estimate `\(\hat \beta\)` on our training set. --&gt;
+&lt;!--   - Estimate `\(d\)` on our training set. --&gt;
+&lt;!--   - Tune `\(h\)` on training set using k-fold modification --&gt;
+&lt;!--   - Tune `\(h\)` on our tuning set --&gt;
+&lt;!--   - Assess performance of `\(\hat \beta\)` on the testing set --&gt;
+
 ---
 count: false
 class: left, top
@@ -1047,11 +1054,11 @@ class: left, top
 class: left, top
 # Ordinal-Categorical Data Analysis
 
-We analyze four ordinal-categorical response datasets: 
+We analyze two ordinal-categorical response datasets: 
 
-  - Red Wine Quality - UCI
+  &lt;!-- - Red Wine Quality - UCI --&gt;
 
-    - p=11; n=1599; Ordinal response - Wine Quality Score;
+  &lt;!--   - p=11; n=1599; Ordinal response - Wine Quality Score; --&gt;
   
   &lt;!-- - Wisconsin Eye Disease --&gt;
 
@@ -1088,13 +1095,13 @@ We analyze four ordinal-categorical response datasets:
 &lt;!-- &lt;img align="centered" class="image" src="images/ord_class_table2.png" width="100%"&gt; --&gt;
 
 
----
-count: false
-class: left, top
-# Red Wine Quality
+&lt;!-- --- --&gt;
+&lt;!-- count: false --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Red Wine Quality --&gt;
 
 
-&lt;img align="centered" class="image" src="images/opcg_wine_preds2.png" width="100%"&gt;
+&lt;!-- &lt;img align="centered" class="image" src="images/opcg_wine_preds2.png" width="100%"&gt; --&gt;
 
 
 &lt;!-- --- --&gt;
@@ -1142,7 +1149,7 @@ We analyze three datasets with categorical responses:
   
     - p=16; n=2000; resp=0-9
     
-  - USPS Handwritten Digits (Pendigit) from UCI
+  - USPS Handwritten Digits  
   
     - p=256; n=2007; resp=0-9
     
@@ -1155,7 +1162,7 @@ class: left, top
 # Categorical Classification Error using SVM
 
 .center[
-&lt;img align="center" class="image" src="images/cat_class_table3-2.png" width="80%"&gt;
+&lt;img align="center" class="image" src="images/cat_class_table4.png" width="80%"&gt;
 ]
 
 ---
@@ -1170,17 +1177,17 @@ class: ani-slide
 
 &lt;iframe src="images/opcg_pendigit4.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt;
 
----
-class: ani-slide
-# Pen Digit 10 - SIR/DR - 3,5,8,9
-&lt;iframe src="images/dr_pendigit4-2.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt;
+&lt;!-- --- --&gt;
+&lt;!-- class: ani-slide --&gt;
+&lt;!-- # Pen Digit 10 - SIR/DR - 3,5,8,9 --&gt;
+&lt;!-- &lt;iframe src="images/dr_pendigit4-2.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt; --&gt;
 
----
-count: false
-class: ani-slide
-# Pen Digit 10 - OPCG - 3,5,8,9
+&lt;!-- --- --&gt;
+&lt;!-- count: false --&gt;
+&lt;!-- class: ani-slide --&gt;
+&lt;!-- # Pen Digit 10 - OPCG - 3,5,8,9 --&gt;
 
-&lt;iframe src="images/opcg_pendigit4-2.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt;
+&lt;!-- &lt;iframe src="images/opcg_pendigit4-2.html" width="100%" height="95%" frameborder="0"&gt;&lt;/iframe&gt; --&gt;
 
 
 ---

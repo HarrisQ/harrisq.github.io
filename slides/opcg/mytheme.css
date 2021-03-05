@@ -37,6 +37,10 @@ h2 {
 .bg-text {
   font-size: 2.25rem;
 }
+
+.md-text {
+  font-size: 1.0rem;
+}
 /* Animation Slides */
 .ani-slide{
   background-color: #fff;
