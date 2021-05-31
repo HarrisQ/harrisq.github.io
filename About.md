@@ -6,7 +6,7 @@ title: About Me
 # About Me
 
 <!-- CV + About Me -->
-I am a fourth year Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/).
+I am a sixth year Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/). My current research focus is in sufficient dimension reduction, where I am developing estimation and inference methods. 
 
 {{site.author.linkedin}}
 <br/>
