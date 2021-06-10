@@ -27,8 +27,11 @@ Publications
 
 Talks + Presentations
 ---
+* Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2021 June 10. 
+  *Statistical Society of Canada, Annual Conference* (Remote) &nbsp;[Slides](/slides/opcg/ssc_opcg#1) 
+
 * Generalized Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2021 March 5. 
-	*Stochastic Modelling And Computing* Seminar (Penn State) &nbsp;[Slides](/slides/opcg/opcg_xslides#1) 
+	*Stochastic Modelling And Computing* Seminar (Penn State) &nbsp;[Slides](/slides/opcg/smac_opcg#1) 
 
 * Accurate Confidence Intervals for Clustered Data and Small Samples, 2017. 
 	*The Annual Statistical Society of Canada Conference.* Meeting (Winnipeg, Canada). (Talk; Masters Work) (Was not able to attend)
