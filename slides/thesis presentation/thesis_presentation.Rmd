@@ -1335,8 +1335,9 @@ class: left, top
 # TPG - UJI 3,5,9 to a,b,c
 ## Associate digits '3', '5', '9' to letters 'a', 'b', 'c':
   
-  - predictor is 2d curves $(X_1(t), X_2(t))$ for '3', '5', '9'; 
   - response is 2d curve $(Y_1(t), Y_2(t))$ for 'a', 'b', 'c';
+  - predictor is 2d curves $(X_1(t), X_2(t))$ for '3', '5', '9'; 
+  
   
 .center[
 <img align="center" class="image" src="images/tpg_uji_preds359abc.png" width="50%">
