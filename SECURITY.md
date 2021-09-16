@@ -1,3 +1,8 @@
+---
+layout: default
+title: Talks + Presentations
+---
+
 # Security Policy
 
 ## Supported Versions
