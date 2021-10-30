@@ -55,6 +55,7 @@ html {
  * 
  * Incorporated parts from Jekyll-Flexible for the sidebar
  *
+ * Note: This is where the scroll is implemented
  */
  
 .sidebar {
@@ -81,7 +82,7 @@ html {
   background-color: #202020; 
   text-align: center; 
   /*max-height: calc(100vh - 9rem);*/
-  /*overflow-y: auto;*/
+  overflow-y: auto; 
   /*color: rgba(255,255,255,.5);*/
 }
 

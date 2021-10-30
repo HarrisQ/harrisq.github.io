@@ -936,7 +936,7 @@ table tfoot td {
   /*height: 100%;*/
   padding: 20px 10px;
   background-color: #ffffff;
-  overflow-y: scroll;    
+  /*overflow-y: scroll;*/    
 }
 
 .about {
