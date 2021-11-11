@@ -90,8 +90,8 @@ google_analytics: G-RP3VXX4HME
 # Site Author
 author: 
   name             : "Harris Quach" 
-  avatar           : "profile_1.JPG" # add your photo
-  author-img       : "david-freeman.jpg"
+  avatar           : "profile_4.JPG" # add your photo
+  author-img       : # "david-freeman.jpg"
   bio              : "Ph.D Student"
   location         : "State College, PA"
   employer         : "Pennsylvania State University"
