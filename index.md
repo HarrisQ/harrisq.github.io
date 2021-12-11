@@ -9,7 +9,7 @@ layout: default
 I am a Ph.D. student, advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/). My current research focus is in sufficient dimension reduction, where I am developing estimation methods for prediction and classification of functional and high dimensional data. 
 
 
-A pdf copy of my CV can be found [here](files/Resume_HarrisQuach_acv_twocol.pdf). (Last updated February 2021)
+<!-- A pdf copy of my CV can be found [here](files/Resume_HarrisQuach_acv_twocol.pdf). (Last updated February 2021) -->
 
 ## Education
 * Ph.D in Statistics, Pennsylvania State University, 2016-present
