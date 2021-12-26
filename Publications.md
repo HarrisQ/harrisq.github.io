@@ -8,6 +8,8 @@ Research Interests
 
 My current research focus is on the theoretical and applied aspects of forward Sufficient Dimension Reduction (SDR). I am developing estimation procedures for linear and nonlinear forward SDR, with applications to prediction and classification of functional and high dimension data.
 
+My work focuses on developing supervised dimension reduction methods that extract the most informative features from functional and high dimensional data. These extracted features can be fed into prediction and classification algorithms or be used for data visualization.
+
 
 <!-- I have dabbled in applications of SDR for generating summary statistics in Approximate Bayesian Computations and Indirect Inference, and have explored how Optimal Transport may remedy violations of distributional assumptions for inverse SDR methods.      
  -->
