@@ -6,7 +6,7 @@ layout: default
 <h1 class="page-title">Introduction</h1>
 
 <!-- CV + About Me -->
-I am a Ph.D. student working on developing sufficient dimension reduction methods in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/), advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9). My work focuses on developing supervised dimension reduction methods that extract the most informative features from functional and high dimensional data. These extracted features can be fed into prediction and classification algorithms or be used for data visualization.
+I am a Ph.D. student working on developing sufficient dimension reduction methods in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/), advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9). My work focuses on developing supervised dimension reduction methods that extract the most informative features from functional and high dimensional data. These extracted features can be fed into regression and classification procedures for prediction, or be used for data visualization.
 
 
 <!-- A pdf copy of my CV can be found [here](files/Resume_HarrisQuach_acv_twocol.pdf). (Last updated February 2021) -->
