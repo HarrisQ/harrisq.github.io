@@ -44,10 +44,10 @@ Programming Languages
 ---
 * Proficient:
     * R, TeX 
-* Basic: 
+* Working knowledge: 
     * Cpp via Rcpp
-* Rudimentary:
-    * MATLAB, Python, HTML
+* Basic:
+    * MATLAB, Python, HTML, SQL
 
 Related Experience
 ---
