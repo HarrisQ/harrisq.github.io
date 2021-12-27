@@ -7,7 +7,7 @@ layout: default
 
 <!-- CV + About Me -->
 I am a Ph.D. student working on developing sufficient dimension reduction methods in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/), advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9). 
-I develop supverised feature extraction methods for functional and high dimensional data. These extracted features can be fed into regression and classification procedures for prediction, or be used for data visualization.
+I develop supverised feature extraction methods for functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization.
 
 
 <!-- A pdf copy of my CV can be found [here](files/Resume_HarrisQuach_acv_twocol.pdf). (Last updated February 2021) -->
