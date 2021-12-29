@@ -21,7 +21,7 @@ tagline                  : #'A Jekyll theme'
 #                            Made by <a href="https://twitter.com/mdo" target="_blank">@mdo</a>.'
 url                      : "https://harrisq.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "/" # the subpath of your site, e.g. "/blog"
-# repository               : "HarrisQ/harrisq.github.io"
+repository               : "http://github.com/harrisq"
 # teaser                   :  # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
 # breadcrumbs              : false # true, false (default)
 # words_per_minute         : 160
