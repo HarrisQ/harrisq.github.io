@@ -69,7 +69,7 @@
           <!-- <ul> -->
             {% for child in nav.children %}
               <!-- <li> -->
-                <a style="margin-left: 40px" class="sidebar-nav-item{% if page.url == nav.url %} active{% endif %}" href="{{ child.url | relative_url }}"{% if child.url == page.url %} class="active"{% endif %}>{{ child.title }}</a>
+                <a style="margin-left: 40px; font-size: 15px" class="sidebar-nav-item{% if page.url == nav.url %} active{% endif %}" href="{{ child.url | relative_url }}"{% if child.url == page.url %} class="active"{% endif %}>{{ child.title }}</a>
               <!-- </li> -->
             {% endfor %}
           <!-- </ul> -->
