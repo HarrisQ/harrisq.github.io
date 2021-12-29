@@ -62,10 +62,10 @@ navigation:
   main:
   - title: "Home"
     url: /
-  # - title: "About"
-  #   url: https://mmistakes.github.io/minimal-mistakes/about/
-  # - title: "Sample Posts"
-  #   url: /year-archive/
+  - title: "Research"
+    url: /Publications/
+  - title: "Software + Code"
+    url: /Software_Code/
   # - title: "Sample Collections"
   #   url: /collection-archive/
   # - title: "Sitemap"

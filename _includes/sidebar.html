@@ -28,12 +28,11 @@
     </div> 
   </header>
 
-    <!-- {% assign navigation = site.data.navigation[include.nav] %}
     
     <nav class="nav__list">
-    {% if page.sidebar.title %}<h3 class="nav__title" style="padding-left: 0;">{{ page.sidebar.title }}</h3>{% endif %}
-    <input id="ac-toc" name="accordion-toc" type="checkbox" />
-    <label for="ac-toc">{{ site.data.ui-text[site.locale].menu_label | default: "Toggle Menu" }}</label>
+    <!-- {% if page.sidebar.title %}<h3 class="nav__title" style="padding-left: 0;">{{ page.sidebar.title }}</h3>{% endif %} -->
+    <!-- <input id="ac-toc" name="accordion-toc" type="checkbox" /> -->
+    <!-- <label for="ac-toc">{{ site.data.ui-text[site.locale].menu_label | default: "Toggle Menu" }}</label> -->
     <ul class="nav__items">
       {% for nav in navigation %}
         <li>
@@ -53,7 +52,7 @@
         </li>
       {% endfor %}
     </ul>
-    </nav> -->
+    </nav>
 
     <nav class="sidebar-nav">
 
@@ -83,7 +82,7 @@
       {% endcomment %}
       <!-- <a class="sidebar-nav-item{% if page.url == site.baseurl %} active{% endif %}" href="{{ site.baseurl }}">About Me \& CV</a> -->
       <a class="sidebar-nav-item{% if page.url == /Publications.html %} active{% endif %}" href="/Publications.html">Research</a>
-      <a class="sidebar-nav-item{% if page.url == site.baseurl %} active{% endif %}" href="{{ site.baseurl }}">Software + Code</a>
+      <a class="sidebar-nav-item{% if page.url == /Software_Code.html %} active{% endif %}" href="/Publications.html">Software + Code</a>
       <!-- <a class="sidebar-nav-item{% if page.url == site.baseurl %} active{% endif %}" href="{{ site.baseurl }}">Teaching</a> -->
  
       {% comment %}
