@@ -80,7 +80,7 @@ html {
   height: 100%;
   padding: 20px 10px;
   background-color: #202020; 
-  text-align: center; 
+  text-align: left; 
   /*max-height: calc(100vh - 9rem);*/
   overflow-y: auto; 
   /*color: rgba(255,255,255,.5);*/
