@@ -74,6 +74,23 @@
       {% endfor %}
       </ul>
 
+      {% comment %}
+        The code below dynamically generates a sidebar nav of pages with
+        `layout: page` in the front-matter. See readme for usage.
+      {% endcomment %}
+
+      <!-- {% assign pages_list = site.pages %} -->
+      {% assign pages_list = site.navigation%}
+      
+      {% for node in pages_list %}
+        {% if node.title != null %}
+          {% if node.layout == "page" %}
+            <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">{{ node.title }}</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+
       <a class="sidebar-nav-item{% if page.url == site.baseurl %} active{% endif %}" href="{{ site.url }}">Home</a>
       {% comment %}
         can use "/index.html" instead of
@@ -83,23 +100,6 @@
       <a class="sidebar-nav-item{% if page.url == /Software_Code.html %} active{% endif %}" href="/Software_Code.html">Software + Code</a>
       <!-- <a class="sidebar-nav-item{% if page.url == site.baseurl %} active{% endif %}" href="{{ site.baseurl }}">Teaching</a> -->
  
-      {% comment %}
-        The code below dynamically generates a sidebar nav of pages with
-        `layout: page` in the front-matter. See readme for usage.
-      {% endcomment %}
-
-     
-      <!-- {% assign pages_list = site.pages %} -->
-      {% assign pages_list = site.navigation%}
-      {% for node in pages_list %}
-        {% if node.title != null %}
-          {% if node.layout == "page" %}
-            <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">{{ node.title }}</a>
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-     
-
 	  <!-- Link to Table of Jobs -->
       <a class="sidebar-nav-item active" href="https://harrisq.shinyapps.io/stat_jobs/" target="_blank">Stats Jobs</a>
 
