@@ -133,9 +133,9 @@ navigation:
   - title: "Home"
     url: /
   - title: "Research"
-    url: /Publications/
+    url: /Publications.html
   - title: "Software + Code"
-    url: /Software_Code/
+    url: /Software_Code.html
   # - title: "Sample Collections"
   #   url: /collection-archive/
   # - title: "Sitemap"
