@@ -80,7 +80,7 @@ html {
   height: 100%;
   padding: 20px 10px;
   background-color: #202020; 
-  text-align: left; 
+  text-align: center; 
   /*max-height: calc(100vh - 9rem);*/
   overflow-y: auto; 
   /*color: rgba(255,255,255,.5);*/
@@ -242,7 +242,7 @@ html {
 .sidebar-nav-item {
   position: relative;
   /*margin: 0 0 40px;*/
-  text-align: center;
+  text-align: left;
   display: block;
   line-height: 1.75;
 }
@@ -253,7 +253,7 @@ a.sidebar-nav-item:focus {
 .sidebar-nav-item.active {
   position: relative;
   /*margin: 0 0 40px;*/
-  text-align: center;
+  text-align: left;
   font-weight: bold;
 }
 
