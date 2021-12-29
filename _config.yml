@@ -135,8 +135,8 @@ navigation:
   - title: "Research"
     url: /Publications.html
     children:
-      - title: "Software + Code"
-        url: /Software_Code.html
+      - title: "Sufficient Dimension Reduction"
+        url: /sdr.html
   - title: "Software + Code"
     url: /Software_Code.html
   # - title: "Sample Collections"
