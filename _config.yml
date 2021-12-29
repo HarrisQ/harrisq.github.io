@@ -59,7 +59,6 @@ repository               : "http://github.com/harrisq"
 
 # Navigation
 navigation: 
-  main:
   - title: "Home"
     url: /
   - title: "Research"
