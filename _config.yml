@@ -57,6 +57,20 @@ repository               : "http://github.com/harrisq"
 # atom_feed:
 #   path                   : # blank (default) uses feed.xml
 
+# Navigation
+navigation: 
+  main:
+  - title: "Home"
+    url: /index/
+  # - title: "About"
+  #   url: https://mmistakes.github.io/minimal-mistakes/about/
+  # - title: "Sample Posts"
+  #   url: /year-archive/
+  # - title: "Sample Collections"
+  #   url: /collection-archive/
+  # - title: "Sitemap"
+  #   url: /sitemap/
+
 # # SEO Related
 # google_site_verification :
 # bing_site_verification   :
