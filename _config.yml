@@ -127,7 +127,9 @@ author:
   # youtube          :
   # wikipedia        :
 
-
+- name: generate-sitemap
+  uses: cicirello/generate-sitemap@v1.8.1
+  
 # Navigation
 navigation: 
   - title: "Home"
