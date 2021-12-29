@@ -90,7 +90,7 @@
 
      
       <!-- {% assign pages_list = site.pages %} -->
-      {% assign pages_list = site.navigation.main %}
+      {% assign pages_list = site.navigation%}
       {% for node in pages_list %}
         {% if node.title != null %}
           {% if node.layout == "page" %}
