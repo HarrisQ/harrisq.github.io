@@ -61,7 +61,7 @@ repository               : "http://github.com/harrisq"
 navigation: 
   main:
   - title: "Home"
-    url: /index/
+    url: /
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
