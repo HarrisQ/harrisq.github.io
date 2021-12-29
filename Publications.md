@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Research 
+has_children: true
 # permalink: /Research/
 ---
 
