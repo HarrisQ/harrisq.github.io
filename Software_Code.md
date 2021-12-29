@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Software + Code 
-permalink: /Software_Code/
+# permalink: /Software_Code/
 ---
 
 R Packages
