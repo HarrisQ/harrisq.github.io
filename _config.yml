@@ -134,6 +134,9 @@ navigation:
     url: /
   - title: "Research"
     url: /Publications.html
+    children:
+      - title: "Software + Code"
+        url: /Software_Code.html
   - title: "Software + Code"
     url: /Software_Code.html
   # - title: "Sample Collections"
