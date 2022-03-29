@@ -55,7 +55,18 @@
   
 <!-- Keeping track using Google Analytics -->
 <!-- {% if site.google_analytics and jekyll.environment == 'production' %} -->
-<!-- {% if site.google_analytics %} -->
+<!-- {% if site.google_analytics and jekyll.environment == 'production' %}
 {% include analytics.html %}
-<!-- {% endif %} -->
+{% endif %} -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RP3VXX4HME"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-RP3VXX4HME');
+</script>
+
 </head>
