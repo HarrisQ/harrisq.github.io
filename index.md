@@ -6,7 +6,8 @@ layout: default
 <h1 class="page-title">Introduction</h1>
 
 <!-- CV + About Me -->
-Currently, I am a Postdoctoral Researcher supervised by Dr. Wensheng Guo at the Perelman School of Medicine, University of Pennsylvania. My doctorate in Statistics was obtained at [Penn State University](https://www.psu.edu/), under the supervision of [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), where I developed sufficient dimension reduction methods. 
+I am a senior PhD student in Statistics at [Penn State University](https://www.psu.edu/), under the supervision of [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), where I develop sufficient dimension reduction methods. 
+I will be a Postdoctoral Researcher supervised by Dr. Wensheng Guo and Dr. Wei Yang at the Perelman School of Medicine, University of Pennsylvania.
 I continue to develop supverised feature extraction methods for functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization.
 
 
