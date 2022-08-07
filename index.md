@@ -6,16 +6,16 @@ layout: default
 <h1 class="page-title">Introduction</h1>
 
 <!-- CV + About Me -->
-I am a Ph.D. student working on developing sufficient dimension reduction methods in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/), advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9). 
-I develop supverised feature extraction methods for functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization.
+Currently, I am a Postdoctoral Researcher supervised by Dr. Wensheng Guo at the Perelman School of Medicine, University of Pennsylvania. My doctorate in Statistics was obtained at [Penn State University](https://www.psu.edu/), under the supervision of [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), where I developed sufficient dimension reduction methods. 
+I continue to develop supverised feature extraction methods for functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization.
 
 
 <!-- A pdf copy of my CV can be found [here](files/Resume_HarrisQuach_acv_twocol.pdf). (Last updated February 2021) -->
 
 Professional Experience
 ---
-* Fall 2022 - Present: Postdoctoral Researcher in Biostatistics
-  * Perelman School of Medicine, University of Pennsylvania
+* Fall 2022 - Present: Postdoctoral Researcher in Biostatistics, Perelman School of Medicine, University of Pennsylvania
+    * Supervisor: [Dr. Wensheng Guo](https://dbe.med.upenn.edu/biostat-research/WenshengGuo)
 <!--   * Duties included: Tagging issues -->
 
 Programming Languages

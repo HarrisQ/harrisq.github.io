@@ -1,8 +1,7 @@
 ---
 layout: default 
 title: About Me  
----
-
+--- 
 
 <h1 class="page-title">Introduction</h1>
 
@@ -13,10 +12,27 @@ I develop supverised feature extraction methods for functional and high dimensio
 
 <!-- A pdf copy of my CV can be found [here](files/Resume_HarrisQuach_acv_twocol.pdf). (Last updated February 2021) -->
 
+Professional Experience
+---
+* Fall 2022 - Present: Postdoctoral Researcher in Biostatistics
+  * Perelman School of Medicine, University of Pennsylvania
+<!--   * Duties included: Tagging issues -->
+
+Programming Languages
+---
+* Proficient:
+    * R, TeX 
+* Working knowledge: 
+    * Cpp via Rcpp
+* Basic:
+    * MATLAB, Python, HTML, SQL
+
+
 ## Education
-* Ph.D in Statistics, Pennsylvania State University, 2016-present
+* Ph.D in Statistics, Pennsylvania State University, 2016-2022
 
      * Advisor: [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), Verne M. Willaman Professor of Statistics
+        * Thesis: Advances in Forward Sufficient Dimension Reduction for Statistical Learning 
      <!-- * Committee: [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), Verne M. Willaman Professor of Statistics -->
 
 * M.S. in Statistics, University Of Toronto, 2015-2016
@@ -40,15 +56,6 @@ I develop supverised feature extraction methods for functional and high dimensio
 * STAT318 - Elementary Probability (Winter 2018)
 * STAT200 - Introduction to Statistics (Fall 2016) 
 
-
-Programming Languages
----
-* Proficient:
-    * R, TeX 
-* Working knowledge: 
-    * Cpp via Rcpp
-* Basic:
-    * MATLAB, Python, HTML, SQL
 
 Related Experience
 ---
