@@ -243,14 +243,27 @@ corresponding to the $d$ largest eigenvalues.
 
 ---
 class: left, top 
-# Properties related to OPCG
+# Under some regularity conditions:
 
-  - OPCG is consistent:
-  
+<div class="prop" text="Exhaustiveness">
+  Let
+  \begin{align*}
+  \Lambda_{\mathrm{opcg}}
+  =
+  E 
+  \bigg \{ 
+  \frac{\partial \theta(X)^\top}{\partial x}
+  \frac{\partial \theta(X)}{\partial x^\top}
+  \bigg \},
+  \end{align*}
+  and \(\eta\) be the leading \(d\) eigenvectors of \(\Lambda_{\mathrm{opcg}}\). 
+  Under SDR and a convexity assumption, \(\mathrm{span}(\eta ) = \SS_{E(Y|X)}  \).
+  </div>
+  <br>
   <div class="theorem">
   Under some regularity assumptions, as \( n \to \infty\), we have
   \begin{align*} 
-  \| \hat \beta_{opcg}  - \beta \|_F = O_{a.s}
+  \| \hat \beta_{opcg}  - \eta \|_F = O_{a.s}
   ( h + h^{-1} \delta_{ph} + \delta_{n} )
   ,
   \end{align*} 
@@ -259,8 +272,6 @@ class: left, top
   \(  h \downarrow 0\), and
   \( h^{-1}\delta_{ph} \to 0\).
   </div>
-  
-  - Can be implemented using Newton-Raphson
 
   - Ladle and Predictor Augmentation methods are fast, eigen-based methods that can be applied to estimate $d$. `r Citep(bib_sdr, author=c("luo"),title=c("combining", "augmentation"))`
 
