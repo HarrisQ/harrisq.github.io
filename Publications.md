@@ -26,8 +26,8 @@ Publications
 
 Talks + Presentations
 ---
-<!-- * On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2022 April 4. 
-  *2022 Joint Statistical Meeting* (Washington, D.C.) &nbsp;[Slides](/slides/opcg/ssc_opcg#1)  -->
+* On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2022 August 7. 
+  *2022 Joint Statistical Meeting* (Washington, D.C.) &nbsp;[Slides](/slides/opcg/jsm_opcg#1) 
 
 * On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2022 April 4. 
   *Fred Hutchison Post-Doc Seminar* (Remote) &nbsp;[Slides](/slides/opcg/fred_hutch_opcg#1) 
