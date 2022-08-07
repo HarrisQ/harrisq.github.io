@@ -114,7 +114,7 @@ class: left, top
 
   - Suppose $Y| X \sim GLM(\theta(X))$ and predictors $X \in \R^p$ are continuous.
     - So Y depends on X solely through a smooth function $\theta(\cdot)$.
-    - Categorical and Ordinal-Categorical variables are examples of such GLMs
+    
   
   - Assume a Sufficient Dimension Reduction exists: There exists a linear map $\beta \in \R^{p \times d}$, $d < p$, such that
   
