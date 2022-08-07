@@ -7,11 +7,10 @@ layout: default
 
 <!-- CV + About Me -->
 I am a senior PhD student in Statistics at [Penn State University](https://www.psu.edu/), under the supervision of [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), where I develop sufficient dimension reduction methods. 
-I will be a Postdoctoral Researcher supervised by Dr. Wensheng Guo and Dr. Wei Yang at the Perelman School of Medicine, University of Pennsylvania.
+Starting in Fall 2022, I will be a Postdoctoral Researcher supervised by Dr. Wensheng Guo and Dr. Wei Yang at the Perelman School of Medicine, University of Pennsylvania.
 I continue to develop supverised feature extraction methods for functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization.
 
 
-<!-- A pdf copy of my CV can be found [here](files/Resume_HarrisQuach_acv_twocol.pdf). (Last updated February 2021) -->
 
 Professional Experience
 ---
