@@ -8,8 +8,8 @@ has_children: true
 Research Interests
 ---
 
-My current research focus is on the theoretical and applied aspects of linear and nolinear forward Sufficient Dimension Reduction (SDR) in the context of functional and high dimensional data.
-I develop supervised dimension reduction methods that extract the most informative and relevant features from functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization.
+My current research focus is on the theoretical and applied aspects of linear and nonlinear forward Sufficient Dimension Reduction (SDR) in the context of functional and high dimensional data.
+<!-- I develop supervised dimension reduction methods that extract the most informative and relevant features from functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization. -->
 
 Prior to my doctoral studies at Penn State, I experimented with applications of higher-order likelihood approximations at Toronto.
 
