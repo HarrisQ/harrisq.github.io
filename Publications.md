@@ -16,7 +16,7 @@ Prior to my doctoral studies at Penn State, I worked on likelihood theory and ap
 
 Publications
 ---
-* On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses. *Submitted*. [arxiv](https://arxiv.org/abs/2102.06002). [supplement](files/supplementary_materials.pdf)
+* "On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses". Electron. J. Statist. 17 (1) 980 - 1006, 2023. https://doi.org/10.1214/23-EJS2122. [Link](https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-17/issue-1/On-forward-sufficient-dimension-reduction-for-categorical-and-ordinal-responses/10.1214/23-EJS2122.full?tab=ArticleLink). [supplement](files/supplementary_materials.pdf)
 
 <!-- <ul>
     <li>  </li>
