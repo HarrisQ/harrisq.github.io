@@ -11,7 +11,7 @@ Research Interests
 My current research focus is on the theoretical and applied aspects of linear and nonlinear forward Sufficient Dimension Reduction (SDR) in the context of functional and high dimensional data.
 <!-- I develop supervised dimension reduction methods that extract the most informative and relevant features from functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization. -->
 
-Prior to my doctoral studies at Penn State, I experimented with applications of higher-order likelihood approximations at Toronto.
+Prior to my doctoral studies at Penn State, I worked on likelihood theory and applications at Toronto.
 
 
 Publications
@@ -26,6 +26,9 @@ Publications
 
 Talks + Presentations
 ---
+* Smoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 
+  *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp;(Poster)
+
 * On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2022 August 7. 
   *2022 Joint Statistical Meeting* (Washington, D.C.) &nbsp;[Slides](/slides/opcg/jsm_opcg#1) 
 
