@@ -9,9 +9,10 @@ Research Interests
 ---
 
 My current research focus is on the theoretical and applied aspects of linear and nonlinear forward Sufficient Dimension Reduction (SDR) in the context of functional and high dimensional data.
-The methodologies I develop focus on eigen decompositions, maximum likelihood, or estimating equations. 
-More often than not, my methods can be succinctly summed up as a form of, or involving, supervised principal component analysis, or supervised feature extraction. 
-The extracted features are usually used for statistical applications, such as regression, clustering/classification, prediction, and data visualization.
+The statistical methodologies I develop typically inolve eigen decompositions, maximum likelihood, and estimating equations. 
+
+Usually, my methods can be succinctly summed up as a form of supervised principal component analysis or feature extraction. 
+The extracted features are used for statistical applications, such as regression, clustering/classification, prediction, and data visualization.
 
 
 Publications
