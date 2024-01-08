@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Sufficient Dimension Reduction</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Harris Quach" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="mytheme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: { 
+      independenT: ["{\\mathrel{\\rlap{ #1 }\\mkern2mu{ #1 }}}",1],
+      argmin: "{\\DeclareMathOperator*{\argmin}{\arg\!\min}}",
+      argmax: "{\\DeclareMathOperator*{\argmax}{\arg\!\max}}",
+      indep: "{\\independenT{\\perp}}",
+      SS: "{\\mathscr{S}}",
+      R:"{\\mathbb{R}}",
+      Xcal: "{\\mathcal{X}}",
+      ran: "{\\mathrm{ran}}", 
+      sH: "{\\mathscr{H}}",
+      sB: "{\\mathscr{B}}",
+      sC: "{\\mathscr{C}}",
+      sE: "{\\mathscr{E}}",
+      water: "{H_2O}",
+      ip: ['{\\langle #1 \\rangle}', 1], 
+      Abs: ['\\left\\lvert #2 \\right\\rvert_{\\text{#1}}', 2, ""]
+    }
+  }
+});
+</script>
+
+
+
+
+ 
+
+
+&lt;!-- class: title-slide --&gt;
+
+# Sufficient Dimension Reduction
+## Forward methods for Categorical and Ordinal Responses
+
+&lt;hr/&gt;
+
+Harris Quach (joint work with Dr. Bing Li) &lt;br/&gt; Date: "2024/01/10"
+
+
+---
+class: inverse, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text.center[Overview of Talk]  
+
+.md-text[
+  
+1. An overview of sufficient dimension reduction (SDR)
+  
+2. Motivating idea for our SDR approach
+  
+3. SDR for categorical and ordinal responses
+
+4. Tuning our method procedure
+
+4. Application to NHANES glycohemoglobin data
+
+Main Source: 
+
+Quach, H., &amp; Li, B. (2023). On forward sufficient dimension reduction for categorical and ordinal responses. *Electronic Journal of Statistics*, 17(1), 980-1006.
+&lt;!-- (Quach and Li, 2023)  --&gt;
+
+]
+
+---
+class: left, top
+# What is Sufficient Dimension Reduction? 
+
+
+Suppose we have a large dataset with some response `\(Y \in \R^m\)` and predictors `\(X \in \R^p\)`.
+
+  - When `\(p\)` is large, lower dimensional summaries of `\(X\)` are helpful for visualization and application of conventional statistical methods
+
+  - Finding a lower dimensional summary of `\(X\)` means finding `\(\beta \in \R^{p \times d}\)`, where `\(d &lt; p\)`, in order to construct the lower dimensional summary `\(\beta^\top X\)`
+  
+  - Sufficient Dimension Reduction (SDR) are approaches for finding `\(\beta\)` such that `\(\beta^\top X\)` retains all relevant information about `\(Y\)`
+  
+  - The information preserved by `\(\beta\)` is characterized by conditional independence
+  
+  - The mapping `\(\beta\)` preserves different information by satisfying different conditional independence criteria 
+**NOTE:**
+**We refer to `\(\beta\)` and `\(\mathrm{span}(\beta)\)` interchangeably.**
+
+
+
+---
+class: left, top
+# Central Subspaces
+
+Two subspaces of conventional interest:
+
+  - `\(Y \indep X | \beta^\top X\)`; (Li, 2018)
+    - `\(\beta\)` preserves all information between `\(Y\)` and `\(X\)`; 
+    - the smallest such subspace is called the **Central Subspace**. 
+
+  - `\(Y \indep E(Y|X) | \beta^\top X\)`; (Cook and Li, 2002; Ma and Zhu, 2014)
+    - `\(\beta\)` preserves all information between `\(Y\)` and `\(E(Y|X)\)`; 
+    - the smallest such subspace is called the **Central Mean Subspace**. 
+
+
+ 
+---
+class: left, top
+# Survival Analysis and SDR
+  
+  - Response is time-to-event, `\(T&gt;0\)`, with potential censoring `\(C\)`. The observed time-to-event is `\(Y = \min\{Y,C\}\)`. 
+  
+  - Typical assumptions are `\(T \indep C | X\)`.
+  
+  - The subspace of interest, `\(Y \indep X | \beta_0^\top X\)`, is not observable due to censoring.
+  
+  - But it is a direct sum of `\(T \indep X | \beta_1^\top X\)` and `\(C \indep X | \beta_2^\top X\)`:
+  
+      - (Xia, Zhang, and Xu, 2010).   
+        -  Uses many of the same methods presented here, but with survival and hazard functions.  
+        
+      - (Chen and Yi, 2022).   
+        -  Working under `\(C \indep X\)`, when covariates are error prone;  
+      
+      - (Cui, Xu, and Wu, 2023).   
+        -  Using RKHS theory to find and preserve non-linear relationships;  
+  
+---
+class: inverse, center, middle
+
+# .bg-text[Big picture of our SDR approach]  
+
+---
+class: left, top
+# Motivating Example: 
+
+Consider a response `\(Y\)` and predictor `\(X = (X_1, X_2) \in [0,1]^2\)`. 
+Let `\(Y=X_1^2\)`.
+Then `\(Y= (\beta^\top X)^2\)`, where `\(\beta = (1,0) \in \R^2\)`. 
+- we want to recover `\(span(\beta) = \{ (c,0): c \in \R\}\)`;
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sdr_plot.png" width="50%"&gt;
+]
+
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot1.png" width="55%"&gt;
+]
+
+&lt;!-- &lt;iframe src="images/almost_sir.html" width="90%" height="90%" frameborder="0"&gt;&lt;/iframe&gt; --&gt;
+
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot2.png" width="55%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot3.png" width="55%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot4.png" width="55%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot5.png" width="55%"&gt;
+]
+--
+
+  - 'Inverse' because we work with `\(X|Y\)` quantities;  `\(E(X|Y)\)` in particular here.
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot5.png" width="55%"&gt;
+]
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img class="image" src="images_opcg/bad_sir_plot1.png" width="55%"&gt;
+] 
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img class="image" src="images_opcg/bad_sir_plot2.png" width="55%"&gt;
+] 
+
+---
+count: false
+class: left, top  
+
+# Motivating Example: 
+## Inverse Regression for SDR - Drawbacks
+
+.center[
+&lt;img class="image" src="images_opcg/bad_sir_plot3.png" width="55%"&gt;
+] 
+--
+- Inverse methods require assumptions on the support of the predictor.
+
+
+---
+class: left, top  
+
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li, and Zhu, 2002)
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot1.png" width="55%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li et al., 2002)
+
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot2.png" width="55%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li et al., 2002)
+ 
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot3.png" width="55%"&gt;
+] 
+
+
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li et al., 2002)
+ 
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot3-1.png" width="55%"&gt;
+] 
+
+--
+- "Forward" Regression because we are estimating `\(E(Y|x)\)` and `\(\partial E(Y|x)/\partial x^\top\)`
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+ 
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li et al., 2002)
+
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot4.png" width="55%"&gt;
+] 
+
+---
+count: false
+class: left, top
+# Forward Regression for SDR
+## Outer Product of Gradients (OPG) (Xia, Tong, Li et al., 2002)
+
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot5.png" width="55%"&gt;
+]
+
+---
+class: inverse, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .center[.bg-text[Forward SDR for Categorical and Ordinal Response]  ]
+
+.md-text[
+  
+1. We show ordinal random variables are linear exponential families
+  
+2. We extend a popular Sufficient Dimension Reduction method to linear exponential families, and provide some theoretical results
+  
+3. We propose a K-means tuning procedure for our method
+  
+]
+
+
+---
+class: left, top
+# Forward Regression for SDR
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot3-1.png" width="45%"&gt;
+&lt;img class="image" src="images_opcg/fsdr_plot5.png" width="45%"&gt;
+]
+
+- OPG applies to uni-variate, continuous `\(Y\)`
+- Doesn't work as well when `\(Y\)` is categorical or ordinal 
+- **We fit a local multivariate GLM**
+
+
+---
+class: left, top
+# Fitting a local multivariate GLM
+
+We are interested in categorical and ordinal `\(Y\)`.
+
+--
+
+Categorical variables are linear exponential families (hence GLM) because they are a special case of the multinomial
+
+  - the multivariate Logistic and Expit functions are the canonical and inverse canonical links
+
+**Contribution:** Ordinal variables can be represented explicitly as a linear exponential family
+
+  - We derive its multivariate canonical link, inverse multivariate canonical link, and cumulant generating function.
+
+  - the canonical link is analogous to the **Adjacent Categories** logistic link (Agresti, 2010) 
+ 
+
+---
+class: left, top
+# Forward Regression for SDR 
+##Proposal: Fit a local multivariate GLM
+
+Existing work in this direction:
+
+1. Generalized Single Index Model (GSIM): Lambert-Lacroix and Peyre (2006)
+  - Local Linear GLM for uni-variate `\(Y\)`; 
+  - Generalizes the Average Derivative Estimator (ADE) Härdle and Stoker (1989); 
+  - ADE has known drawbacks; e.g. requires gradient has non-zero mean. 
+
+2. Minium Average Deviance Estimation (MADE): Adragni (2018)
+  - Local Linear GLM for uni-variate `\(Y\)` 
+    - Generalizes the Minimum Average Variance Estimator (MAVE) of Xia, Tong, Li et al. (2002)  
+
+**Handles multi-labels inefficiently.**
+
+
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text[Outer Product of Canonical Gradients (OPCG)] 
+
+---
+class: left, top 
+ 
+# Generalized Forward Regression for SDR
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot3-1.png" width="40%"&gt;
+]  
+
+- Instead, fit a multivariate GLM about `\(x_0\)` and minimize
+`\begin{align*}
+  -\ell (a_{x_0}, B_{x_0},x_0)  = - [a_{x_0} + B_{x_0}^\top(x-x_0)]^\top y + b[a_{x_0} + B_{x_0}^\top(x-x_0)] 
+  .
+\end{align*}`
+We will use the minimizer `\(\hat B_{x_0}\)`. 
+
+---
+class: left, top
+
+# Why use `\(B_{x_0}\)` in the GLM?
+
+## Our Dimension Reduction Assumption
+
+- In OPG, the dimension reduction assumption is `\(\beta\)` satisfies `\(E(Y|X) = E(Y|\beta^\top X)\)`. 
+  
+- Our the dimension reduction assumption is `\(\beta\)` satisfies `\(Y \indep \theta(X)|\beta^\top X\)`, i.e. `\(\theta(X) = \tilde \theta(\beta^\top X)\)`. 
+
+  - `\(\theta(X)\)` is the canonical parameter of the multivariate GLM, through which `\(X\)` relates to `\(Y\)` 
+  
+    - For linear exponential families, `\(\theta(X) = link^{-1}(E(Y|X))\)`, so our dimension reduction assumption is equivalent to that in OPG.
+
+---
+class: left, top
+
+# Why use `\(B_{x_0}\)` in the GLM?
+
+## Our Dimension Reduction Assumption
+
+  - Because `\(\theta(X) = \theta(\beta^\top X)\)`, the gradient of `\(\theta(x)\)` satisfies
+  
+`\begin{align*}
+\partial \theta(x)^\top /\partial x = \beta \partial
+\tilde \theta(u)^\top/\partial u
+\end{align*}`
+  
+  - That is, `\(\mathrm{span}(\partial \theta(x)^\top /\partial x) \subseteq \mathrm{span}(\beta)\)`; so gradient can recover part of the subspace at least.
+  
+      &lt;!-- - We say `\(\partial \theta(x)^\top /\partial x\)` is *unbiased* for the central mean subspace. --&gt;
+      
+---
+class: left, top
+
+# Why use `\(B_{x_0}\)` in the GLM?
+
+## Our Dimension Reduction Assumption
+
+&lt;!-- - In OPG, `\(\hat B_{x_0}\)` estimates the gradient of `\(E(Y|X=x)\)` at `\(x_0\)`, i.e. `\(\partial E(Y|X=x_0) /\partial x^\top\)`. --&gt;
+
+- The `\(\hat B_{x_0}\)` obtained from minimizing
+`\begin{align*}
+-\ell_0(a_0, B_0;y,x,x_0) = -[a_0 + B_0^\top(x-x_0)]^\top y + b[a_0 + B_0^\top(x-x_0)].
+\end{align*}`
+
+** `\(\hat B_{x_0}\)` estimates the gradient of `\(\theta(x)\)` at `\(x_0\)`, i.e. `\(\partial \theta(x_0) /\partial x^\top\)`; the canonical gradient at `\(x_0\)`.**
+
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+Given a random sample `\(Y_{1:n}\)`, `\(X_{1:n}\)`, fit a local linear multivariate GLM about `\(x_0\)` by minimizing
+`\begin{align*}
+&amp; -\ell (a_{x_0}, B_{x_0}, x_0, ;X_{1:n}, Y_{1:n}) \\
+= &amp;
+\frac 1n \sum_{i=1}^n
+K \bigg ( \frac{X_i - x_0}{h} \bigg )
+\{-[a_{x_0} + B_{x_0}^\top (X_i - x_0)]^\top Y_i + b[a_{x_0} + B_{x_0}^\top (X_i - x_0) ] \}
+\end{align*}`
+where `\(b(\cdot)\)` determines the GLM, and `\(K(\cdot)\)` is a kernel weight with bandwidth `\(h\)`. 
+The minimizer `\(\hat B_{x_0}\)` is used to estimate `\(\partial \theta(x_0) /\partial x^\top\)`.
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot3-1.png" width="35%"&gt; 
+]
+
+---
+class: left, top
+
+# Outer Product of Canonical Gradients (OPCG)
+
+We fit a local linear multivariate GLM about each `\(X_j\)`, for `\(j=1,...,n\)`, by minimizing the full negative local linear log-likelihood:
+
+`\begin{align*}
+&amp; L(a_1,..,a_n, B_1,...,B_n; X_{1:n}, Y_{1:n})  \\
+= &amp; -\frac {1}{n} \sum_{j,i=1}^n
+K \bigg ( \frac{X_i - X_j}{h} \bigg ) 
+\{[a_{j} + B_{j}^\top (X_i - X_j)]^\top Y_i - 
+b(a_{j} + B_{j}^\top (X_i - X_j)) \} 
+.
+\end{align*}`
+
+This provides a collection of minimizers `\(\hat B_1,\ldots,\hat B_n\)`; where `\(\hat B_j\)` estimates `\(\partial \theta(X_j)/\partial x^\top\)`.
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot4.png" width="35%"&gt; 
+]
+---
+class: left, top
+
+# The OPCG Estimator
+
+We use `\(\hat B_1,\ldots, \hat B_n\)` to construct the average outer product
+`$$\hat \Lambda_{\mathrm{opcg}} = \frac 1n \sum_{j=1}^n \hat B_j \hat B_j^\top.$$` 
+
+The **Outer Product of Canonical Gradients (OPCG) Estimator, `\(\hat \beta_{\mathrm{opcg}}\)`**, is the `\(d\)` leading eigenvectors of `\(\hat \Lambda_{\mathrm{opcg}}\)`.
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot5.png" width="35%"&gt;
+]  
+
+---
+class: left, top 
+# Properties related to OPCG
+## Under some regularity assumptions...
+
+  &lt;div class="prop" text="Exhaustiveness"&gt;
+  Let
+  \begin{align*}
+  \Lambda_{\mathrm{opcg}}
+  =
+  E 
+  \bigg \{ 
+  \frac{\partial \theta(X)^\top}{\partial x}
+  \frac{\partial \theta(X)}{\partial x^\top}
+  \bigg \}
+  .
+  \end{align*}
+  Under SDR and rank assumptions, \(\mathrm{span}( \Lambda_{\mathrm{opcg}} ) = \SS_{E(Y|X)}  \).
+  &lt;/div&gt;   
+--
+  &lt;br/&gt;&lt;br&gt;
+  &lt;div class="theorem" text="Consistency of OPCG"&gt;
+  Let \(\eta\) be the leading \(d\) eigenvectors of \(\Lambda_{\mathrm{opcg}}\). Then, under some regularity, compactness and bandwidth assumptions, we have
+  \begin{align*}
+  \| \hat \Lambda_{\mathrm{opcg}} -
+  \Lambda_{\mathrm{opcg}} \|_F = O_{a.s}
+  ( h + h^{-1} \delta_{ph} + ( \log(n)/n )^{1/2} ),\\
+   \Rightarrow \| \hat \beta_{\mathrm{opcg}} - \eta \|_F = O_{a.s}
+  ( h + h^{-1} \delta_{ph} + ( \log(n)/n )^{1/2} ),
+  \end{align*}
+  where \(\delta_{ph} = \sqrt{ \frac{\log n}{ nh^p} }\),
+  \(  h \downarrow 0\), and \( h^{-1}\delta_{ph} \to 0\).
+  &lt;/div&gt;
+
+
+---
+class: left, top 
+# Estimating the dimension, `\(d\)` 
+
+  - Ladle plot and Predictor Augmentation methods are fast, eigen-based methods that can be applied to OPCG estimate `\(d\)`. (Luo and Li, 2020; Luo and Li, 2016)
+  
+    - Uses variation in eigenvectors and eigenvalues of `\(\hat \Lambda_{\mathrm{opcg}}\)` to determine `\(d\)`.
+
+    - cannot be applied to aforementioned methods
+    
+  &lt;!-- - Cross-validation or sequential testing methods can be used to estimate `\(d\)` for MADE. (Adragni, 2018; Xia, Tong, Li et al., 2002) --&gt;
+ 
+---
+class: inverse, center, middle
+
+# .bg-text[Tuning the bandwidth]
+
+---
+class: left, top 
+# Tuning the bandwidth, `\(h\)`.
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot3-1.png" width="45%"&gt;
+]  
+
+The bandwidth `\(h\)` in the kernel `\(K(h^{-1} \|X_i - X_j \|)\)` determines the size of the local neighbourhoods about points `\(X_j\)`.
+
+This bandwidth needs to be tuned in our forward regression approaches. 
+
+---
+class: left, top
+# Tuning the bandwidth, `\(h\)`.
+ 
+We need to tune `\(h\)` in OPCG:
+
+  - Cross Validation requires specifying a prediction method beforehand. 
+
+  - Can choose `\(h\)` according to optimal bandwidth, such as `\(h^{opt} = cn^{-\frac{1}{(p+6)}}\)` (Xia, 2007)
+  
+    - but suggested values of `\(c\)` does not always work, and then you need to tune `\(c\)`.
+
+--
+
+For classification problems, we propose using a K-means clustering procedure for tuning `\(h\)`.
+
+Our intuition: 
+
+  - SDR should make classification easier, and classification is easiest when the dimension reduced predictors `\(\hat \beta^\top X\)` are clustered into their respective labels.
+
+---
+class: left, top
+# Tuning the bandwidth, `\(h\)`.
+
+Let `\(Y \in \{1,...,m\}\)` be categorical response and our training set is size `\(n\)`. We split the training set into `\((Y, X)_{1:n_1}\)` for estimation, and `\((Y,X)_{1:n_2}^{\mathbb{V}}\)` for validation.
+
+--
+
+Main idea: For each `\(h\)`, 
+
+1. Estimate `\(\hat \beta_{\mathrm{opcg}}\)` on `\((Y, X)_{1:n_1}\)` and construct `\(\hat \beta_{\mathrm{opcg}}^\top X_{1:n_2}^{\mathbb{V}}\)`.
+
+2. Apply K-means to sufficient predictors `\(\hat \beta_{\mathrm{opcg}}^\top X_{1:n_2}^{\mathbb{V}}\)` for `\(m\)` clusters.
+
+  - This returns `\(m\)` estimated clusters and the F-ratio, for each `\(h\)`.
+
+3. Select `\(h\)` that minimizes the F-ratio from K-means. 
+
+  - Small F-ratio means small WSS and large BSS
+
+---
+class: left, top
+# Tuning the bandwidth, `\(h\)`.
+ 
+But 
+ - Estimating `\(m\)` clusters implicitly assumes we have only 1 cluster per class
+ - We ought to incorporate the class/label information from `\(Y_{1:n_2}^{\mathbb{V}}\)`, when available.
+
+We modify K-means so that:
+
+1. we estimate more than 1 cluster per class;
+
+2. uses label information from `\(Y_{1:n_2}^{\mathbb{V}}\)`; a "supervised" K-means
+
+This "supervised k-means" is applied on the training set in a r-fold manner.
+
+---
+class: inverse, center, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text[Simulations and Data Analyses]
+
+
+---
+class: left, top
+# Simulations
+
+
+Our predictor will be `\(X=(X_1,X_2,X_3,...,X_{10}) \in \R^{10}\)`.
+
+  - `\((X_3, X_7)\)` is sampled from one of 5 clusters, generated by a bivariate normal
+    - Then augmented with 8 standard normals, so `\(p=10\)`.
+
+  - Two clusters are labeled 1, two are labeled 2, and one cluster is labeled 3; So `\(Y \in \{1,2,3\}\)` is categorical.
+ 
+  - We sample 300 for our training set and 150 for testing. We split the training set in half for estimation and validation.  
+ 
+
+---
+class: ani-slide
+# K-mean Tuning for `\(h\)`
+ 
+&lt;iframe src="images_opcg/tuning_sc.html" width="100%" height="95%" frameborder="0" &gt;&lt;/iframe&gt;
+
+
+
+---
+count: false
+class: left, top
+# Simulations - tuning and estimation
+
+K-fold supervised K-means Tuning: `\(h \approx 1.26\)`;
+
+&lt;img align="centered" class="image" src="images_opcg/sim_dist_table4.png" width="100%"&gt;
+  
+  - SIR is Sliced Inverse Regression (Li, 1991)  
+  
+  - DR is Directional Regression (Li and Wang, 2007)  
+  
+  - PL-method is a per-label approach; Lambert-Lacroix and Peyre's suggestion for multi-label problems.
+    &lt;!-- - estimates 2 SDR directions per binary logistic problem for each class, for 6 total, and selects the 2 that explain the most variation. --&gt;
+    
+  - PW-method is pairwise approach; Adragni's suggestion for multi-label problems.  
+    &lt;!-- - estimates 2 SDR directions per pair of classes \{1,2\}, \{1,3\}, and \{2,3\}, for 6 total, and selects the 2 that explain the most variation.  --&gt;
+
+---
+class: center, middle, inverse
+# .bg-text[Application to a National Health and Nutrition Examination Survey Dataset]
+## Source: http://hbiostat.org/data courtesy of the Vanderbilt University Department of Biostatistics 
+ 
+
+---
+class: left, top
+# NHANES glycohemoglobin data
+  
+  - Collection of studies to assess health of adults and children in the US. 
+  
+  - Surveys a representative sample of about 5000 individuals every year, collecting interviews and physical examinations.
+      
+      - Data collected include demographic, socioeconomic, dietary surveys;
+      
+      - Medical and Physiological measurements are collected;
+      
+      - Laboratory tests are conducted by medical professionals; 
+
+  - The data set hosted by Vanderbilt University is a cleaned and process subset of one NHANES survey, year unknown.
+  
+      - Data includes demographic and body measurements related to Diabetes in participants
+  
+---
+class: left, top
+# NHANES glycohemoglobin data
+## Demographic Characteristics
+
+ &lt;!-- 6795 observations and 20 variables, maximum # NAs:971     --&gt;
+
+&lt;!-- # seqn is respondents sequence number --&gt;
+
+&lt;!-- # gh is glycohemoglobin levels --&gt;
+&lt;!-- # tx is indicator for "on Insulin of Diabetes Mellitus Drugs"  --&gt;
+&lt;!-- # dx is indicator for diagnosed with Diabetes Mellitus or Pre DM --&gt;
+&lt;!-- # 2 levels of sex --&gt;
+&lt;!-- # 5 levels of race --&gt;
+&lt;!-- # 14 levels of income --&gt;
+
+&lt;!-- # wt is weight --&gt;
+&lt;!-- # ht is standing height --&gt;
+&lt;!-- # bmi is BMI  --&gt;
+&lt;!-- # leg - upper leg length --&gt;
+&lt;!-- # arml - upper arm length --&gt;
+&lt;!-- # armc - arm circum --&gt;
+&lt;!-- # waist - waist circum --&gt;
+&lt;!-- # tri - Triceps Skinfold --&gt;
+&lt;!-- # sub - Subscapular Skinfold --&gt;
+&lt;!-- # albumin - albumin levels --&gt;
+&lt;!-- # bun - bloord urea nitrogen --&gt;
+&lt;!-- # SCr - Creatinine  --&gt;
+
+&lt;iframe src="images_pharma_biotech/demo_gtable.html" width="100%" height="90%" frameborder="0" &gt;&lt;/iframe&gt;
+
+
+---
+class: left, top
+# NHANES glycohemoglobin data
+## Body Measurements 
+
+ &lt;!-- 6795 observations and 20 variables, maximum # NAs:971     --&gt;
+
+&lt;!-- # seqn is respondents sequence number --&gt;
+
+&lt;!-- # gh is glycohemoglobin levels --&gt;
+&lt;!-- # tx is indicator for "on Insulin of Diabetes Mellitus Drugs"  --&gt;
+&lt;!-- # dx is indicator for diagnosed with Diabetes Mellitus or Pre DM --&gt;
+&lt;!-- # 2 levels of sex --&gt;
+&lt;!-- # 5 levels of race --&gt;
+&lt;!-- # 14 levels of income --&gt;
+
+&lt;!-- # wt is weight --&gt;
+&lt;!-- # ht is standing height --&gt;
+&lt;!-- # bmi is BMI  --&gt;
+&lt;!-- # leg - upper leg length --&gt;
+&lt;!-- # arml - upper arm length --&gt;
+&lt;!-- # armc - arm circum --&gt;
+&lt;!-- # waist - waist circum --&gt;
+&lt;!-- # tri - Triceps Skinfold --&gt;
+&lt;!-- # sub - Subscapular Skinfold --&gt;
+&lt;!-- # albumin - albumin levels --&gt;
+&lt;!-- # bun - bloord urea nitrogen --&gt;
+&lt;!-- # SCr - Creatinine  --&gt;
+
+&lt;iframe src="images_pharma_biotech/biom_gtable.html" width="100%" height="90%" frameborder="0" &gt;&lt;/iframe&gt;
+
+---
+class: left, top
+# Application of OPCG to NHANES glycohemoglobin data
+
+For Convenience: 
+  - Drop individuals with missingness 
+  - Do not consider Categorical Predictors that cannot be interpreted as continuous
+      - e.g. race, sex, treatment status
+      - Dropped individuals with "&lt; 20000" and "&gt; 20000" as income to convert to continuous
+ 
+Outcomes:
+  - Binary: Diabetes Diagnosis
+  - Ordinal: No Diabetes, Pre-Diabetes, Diabetes
+      - Derived from Glycohemoglobin according to normal levels from CDC website
+      - Normal: &lt; 5.6; Pre-Diabetes: 5.6 to 6.4; Diabetes: &gt; 6.4 
+      
+
+We use roughly 4000 observations for estimation. The remaining observations are used as a testing set to validate our results.
+       
+---
+class: left, top
+# Diabetes Diagnosis  
+
+&lt;img src="images_pharma_biotech/cat_plots.png" width="85%" style="display: block; margin: auto;" /&gt;
+---
+class: left, top
+# Glycohemoglobin Levels 
+
+
+&lt;img src="images_pharma_biotech/ord_plots.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+class: left, middle, inverse
+# .bg-text[Summary of Presentation]
+
+1. Overview of Sufficient Dimension Reduction.
+
+2. Outline of the motivation behind OPCG and K-Means Tuning 
+
+3. Application to a National Health and Nutrition Examination Survey Dataset
+
+---
+layout: false
+# References
+
+Adragni, K. P. (2018). "Minimum average deviance estimation for
+sufficient dimension reduction". In: _Journal of Statistical
+Computation and Simulation_ 88.3, pp. 411-431.
+
+Agresti, A. (2010). _Analysis of ordinal categorical data_. Vol. 656.
+John Wiley &amp; Sons.
+
+Chen, L. and G. Y. Yi (2022). "Sufficient dimension reduction for
+survival data analysis with error-prone variables". In: _Electronic
+Journal of Statistics_ 16.1, pp. 2082-2123.
+
+Cook, R. D. and B. Li (2002). "Dimension reduction for conditional mean
+in regression". In: _The Annals of Statistics_ 30.2, pp. 455-474.
+
+Cui, W., J. Xu, and Y. Wu (2023). "A new reproducing kernel-based
+nonlinear dimension reduction method for survival data". In:
+_Scandinavian Journal of Statistics_.
+
+---
+layout: false
+# References
+
+Härdle, W. and T. M. Stoker (1989). "Investigating smooth multiple
+regression by the method of average derivatives". In: _Journal of the
+American statistical Association_ 84.408, pp. 986-995.
+
+Lambert-Lacroix, S. and J. Peyre (2006). "Local likelihood regression
+in generalized linear single-index models with applications to
+microarray data". In: _Computational statistics &amp; data analysis_ 51.3,
+pp. 2091-2113.
+
+Li, B. (2018). _Sufficient Dimension Reduction: Methods and
+Applications with R_. CRC Press.
+
+Li, B. and S. Wang (2007). "On directional regression for dimension
+reduction". In: _Journal of the American Statistical Association_
+102.479, pp. 997-1008.
+
+Li, K. (1991). "Sliced inverse regression for dimension reduction". In:
+_Journal of the American Statistical Association_ 86.414, pp. 316-327.
+
+Luo, W. and B. Li (2020). "On order determination by predictor
+augmentation". In: _Biometrika_.
+
+---
+layout: false
+# References
+
+Luo, W. and B. Li (2016). "Combining eigenvalues and variation of
+eigenvectors for order determination". In: _Biometrika_ 103.4, pp.
+875-887.
+
+Ma, Y. and L. Zhu (2014). "On estimation efficiency of the central mean
+subspace". In: _Journal of the Royal Statistical Society: Series B:
+Statistical Methodology_, pp. 885-901.
+
+Quach, H. and B. Li (2023). "On forward sufficient dimension reduction
+for categorical and ordinal responses". In: _Electronic Journal of
+Statistics_ 17.1, pp. 980-1006.
+
+Xia, Y. (2007). "A constructive approach to the estimation of dimension
+reduction directions". In: _The Annals of Statistics_ 35.6, pp.
+2654-2690.
+
+Xia, Y., H. Tong, W. Li, et al. (2002). "An adaptive estimation of
+dimension reduction space". In: _Journal of the Royal Statistical
+Society: Series B (Statistical Methodology)_ 64.3, pp. 363-410.
+
+Xia, Y., D. Zhang, and J. Xu (2010). "Dimension reduction and
+semiparametric estimation of survival models". In: _Journal of the
+American Statistical Association_ 105.489, pp. 278-290.
+
+---
+layout: false
+# References
+
+Xia, Y., D. Zhang, and J. Xu (2010). "Dimension reduction and
+semiparametric estimation of survival models". In: _Journal of the
+American Statistical Association_ 105.489, pp. 278-290.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
