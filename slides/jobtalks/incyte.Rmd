@@ -161,7 +161,7 @@ Two subspaces of conventional interest:
 class: left, top
 # Survival Analysis and SDR
   
-  - Response is time-to-event, $T>0$, with potential censoring $C$. The observed time-to-event is $Y = \min\{Y,C\}$. 
+  - Response is time-to-event, $T>0$, with potential censoring $C$. The observed time-to-event is $Y = \min\{T,C\}$. 
   
   - Typical assumptions are $T \indep C | X$.
   
