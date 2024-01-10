@@ -105,13 +105,13 @@ class: inverse, middle
   
 1. An overview of sufficient dimension reduction (SDR)
   
-2. Motivating idea for our SDR approach
+2. Motivating idea for our approach
   
-3. SDR for categorical and ordinal responses
+3. Broad summary of our procedure
 
-4. Tuning our method procedure
+4. Tuning procedure for our method
 
-4. Application to NHANES glycohemoglobin data
+4. Application to National Health and Nutrition Examination Study - glycohemoglobin data
 
 Main Source: 
 
