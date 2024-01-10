@@ -118,13 +118,11 @@ Two subspaces of conventional interest:
 class: left, top
 # Survival Analysis and SDR
   
-  - Response is time-to-event, `\(T&gt;0\)`, with potential censoring `\(C\)`. The observed time-to-event is `\(Y = \min\{T,C\}\)`. 
+  - Response is time-to-event, `\(T&gt;0\)`, with potential censoring `\(C\)`. The observed time-to-event is `\(Y = \min\{T,C\}\)`. Typical assumption is `\(T \indep C | X\)`.
   
-  - Typical assumptions are `\(T \indep C | X\)`.
+  - The subspace of interest, `\(\beta_0\)` such that `\(Y \indep X | \beta_0^\top X\)`, is not observable due to censoring.
   
-  - The subspace of interest, `\(Y \indep X | \beta_0^\top X\)`, is not observable due to censoring.
-  
-  - But it is a direct sum of `\(T \indep X | \beta_1^\top X\)` and `\(C \indep X | \beta_2^\top X\)`:
+  - But it is contained in a direct sum of `\(\beta_1\)` and `\(\beta_2\)` associated with `\(T \indep X | \beta_1^\top X\)` and `\(C \indep X | \beta_2^\top X\)`, respectively:
   
       - (Xia, Zhang, and Xu, 2010).   
         -  Uses many of the same methods presented here, but with survival and hazard functions.  
@@ -353,6 +351,22 @@ class: left, top
 &lt;img class="image" src="images_opcg/fsdr_plot5.png" width="55%"&gt;
 ]
 
+
+---
+class: left, top
+# Forward Regression for SDR
+
+.center[
+&lt;img class="image" src="images_opcg/fsdr_plot3-1.png" width="45%"&gt;
+&lt;img class="image" src="images_opcg/fsdr_plot5.png" width="45%"&gt;
+]
+
+- OPG applies to uni-variate, continuous `\(Y\)`
+- Doesn't work as well when `\(Y\)` is categorical or ordinal 
+- **We fit a local multivariate GLM**
+
+
+
 ---
 class: inverse, middle
 
@@ -369,20 +383,6 @@ class: inverse, middle
 3. We propose a K-means tuning procedure for our method
   
 ]
-
-
----
-class: left, top
-# Forward Regression for SDR
-
-.center[
-&lt;img class="image" src="images_opcg/fsdr_plot3-1.png" width="45%"&gt;
-&lt;img class="image" src="images_opcg/fsdr_plot5.png" width="45%"&gt;
-]
-
-- OPG applies to uni-variate, continuous `\(Y\)`
-- Doesn't work as well when `\(Y\)` is categorical or ordinal 
-- **We fit a local multivariate GLM**
 
 
 ---
@@ -404,23 +404,23 @@ Categorical variables are linear exponential families (hence GLM) because they a
   - the canonical link is analogous to the **Adjacent Categories** logistic link (Agresti, 2010) 
  
 
----
-class: left, top
-# Forward Regression for SDR 
-##Proposal: Fit a local multivariate GLM
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+&lt;!-- # Forward Regression for SDR  --&gt;
+&lt;!-- ##Proposal: Fit a local multivariate GLM --&gt;
 
-Existing work in this direction:
+&lt;!-- Existing work in this direction: --&gt;
 
-1. Generalized Single Index Model (GSIM): Lambert-Lacroix and Peyre (2006)
-  - Local Linear GLM for uni-variate `\(Y\)`; 
-  - Generalizes the Average Derivative Estimator (ADE) Härdle and Stoker (1989); 
-  - ADE has known drawbacks; e.g. requires gradient has non-zero mean. 
+&lt;!-- 1. Generalized Single Index Model (GSIM): Lambert-Lacroix and Peyre (2006) --&gt;
+&lt;!--   - Local Linear GLM for uni-variate `\(Y\)`;  --&gt;
+&lt;!--   - Generalizes the Average Derivative Estimator (ADE) Härdle and Stoker (1989);  --&gt;
+&lt;!--   - ADE has known drawbacks; e.g. requires gradient has non-zero mean.  --&gt;
 
-2. Minium Average Deviance Estimation (MADE): Adragni (2018)
-  - Local Linear GLM for uni-variate `\(Y\)` 
-    - Generalizes the Minimum Average Variance Estimator (MAVE) of Xia, Tong, Li et al. (2002)  
+&lt;!-- 2. Minium Average Deviance Estimation (MADE): Adragni (2018) --&gt;
+&lt;!--   - Local Linear GLM for uni-variate `\(Y\)`  --&gt;
+&lt;!--     - Generalizes the Minimum Average Variance Estimator (MAVE) of Xia, Tong, Li et al. (2002)   --&gt;
 
-**Handles multi-labels inefficiently.**
+&lt;!-- **Handles multi-labels inefficiently.** --&gt;
 
 
 ---
@@ -446,6 +446,21 @@ class: left, top
 \end{align*}`
 We will use the minimizer `\(\hat B_{x_0}\)`. 
 
+&lt;!-- --- --&gt;
+&lt;!-- class: left, top --&gt;
+
+&lt;!-- # Why use `\(B_{x_0}\)` in the GLM? --&gt;
+
+&lt;!-- ## Our Dimension Reduction Assumption --&gt;
+
+&lt;!-- - In OPG, the dimension reduction assumption is `\(\beta\)` satisfies `\(E(Y|X) = E(Y|\beta^\top X)\)`.  --&gt;
+
+&lt;!-- - Our the dimension reduction assumption is `\(\beta\)` satisfies `\(Y \indep \theta(X)|\beta^\top X\)`, i.e. `\(\theta(X) = \tilde \theta(\beta^\top X)\)`.  --&gt;
+
+&lt;!--   - `\(\theta(X)\)` is the canonical parameter of the multivariate GLM, through which `\(X\)` relates to `\(Y\)`  --&gt;
+
+&lt;!--     - For linear exponential families, `\(\theta(X) = link^{-1}(E(Y|X))\)`, so our dimension reduction assumption is equivalent to that in OPG. --&gt;
+
 ---
 class: left, top
 
@@ -453,20 +468,9 @@ class: left, top
 
 ## Our Dimension Reduction Assumption
 
-- In OPG, the dimension reduction assumption is `\(\beta\)` satisfies `\(E(Y|X) = E(Y|\beta^\top X)\)`. 
+  - Our the dimension reduction assumption is `\(\beta\)` satisfies `\(Y \indep \theta(X)|\beta^\top X\)`, i.e. `\(\theta(X) = \tilde \theta(\beta^\top X)\)`. 
   
-- Our the dimension reduction assumption is `\(\beta\)` satisfies `\(Y \indep \theta(X)|\beta^\top X\)`, i.e. `\(\theta(X) = \tilde \theta(\beta^\top X)\)`. 
-
-  - `\(\theta(X)\)` is the canonical parameter of the multivariate GLM, through which `\(X\)` relates to `\(Y\)` 
-  
-    - For linear exponential families, `\(\theta(X) = link^{-1}(E(Y|X))\)`, so our dimension reduction assumption is equivalent to that in OPG.
-
----
-class: left, top
-
-# Why use `\(B_{x_0}\)` in the GLM?
-
-## Our Dimension Reduction Assumption
+    - `\(\theta(X)\)` is the canonical parameter of the multivariate GLM, through which `\(X\)` relates to `\(Y\)` 
 
   - Because `\(\theta(X) = \theta(\beta^\top X)\)`, the gradient of `\(\theta(x)\)` satisfies
   
@@ -593,7 +597,7 @@ class: left, top
   
     - Uses variation in eigenvectors and eigenvalues of `\(\hat \Lambda_{\mathrm{opcg}}\)` to determine `\(d\)`.
 
-    - cannot be applied to aforementioned methods
+    &lt;!-- - cannot be applied to aforementioned methods --&gt;
     
   &lt;!-- - Cross-validation or sequential testing methods can be used to estimate `\(d\)` for MADE. (Adragni, 2018; Xia, Tong, Li et al., 2002) --&gt;
  
@@ -668,7 +672,7 @@ We modify K-means so that:
 
 2. uses label information from `\(Y_{1:n_2}^{\mathbb{V}}\)`; a "supervised" K-means
 
-This "supervised k-means" is applied on the training set in a r-fold manner.
+&lt;!-- This "supervised k-means" is applied on the training set in a r-fold manner. --&gt;
 
 ---
 class: inverse, center, middle
