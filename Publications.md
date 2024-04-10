@@ -5,18 +5,22 @@ has_children: true
 # permalink: /Research/
 ---
 
+<!---
 Research Interests
 ---
 
-My current research focus is on the theoretical and applied aspects of linear and nonlinear forward Sufficient Dimension Reduction (SDR) in the context of functional and high dimensional data.
+My current research is on the theoretical and applied aspects of linear and nonlinear forward Sufficient Dimension Reduction (SDR) in the context of functional and high dimensional data.
 The statistical methodologies I develop typically inolve eigen decompositions, maximum likelihood, and estimating equations. 
 
 Usually, my methods can be succinctly summed up as a form of supervised principal component analysis or feature extraction. 
 The extracted features are used for statistical applications, such as regression, clustering/classification, prediction, and data visualization.
-
+--->
 
 Publications
 ---
+
+* "Functional Sliced Inverse Regression via Informed Basis Expansions". 2024. Manuscript.
+
 * "On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses". Electron. J. Statist. 17 (1) 980 - 1006, 2023. https://doi.org/10.1214/23-EJS2122. [Link](https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-17/issue-1/On-forward-sufficient-dimension-reduction-for-categorical-and-ordinal-responses/10.1214/23-EJS2122.full?tab=ArticleLink). [supplement](files/supplementary_materials.pdf)
 
 <!-- <ul>
@@ -27,8 +31,17 @@ Publications
 
 Talks + Presentations
 ---
+
+<!-- 
 * Smoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 
-  *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp;(Poster)
+  *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp; 
+
+* Smoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 
+  *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp; 
+-->
+
+* Smoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 
+  *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp; 
 
 * On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2022 August 7. 
   *2022 Joint Statistical Meeting* (Washington, D.C.) &nbsp;<!-- [Slides](/slides/opcg/jsm_opcg#1) -->
