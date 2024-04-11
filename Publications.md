@@ -16,12 +16,12 @@ Usually, my methods can be succinctly summed up as a form of supervised principa
 The extracted features are used for statistical applications, such as regression, clustering/classification, prediction, and data visualization.
 --->
 
-Publications
+Publications & Manuscripts
 ---
 
-* "Functional Sliced Inverse Regression via Informed Basis Expansions". 2024. Manuscript.
+* Quach, H., Yang, W, and Guo, W. "Functional Sliced Inverse Regression via Informed Basis Expansions". 2024. Manuscript.
 
-* "On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses". Electron. J. Statist. 17 (1) 980 - 1006, 2023. https://doi.org/10.1214/23-EJS2122. [Link](https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-17/issue-1/On-forward-sufficient-dimension-reduction-for-categorical-and-ordinal-responses/10.1214/23-EJS2122.full?tab=ArticleLink). [supplement](files/supplementary_materials.pdf)
+* Quach, H. and Li, B. "On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses". Electron. J. Statist. 17 (1) 980 - 1006, 2023. https://doi.org/10.1214/23-EJS2122. [Link](https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-17/issue-1/On-forward-sufficient-dimension-reduction-for-categorical-and-ordinal-responses/10.1214/23-EJS2122.full?tab=ArticleLink). [supplement](files/supplementary_materials.pdf)
 
 <!-- <ul>
     <li>  </li>
