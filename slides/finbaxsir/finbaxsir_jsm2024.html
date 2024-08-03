@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Functional Sliced Inverse Regression Via Informed Basis Expansions</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Harris Quach" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+    <link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+    <script src="libs/datatables-binding-0.32/datatables.js"></script>
+    <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+    <link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+    <link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="mytheme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: { 
+      independenT: ["{\\mathrel{\\rlap{ #1 }\\mkern2mu{ #1 }}}",1],
+      argmin: "{\\DeclareMathOperator*{\argmin}{\arg\!\min}}",
+      argmax: "{\\DeclareMathOperator*{\argmax}{\arg\!\max}}",
+      indep: "{\\independenT{\\perp}}",
+      SS: "{\\mathscr{S}}",
+      R:"{\\mathbb{R}}",
+      Xcal: "{\\mathcal{X}}",
+      cT: "{\\mathcal{T}}",
+      cP: "{\\mathcal{P}}",
+      ran: "{\\mathrm{ran}}",
+      sH: "{\\mathscr{H}}",
+      sB: "{\\mathscr{B}}",
+      sC: "{\\mathscr{C}}",
+      sE: "{\\mathscr{E}}",
+      water: "{H_2O}",
+      ip: ['{\\langle #1 \\rangle}', 1],
+      ipl: '{\\langle}',
+      ipr: '{\\rangle}',
+      Abs: ['\\left\\lvert #2 \\right\\rvert_{\\text{#1}}', 2, ""],
+      var: "{\\mathrm{var}}",
+      vep: "{\\varepsilon}"
+    }
+  }
+});
+</script>
+
+
+
+
+ 
+
+
+&lt;!-- class: title-slide --&gt;
+
+# Functional Sliced Inverse Regression Via Informed Basis Expansions
+## with applications to the Chronic Renal Insufficiency Cohort Study
+
+&lt;hr/&gt;
+
+Harris Quach (joint work with Dr. Wei Yang and Dr. Wensheng Guo) &lt;br/&gt; Date: "2024/07/17"
+
+
+---
+class: inverse, middle
+
+&lt;!-- inverse makes the background black and text white --&gt;
+
+# .bg-text.center[Overview of Talk]  
+
+.md-text[
+  
+1. Motivation from Chronic Renal Insufficiency Cohort (CRIC) Study
+  
+2. Overview of Sliced Inverse Regression
+  
+3. Proposed Method
+
+4. Simulation Results
+
+5. Application to CRIC Study
+
+
+&lt;!-- Main Source:  --&gt;
+&lt;!-- Quach, H., &amp; Li, B. (2023). On forward sufficient dimension reduction for categorical and ordinal responses. *Electronic Journal of Statistics*, 17(1), 980-1006. --&gt;
+&lt;!-- (Quach and Li, 2023)  --&gt;
+
+]
+
+---
+class: left, top
+# Chronic Renal Insufficiency Cohort (CRIC) Study
+## Source: NIDDK Central Repository
+  
+  - Observational study following subjects with varying severity of renal disease from June 2003 and is currently ongoing. 
+  
+  - Primary objective is to examine risk factors for the progression of chronic kidney disease (CKD) and cardiovascular disease among individuals with CKD.
+      - Additional objectives include developing predictive models for identifying high-risk subgroups.
+  
+  &lt;!-- - The study participants, aged 21 to 74, had clinical evaluations at baseline and at annual in-clinic follows ups.  --&gt;
+  &lt;!--     - Quality of life, dietary assessment, physical activity, health behaviors, depression, cognitive function, health care resource utilization, blood and urine samples.  --&gt;
+	
+	
+	
+&lt;!-- - Measures of kidney function and occurrence of new and worsening CVD are the primary outcomes, among others. --&gt;
+			 
+			
+ 			
+&lt;!-- Observational study that examined risk factors for progression of chronic renal insufficiency (CRI) and cardiovascular disease (CVD) among CRI patients.  --&gt;
+&lt;!-- The study enrolled adults aged 21 to 74 years with a broad spectrum of renal disease severity, half of whom were diagnosed with diabetes mellitus. Subjects underwent extensive clinical evaluation at baseline and at annual clinic visits and via telephone at 6 month intervals. Data on quality of life, dietary assessment, physical activity, health behaviors, depression, cognitive function, health care resource utilization, as well as blood and urine specimens were collected. Measures of kidney function and occurrence of new and worsening CVD are the primary outcomes, among others. --&gt;
+
+&lt;!-- Data from the recruitment and follow-up phases through Phase 3. Additionally, the data package includes variables related to APOL1, Echocardiogram, Electrocardiogram, and censored composite and individual outcomes. The data package includes data through 2021. --&gt;
+
+&lt;!-- Retinal images for CRIC participants are not included in the package, but are available upon request. --&gt;
+
+&lt;!-- Objectives --&gt;
+
+&lt;!-- The primary objectives of the CRIC Study were to examine risk factors for progression of CKD and CVD among patients with established CKD.  --&gt;
+&lt;!-- Additionally, the study aimed to develop predictive models to identify high-risk subgroups, informing future treatment trials, and examine the effect of ongoing clinical management on outcomes. --&gt;
+
+&lt;!-- Outcome Measure --&gt;
+
+&lt;!-- The primary renal outcome measure was reduction in estimated GFR. Renal events were defined as the need for renal replacement therapy (ESRD), an estimated halving of GFR, and/or a 25 ml/min per 1.73 m2 decline in GFR from baseline. --&gt;
+
+&lt;!-- Evaluation of subclinical CVD was also used as a study outcome measure. Additionally, clinical cardiovascular outcomes (including acute myocardial infarction, heart failure, arrhythmias, stroke, and peripheral arterial disease [PAD]) were ascertained. --&gt;
+
+&lt;!-- Criteria --&gt;
+
+&lt;!-- The study enrolled participants with CKD aged 21 to 74 years. About one-half of the study participants were diagnosed with diabetes mellitus. Age-related entry criteria for GFR were established to limit the proportion of older individuals recruited with age-related diminutions of GFR, but otherwise nonprogressive CRI. The estimated GFR to define eligibility was based on the simplified MDRD estimating equation. --&gt;
+&lt;!-- Patients diagnosed with polycystic kidney disease or on active immunosuppression for glomerulonephritis were excluded from the study. --&gt;
+&lt;!-- Outcome --&gt;
+
+&lt;!-- Major outcomes include loss of kidney function (estimated GFR, measured GFR in a subset of study participants, occurrence of end-stage renal disease-ESRD) and occurrence of cardiovascular disease (CVD). See http://www.cristudy.org/Chronic-Kidney-Disease/Chronic-Renal-Insufficiency-Cohort-Study/ for additional information. --&gt;
+  
+
+
+
+---
+class: left, top
+# Electrocardiograms from CRIC Study
+
+  - During annual clinic followups, patient Electrocardiograms (ECGs) were collected.
+  
+  - Our motivation is to identify features in the ECG data that are informative for cardiovascular outcomes of interest, such as Atrial Fibrillation (AFIB).
+ 
+  - We will identify features using Sufficient Dimension Reduction methods.
+  
+&lt;img src="images_inbaxfsir/cric_400tp_ecg.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: left, top
+# Sufficient Dimension Reduction
+
+  - Statistical methods for supervised feature extraction
+      - Feature extraction like PCA, but supervised or guided by an outcome variable.
+      
+  - Suppose we have outcome `\(Y \in \R\)` and predictors `\(X \in \R^p\)` where `\(p\)` is large.
+  
+  - Want to construct a smaller `\(d\)`-dimensional summary of `\(X\)`, e.g. `\(S = \beta^\top X\)`, where `\(\beta \in \R^{p \times d}\)` and `\(d &lt; p\)`.
+
+  - Sufficient Dimension Reduction (SDR) are approaches for finding `\(\beta\)` and constructing `\(S\)` so that `\(S\)` retains all relevant information about our outcome `\(Y\)`
+      - Different SDR methods can preserve different kinds of information.
+  
+  - We will use Sliced Inverse Regression (SIR) to preserve the general relationship between `\(X\)` and `\(Y\)`.
+  
+---
+class: left, top
+# Example: 
+
+Consider a response `\(Y\)` and predictor `\(X = (X_1, X_2) \in [0,1]^2\)`. 
+Let `\(Y=X_1^2\)`.
+Then `\(Y= (\beta^\top X)^2\)`, where `\(\beta = (1,0) \in \R^2\)`. 
+- we want to recover `\(span(\beta) = \{ (c,0): c \in \R\}\)`;
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sdr_plot.png" width="50%"&gt;
+]
+
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot1.png" width="55%"&gt;
+]
+
+&lt;!-- &lt;iframe src="images/almost_sir.html" width="90%" height="90%" frameborder="0"&gt;&lt;/iframe&gt; --&gt;
+
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot2.png" width="55%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot3.png" width="55%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Motivating Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot4.png" width="55%"&gt;
+]
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot5.png" width="55%"&gt;
+] 
+
+---
+count: false
+class: left, top &lt;!-- formatting the slide --&gt;
+
+&lt;!-- the title --&gt; 
+
+# Example: 
+## Inverse Regression for SDR - Sliced Inverse Regression (Li, 1991)
+
+`\begin{align*}
+\max_{v_j} v_j^\top \mathrm{var} \{E(X|Y)\} v_j
+\quad \mathrm{s.t.} \quad  
+v_j^\top \mathrm{var} \{X\} v_k = \delta_{jk}
+\end{align*}`
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot5.png" width="55%"&gt;
+] 
+
+---
+class: left, top  
+
+# Functional Sliced Inverse Regression (FSIR)
+
+  - For CRIC application, 
+      - `\(X\)` are infinite-dimensional functions/curves (ECGs); `\(Y\)` continuous outcome (risk score);
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot5.png" width="55%"&gt;
+]
+
+---
+class: left, top  
+
+# Functional Sliced Inverse Regression (FSIR)
+
+- Eigenproblem for FSIR: 
+
+`\begin{align*}
+\max_{\beta_j} \ipl \beta_j,  \mathrm{var} \{E(X|Y)\} \beta_j \ipr 
+\quad \mathrm{s.t.} \quad  
+\ipl \beta_j, \mathrm{var} \{X\} \beta_k \ipr = \delta_{jk}
+\end{align*}`
+
+.center[
+&lt;img align="centered" class="image" src="images_opcg/sir_plot5.png" width="55%"&gt;
+]
+
+
+---
+class: inverse, center, middle
+
+# .bg-text[FSIR via Informed Basis Expansion]
+
+
+---
+class: left, top  
+
+# Functional Sliced Inverse Regression (FSIR)
+
+- Eigenproblem for FSIR: 
+
+`\begin{align*}
+\max_{\beta_j} \ipl \beta_j,  \mathrm{var} \{E(X|Y)\} \beta_j \ipr 
+\quad \mathrm{s.t.} \quad  
+\ipl \beta_j, \mathrm{var} \{X\} \beta_k \ipr = \delta_{jk}
+\end{align*}`
+
+- A major issue when working with functional data: how to represent the infinite-dimensional objects 
+    - The curves `\(X(t)\)`; 
+    - The linear operators `\(\Lambda = \mathrm{var} \{E(X|Y)\}\)` and `\(\Sigma = \mathrm{var} \{X\}\)`;
+
+- Common solution: Use a finite basis expansion
+    - `\(X(t) \approx \sum_{j=1}^K c_j \theta_j(t)\)` for a finite basis `\(\{\theta_1(t), \ldots, \theta_K(t)\}\)`;
+    - e.g. `\(\{\theta_1(t), \ldots, \theta_K(t)\}\)` are the leading `\(K\)` eigenfunctions of `\(\Sigma\)`;
+    - In literature: 
+    FSIR 
+    (Ferré and Yao, 2003),
+    FSAVE 
+    (Lian and Li, 2014), 
+    WIRE 
+    (Li and Song, 2021), 
+    AFD
+    (Lee and Li, 2022)
+
+&lt;!-- FIR  --&gt;
+&lt;!-- (Ferré and Yao, 2005), --&gt;
+
+---
+class: left, top  
+
+# Functional Sliced Inverse Regression 
+
+- `\(\{\theta_1(t), \ldots, \theta_K(t)\}\)` are the leading `\(K\)` eigenfunctions of `\(\Sigma\)` for `\(X(t) \approx \sum_{j=1}^K c_j \theta_j(t)\)`:
+  - How to select `\(K\)`? Common simple solution % of eigen variation explained 
+      - e.g. First 3 eigenfunctions explain 95% variation, so use first 3 as a basis
+      
+&lt;!-- 1642 x 1216 px  --&gt;
+.center[
+&lt;img align="centered" class="image" src="images_inbaxfsir/reorder_plt12.png" width=300px height=300px&gt;
+]
+
+- Drawback: What if `\(Y\)` is related to eigenfunctions left out?
+
+---
+class: left, top  
+
+# Functional Sliced Inverse Regression 
+
+- Eigenproblem for FSIR: 
+
+`\begin{align*}
+\max_{\beta_j} \ipl \beta_j,  \mathrm{var} \{E(X|Y)\} \beta_j \ipr 
+\quad \mathrm{s.t.} \quad  
+\ipl \beta_j, \mathrm{var} \{X\} \beta_k \ipr = \delta_{jk}
+\end{align*}`
+
+- Heuristically, we are effectively re-ordering the eigenfunctions associated with `\(\mathrm{var} \{E(X|Y)\}\)`;
+
+- If `\(\mathrm{var} \{E(X|Y)\}\)` and `\(\mathrm{var} (X)\)` share the same eigenfunctions, this re-ordering is explicit:
+
+.center[
+&lt;img align="centered" class="image" src="images_inbaxfsir/reorder_plt1.png" width="100%" height="100%"&gt;
+]
+
+ 
+---
+class: left, top  
+
+# Informed basis for Functional Sliced Inverse Regression (FSIR)
+
+Idea: Want a basis `\(\{\theta_1(t), \ldots, \theta_K(t)\}\)` informed by `\(Y\)`.
+  - Basis more capable of preserving features relevant to `\(Y\)`;
+  - Proposal: Use eigenfunctions of `\(\Lambda = \mathrm{var} \{E(X|Y)\}\)` as a basis for `\(X(t) \approx \sum_{j=1}^K c_j \theta_j(t)\)`
+      - Basis now has information on `\(Y\)`;
+      - Approximation of `\(X(t)\)` reflects variation in `\(E(X|Y)\)` instead of just `\(X(t)\)`;
+      - Similar to using the singular functions of `\(\mathrm{cov}(X,Y)\)`
+      (Yang, Müller, and Stadtmüller, 2011); 
+
+ 
+    
+ 
+ 
+  
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+ 
+# Implementation 
+
+0. De-mean `\(X_{1:n}(\cT)\)` and construct `\(\tilde X_i(t)\)`, B-spline smoothed `\(X_i(t)\)`, for `\(i=1, \ldots, n\)`.
+
+1. Estimate the conditional mean `\(E(X(t)|Y)\)`:
+  - partition `\(Y\)` into `\(H\)` slices of size `\(c\)` each; equal size for convenience;
+  - For slice `\(h=1, \ldots, H\)`, estimate mean of each slice;
+`\begin{align*}
+  \hat m_{nJK} (t,h) = c^{-1} \sum_{j=1}^{c} \tilde X_{(h,j)}(t)  
+\end{align*}`
+
+2. Estimate the covariance kernel of the conditional mean `\(\Lambda(s,t)\)`: 
+`\begin{align*}
+  \hat \Lambda_{nJK} (s,t)
+  = H^{-1} \sum_{h=1}^H \hat m_{nJK} (s, h) \hat m_{nJK} (t, h),
+\end{align*}`
+
+ 
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+ 
+# Implementation 
+## Estimate Basis functions 
+
+Estimate `\(K\)` smoothed eigenfunctions of `\(\hat \Lambda_{nJK}(s,t)\)`:
+
+`\begin{align*}
+\max_{v_j}   &amp;  \quad 
+J^{-1} \{B(\cT) v_j\}^\top   \hat \Lambda_{nJK}  \{B(\cT) v_j\} \\
+\mathrm{s.t.} &amp;
+\quad
+J^{-1} \{B(\cT) v_j\}^\top \{B(\cT) v_k\}  = \delta_{jk},
+\end{align*}`
+for `\(j,k=1, \ldots, K\)`, `\(B(t)\)` vector of `\(K\)` cubic B-spline functions.
+
+- Let `\(\hat \theta_j (\cT) = B(\cT) \hat v_j\)` for `\(j=1, \ldots, K\)`. 
+    - Use all `\(K\)` or those with eigenvalues above `\(10e-7\)`.
+  
+
+---
+class: left, top &lt;!-- formatting the slide --&gt;
+ 
+# Implementation 
+## Estimate Features
+
+- Basis expand `\(X_i(t)\)` using `\(\hat X_i(t) \approx \sum_{j=1}^K \hat x_{ij} \hat \theta_j(t)\)`.  
+    - Compute `\(\hat \Sigma_{nJK}(s,t)\)` as the covariance function of `\(\hat X_1(t), \ldots, \hat X_n(t)\)`.
+    - Let `\(\hat \Theta(t) = \{\hat \theta_1 (t), \ldots, \hat \theta_K(t)\}\)`.
+    
+- Estimate the `\(j=1, \ldots, d\)` features by solving
+
+`\begin{align*}
+\max_{u_j}  &amp;  \quad 
+J^{-1}\{\hat \Theta(\cT) u_j\}^\top \hat \Lambda_{nJK} \{\hat \Theta(\cT)u_j\} \\
+\mathrm{s.t.}  &amp;
+\quad
+J^{-1} \{ \hat \Theta(\cT) u_j\}^\top 
+\hat \Sigma_{nJK}
+\{ \hat \Theta(\cT) u_k\}  = \delta_{jk}
+.
+\end{align*}`
+
+Let `\(\hat \beta_j (t) =  \hat \Theta(t) \hat u_j\)`, for `\(j=1, \ldots, d\)`, be the estimated features. 
+
+
+---
+class: left, top  
+
+# FSIR via Informed Basis Expansion
+## Summary of Proposal
+
+1. Estimate the covariance kernel function `\(\Lambda(s,t)\)` using a tensor product cubic B-spline, `\(\hat \Lambda_{nJK}(s,t)\)`;
+
+2. Use `\(K\)` eigenfunctions of `\(\hat \Lambda_{nJK}(s,t)\)`, denote `\(\{ \hat \theta_1(t),\ldots,\hat \theta_K(t)\}\)` as finite basis representation for `\(X(t)\)`;
+    -  In practice, for numerical stability, we use the eigenfunctions associated with eigenvalues larger than `\(10e-7\)`;
+    
+3. Solve FSIR problem for `\(d &lt; K\)` features:
+`\begin{align*}
+\max_{\beta_j} \ipl \beta_j,  \hat \Lambda_{nJK} \beta_j \ipr 
+\quad \mathrm{s.t.} \quad  
+\ipl \beta_j, \hat \Sigma_{nJK} \beta_k \ipr = \delta_{jk}
+,
+\end{align*}`
+where `\(\hat \Sigma_{nJK}\)` is the covariance of the finite representation for `\(X\)`;
+
+---
+class: left, top
+# Consistency
+
+Assume conventional assumptions for fixed design B-splines, Sliced Inverse Regression and spectral decay in Functional Linear Model hold (all in Appendix).
+
+Let
+`\begin{align*}
+\gamma = \frac 12 - \frac{1}{4+b} - 
+\max \bigg \{ \frac{1}{r}, \frac{1}{4+b} \bigg \},
+\end{align*}`
+for `\(r&gt;0\)` and `\(b&gt;0\)` relate to the moments and smoothness of `\(X(t)\)`, analogous to conventional assumptions for SIR.
+
+
+If `\(\lim_{J \to \infty} J^{-1} K \log K = 0\)` and `\(c \sim n^{\gamma}\)`, then
+`\begin{align*}
+\sup_{t \in [0,1]} |\hat \beta_{j}(t) - \beta_{j}(t)| = O_p(J^{-1} + n^{-1}) ,
+\end{align*}`
+for `\(j=1\ldots,d\)`. 
+
+
+
+---
+class: center, middle, inverse
+# .bg-text[Simulations]
+
+
+---
+class: left, top
+# Simulations
+## Setup
+
+- 1000 replications of `\(n=2000\)` observations, `\(\{(X_i(t), Y_i):i=1,\ldots,n\}\)`
+
+- The curves `\(X(t)\)` are generated as follows:
+`\begin{align*}
+    X(t) = \sum_{j=1}^{100} c_j \sqrt{2} \sin\{  (j-0.5)\pi t \},
+\end{align*}`
+where i.i.d `\(c_j \sim N(0, \sigma_j)\)` with `\(\sigma_j = 50 j^{-2.5}\)`, for `\(j=1,\ldots, 100\)`.
+
+- `\(X(t)\)` are observed over 100 equally-spaced time points in `\([0,1]\)`. 
+
+- Features: `\(\beta_1 = \sin\{ 2\pi(2t-1) \}\)` and `\(\beta_2 = \cos\{4\pi(2t-1)\}\)` normalized with respect to `\(\Sigma\)`;
+
+---
+class: left, top
+# Simulations
+## Comparison  
+
+Methods compared:
+
+  - Smoothed Functional Inverse Regression (FIR) (Ferré and Yao, 2005)
+    - bandwidth `\(h\)` chosen using CV in a smaller pilot run for each model 
+    
+  - Functional SIR (FSIR) (Lian and Li, 2014)  
+    - `\(K\)` chosen via `\(95\%\)` eigen-variation explained; 
+    
+  &lt;!-- - FSIR-Ridge --&gt;
+  &lt;!--   - replace `\(K\)` truncation of `\(\Sigma\)` in FSIR with ridge penalty;  --&gt;
+  &lt;!--   - ridge penalty set to `\(0.02\)` from CV elbow.  --&gt;
+  
+ 
+---
+class: left, top
+# Simulation Results: Model II - Frobenius Norm to `\(\mathrm{span}(\beta_1, \beta_2)\)`
+
+The outcome is 
+`\begin{align*}
+Y = 5\sin(\pi \ipl X, \beta_2 \ipr) + 1.5\exp\{-.5\ipl X, \beta_1     \ipr\} \times \varepsilon,
+\end{align*}`
+where `\(\varepsilon\)` is a standard normal. 
+Output is scaled by 100 and `\(d\)` is taken as known.
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b96c7f5ff19b13a2c34e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b96c7f5ff19b13a2c34e">{"x":{"filter":"none","vertical":false,"data":[["7","8","9","10","11","12"],[10,10,10,20,20,20],[10,20,30,10,20,30],[" 75.0 (16.5)"," 71.2 (19.8)"," 86.1 (21.2)"," 89.0 (16.6)"," 99.3 (11.3)","114.5 ( 8.7)"],["168.2 (4.4)","168.2 (4.4)","168.2 (4.4)","168.2 (4.4)","168.2 (4.4)","168.2 (4.4)"],["150.0 (9.8)","150.0 (9.9)","150.0 (9.9)","150.0 (9.8)","150.0 (9.9)","150.0 (9.9)"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th># knots<\/th>\n      <th># slices<\/th>\n      <th>FInBaXSIR<\/th>\n      <th>FIR<\/th>\n      <th>FSIR<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"# knots","targets":1},{"name":"# slices","targets":2},{"name":"FInBaXSIR","targets":3},{"name":"FIR","targets":4},{"name":"FSIR","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+
+---
+class: left, top
+# Simulation Results: Model II - Frobenius Norm to `\(\mathrm{span}(\beta_1, \beta_2)\)`
+
+An example of estimated features from simulation of Model II:
+
+&lt;img src="images_inbaxfsir/ft_plt2.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: center, middle, inverse
+# .bg-text[Application to a Chronic Reneal Insufficiency Cohort Study]
+
+
+
+---
+class: left, top
+# Electrocardiograms from CRIC Study
+
+
+Atrial Fibrillation (AFIB) is our outcome of interest.
+  - a form of irregular and/or rapid heart rhythm; 
+  - upper chambers of the heart beat chaotically rather than regularly
+
+
+AFIB event is Binary outcome: 
+  - a limitation of FSIR; 
+  - Only one feature can be recovered;
+  
+We construct a continuous surrogate for AFIB using demographic, health and echocardiogram variables.
+  - A risk score for AFIB to use as a continuous outcome
+
+We apply InBaX-FSIR to Lead I ECGs;
+  - 3/4 of sample curves are used to estimate features
+  - 1/4 of sample curves are used for checking the features.
+
+  
+---
+class: left, top
+# Application of InBaX-FSIR to CRIC Lead I
+
+.pull-left[
+The number of knots `\(K\)` were selected using cross-validation for MSE of curve reconstruction (Silverman, 1996).
+
+&lt;img src="images_inbaxfsir/cric_cvknot_plot.png" width="95%" /&gt;
+]
+
+.pull-right[
+The number of dimensions `\(d\)` were selected using the Ladle plot estimator (Luo and Li, 2016); .
+
+&lt;img src="images_inbaxfsir/cric_ladle_plot.png" width="95%" /&gt;
+] 
+
+
+  
+---
+class: left, top
+# Application of spFPCA to CRIC Lead I
+
+
+ 
+.pull-left[
+
+&lt;img src="images_inbaxfsir/inbaxfsir_plots.png" width="95%" /&gt;
+
+InBaX-FSIR (Left Set): 
+  - Adj R-sq: Full: 0.186; Lead: .154
+  - C-Stat: 0.751
+]
+
+.pull-right[
+
+&lt;img src="images_inbaxfsir/spfpca_plots.png" width="95%" /&gt;
+
+Spline FPCA (Right Set): 
+  - Step-Vmx feats 1, 6, 3 of 8
+  - Adj R-sq: Full: 0.174; Lead: 0.148
+  - C-Stat: 0.755
+]
+
+
+---
+class: left, middle, inverse
+# .bg-text[Summary of Presentation]
+
+1. Proposed using a smoothed, informed basis for FSIR.
+
+2. Application to Lead I ECGs in the CRIC Study
+
+---
+layout: false
+# References
+
+Ferré, L. and A. Yao (2003). "Functional sliced inverse regression
+analysis". In: _Statistics_ 37.6, pp. 475-488.
+
+Ferré, L. and A. Yao (2005). "Smoothed functional inverse regression".
+In: _Statistica Sinica_, pp. 665-683.
+
+Lee, K. and L. Li (2022). "Functional sufficient dimension reduction
+through average Fréchet derivatives". In: _Annals of statistics_ 50.2,
+p. 904.
+
+Li, B. and J. Song (2021). "Dimension Reduction For Functional Data
+Based on Weak Conditional Moments". In: _The Annals of Statistics_.
+
+Li, K. (1991). "Sliced inverse regression for dimension reduction". In:
+_Journal of the American Statistical Association_ 86.414, pp. 316-327.
+
+---
+layout: false
+# References
+
+
+```
+## Warning in `[[.BibEntry`(x, ind): subscript out of bounds
+```
+
+Lian, H. and G. Li (2014). "Series expansion for functional sufficient
+dimension reduction". In: _Journal of Multivariate Analysis_ 124, pp.
+150-165.
+
+Luo, W. and B. Li (2016). "Combining eigenvalues and variation of
+eigenvectors for order determination". In: _Biometrika_ 103.4, pp.
+875-887.
+
+Quach, H. and B. Li (2023). "On forward sufficient dimension reduction
+for categorical and ordinal responses". In: _Electronic Journal of
+Statistics_ 17.1, pp. 980-1006.
+
+Silverman, B. W. (1996). "Smoothed functional principal components
+analysis by choice of norm". In: _The Annals of Statistics_ 24.1, pp.
+1-24.
+
+Yang, W., H. Müller, and U. Stadtmüller (2011). "Functional singular
+component analysis". In: _Journal of the Royal Statistical Society
+Series B: Statistical Methodology_ 73.3, pp. 303-324.
+
+
+---
+class: left, top
+# Consistency
+## Notable Assumptions
+
+SDR: 
+  - SDR: `\(Y \indep X | T(X)\)`, `\(T(X) = ( \ipl X, \beta_1 \ipr, \ldots, \ipl X, \beta_d \ipr)\)`
+  - Linear Conditional Mean: `\(E\{X \mid T(X)\}\)`, is a linear function of `\(T(X)\)`
+  - Finite rank: `\(\var\{E(X|Y)\}\)` has rank `\(d\)`.
+
+Moments and rates: 
+  - `\(E\{\|X \|^{4+b}\} &lt; \infty\)` for `\(b &gt; 0\)`, covariance `\(\Sigma\)` is positive definite with distinct eigenvalues, and `\(\sup E\{|X(t)|^{4}\} &lt; \infty\)`.
+  - Suppose `\(k^{-\alpha_1} \lesssim \xi_k\)` and `\(\ipl \theta_j, \xi_k \ipr \lesssim k^{-\alpha_2}\)` for every `\(j\)`, with `\(\alpha_1 &gt; 1\)` and `\(1+ \frac{1}{2} \alpha_1 &lt; \alpha_2\)`.
+  
+SIR: 
+  - `\(m(y) = E(X|Y=y)\)` has total variation of order `\(r\)`
+  
+`\begin{align*}
+\lim_{n \to \infty} n^{-r} \sup_{\cP(B,n)} \sum_{l=1}^{n-1} \| m(b_{l+1}) - m(b_l) \|_{\infty} = 0
+\end{align*}`
+
+
+---
+class: left, top
+# Consistency
+## Notable Assumptions
+
+SIR: 
+
+  - `\(m(y)\)` is non-expansive on `\((-\infty, -B] \cup [B, \infty)\)`. i.e. there is a non-decreasing function `\(M(y)\)` such that if `\(y_1, y_2 \in (-\infty, -B]\)` or `\(y_1, y_2 \in [B, \infty)\)`, then 
+
+`\begin{align*}
+\| m(y_1) - m(y_2) \|_{\infty} \leq |M(y_1) - M(y_2)|
+\end{align*}`
+
+and `\(\lim_{t \to \infty} M^{4+b}(t) P(Y &gt; t) = 0\)` for `\(b &gt; 0\)`. 
+
+
+B-splines: 
+  - There exist constants `\(M_1, M_2 &gt;0\)` such that
+  
+`\begin{align*}
+M_1 \| g \|^2 \leq \|g\|_J^2 \leq M_2 \|g\|^2
+\end{align*}`
+for `\(g \in \mathbb{G}\)`, where `\(\mathbb{G}\)` is the B-spline space and `\(\| \cdot \|_J\)` is the empirical norm.
+
+  - The covariance kernel functions of `\(X(t)\)` and `\(E(X(t) \mid Y)\)` are twice continuously differentiable.
+
+ 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
