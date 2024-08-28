@@ -6,11 +6,12 @@ layout: default
 <h1 class="page-title">Introduction</h1>
 
 <!-- CV + About Me -->
-I am a Postdoctoral Researcher supervised by Dr. Wensheng Guo and Dr. Wei Yang in the Department of Biostatistcs, Epidemiology and Informations (DBEI) at the Perelman School of Medicine, University of Pennsylvania. My current research focuses on developing informative features and summary statistics for negative patient outcomes in the Chronic Renal Insufficiency Cohort (CRIC) study using patient ECG data. More generally, my interests include statistical modelling, dimension reduction and data visualization.
+I am a Postdoctoral Researcher supervised by Dr. Wensheng Guo and Dr. Wei Yang in the Department of Biostatistcs, Epidemiology and Informations (DBEI) at the Perelman School of Medicine, University of Pennsylvania. 
+My current research focuses on developing informative features and summary statistics for cardiovascular endpoints in the Chronic Renal Insufficiency Cohort (CRIC) study using patient ECG data. 
+Part of my duties as a postdoctoral researcher includes providing biostatistical support for clinical trials and cohort studies. 
 
 I obtained my PhD in Statistics at [Penn State University](https://www.psu.edu/), under the supervision of [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9), where I developed sufficient dimension reduction methods for classification and functional data. 
-
-My work involves developing supverised feature extraction methods for functional and high dimensional data in order to facilitate downstream statistical applications, such as regression, classification, prediction, and data visualization.
+My research involves developing supverised feature extraction methods for functional and high dimensional data in order to facilitate downstream statistical applications, such as regression, classification, prediction, and data visualization.
 
 
 

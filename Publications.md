@@ -32,13 +32,12 @@ Publications & Manuscripts
 Talks + Presentations
 ---
 
-<!-- 
-* Smoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 
-  *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp; 
 
-* Smoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 
-  *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp; 
--->
+* Functional Sliced Inverse Regression via Informed Basis Expansions, 2024 August 4. 
+  *2024 Joint Statistical Meeting* (Portland, Oregon, USA) &nbsp; 
+
+* Functional Sliced Inverse Regression via Informed Basis Expansions, 2024 July 17.
+  *2024 ECOSTA* (Bejing, China) &nbsp; 
 
 * Smoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 
   *2023 Joint Statistical Meeting* (Toronto, Canada) &nbsp; 
