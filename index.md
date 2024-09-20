@@ -18,7 +18,7 @@ My research involves developing supverised feature extraction methods for functi
 Professional Experience
 ---
 * Fall 2022 - Present: Postdoctoral Researcher in Biostatistics, Perelman School of Medicine, University of Pennsylvania
-    * Supervisor(s): [Dr. Wensheng Guo](https://dbe.med.upenn.edu/biostat-research/WenshengGuo) and [Dr. Wei Yang](https://www.med.upenn.edu/apps/faculty/index.php/g275/p5888381)
+    * Supervisor(s): [Dr. Wensheng Guo](https://www.dbei.med.upenn.edu/bio/wensheng-guo-phd) and [Dr. Wei Yang](https://www.med.upenn.edu/apps/faculty/index.php/g275/p5888381)
 <!--   * Duties included: Tagging issues -->
 
 Programming Languages
