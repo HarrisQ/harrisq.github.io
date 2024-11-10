@@ -23,7 +23,7 @@ Programming Languages
 * Proficient:
     * R, TeX  
 * Basic:
-    * Python, C++ (via Rcpp), SAS, MATLAB, HTML, SQL
+    *  SAS, Python, C++ (via Rcpp), MATLAB, HTML, SQL
 
 
 ## Education
