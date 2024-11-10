@@ -21,11 +21,9 @@ Professional Experience
 Programming Languages
 ---
 * Proficient:
-    * R, TeX 
-* Working knowledge: 
-    * Cpp via Rcpp
+    * R, TeX  
 * Basic:
-    * MATLAB, Python, HTML, SQL
+    * Python, C++ (via Rcpp), SAS, MATLAB, HTML, SQL
 
 
 ## Education
@@ -57,13 +55,13 @@ Programming Languages
 * STAT200 - Introduction to Statistics (Fall 2016) 
 
 
-Related Experience
+<!--Related Experience
 ---
 * Winter 2021: Research Assistant
   * Pennsylvania State University
-<!--   * Duties included: Tagging issues -->
+  * Duties included: Tagging issues 
 
 * Fall 2016 - Fall 2020: Graduate Assistant
   * Pennsylvania State University
-<!--   * Duties included: Teaching undergraduate courses as the instructor of record, Assisting instructors as a TA
+  * Duties included: Teaching undergraduate courses as the instructor of record, Assisting instructors as a TA
  -->
