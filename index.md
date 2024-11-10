@@ -24,11 +24,11 @@ Professional Experience
 Programming Languages
 ---
 * Proficient:
-    * R, TeX 
-* Working knowledge: 
-    * Cpp via Rcpp
+    * R, TeX  
 * Basic:
-    * MATLAB, Python, HTML, SQL
+    *  SAS, Python, C++ (via Rcpp), MATLAB, HTML, SQL
+
+
 
 
 ## Education

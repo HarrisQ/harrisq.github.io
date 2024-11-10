@@ -5,6 +5,8 @@ title: About Me
 
 <h1 class="page-title">Introduction</h1>
 
+<!-- This is not the home page -->
+
 <!-- CV + About Me -->
 I am a Ph.D. student working on developing sufficient dimension reduction methods in the [Department of Statistics](https://science.psu.edu/stat) at [Penn State University](https://www.psu.edu/), advised by [Dr. Bing Li](https://science.psu.edu/stat/people/bxl9). 
 I develop supverised feature extraction methods for functional and high dimensional data for downstream statistical applications, such as regression, classification, prediction, and data visualization.
