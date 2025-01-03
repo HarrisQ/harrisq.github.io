@@ -1,0 +1,1038 @@
+[
+  {
+    "objectID": "updates/posts_working/7_blog_subscriptions.html",
+    "href": "updates/posts_working/7_blog_subscriptions.html",
+    "title": "Adding Subscriptions to a Quarto Site",
+    "section": "",
+    "text": "The Quarto Documenation covers how to implement website subscriptions at a surface level. This guide goes into the details on how one could do so, with three different options. That said, this guide can also be helpful for sites that do not use Quarto.\nThe three ways this guide will cover:\nSwitch between the tabs below to view the steps for each option."
+  },
+  {
+    "objectID": "updates/posts_working/7_blog_subscriptions.html#option-3",
+    "href": "updates/posts_working/7_blog_subscriptions.html#option-3",
+    "title": "Adding Subscriptions to a Quarto Site",
+    "section": "Option 3",
+    "text": "Option 3\nPerhaps you know some HTML and JS, or even only JS, and don’t have an alternative address. Instead of creating the frontend with HTML, try using the Quarto HTML Forms extension by Jonathan Graves.\nThis extension allows you to implement HTML forms through Quarto Shortcodes and YAML Options. However, you still will need to handle the backend with JavaScript and perhaps a few other technologies. If you’re interested in implementing it this way, you probably already know how to. If not, there are plenty of great guides online!."
+  },
+  {
+    "objectID": "updates/posts_working/7_blog_subscriptions.html#acknowledgements",
+    "href": "updates/posts_working/7_blog_subscriptions.html#acknowledgements",
+    "title": "Adding Subscriptions to a Quarto Site",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThanks to Isaac Flath for collaborating with me on this guide! You can view his blog, works, and contact here."
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "",
+    "text": "You can find this notebook on Kaggle here.\nThis article was updated on Friday, 11 November 2022.\nThe model that will be created in this notebook can detect whether an area shown in an image is flooded or not. The idea for creating this model has been spurred from the recent floodings in Pakistan.\nSuch models can prove useful in flood relief, helping to detect which areas need immediate focus.\nThe dataset used to train this model is Louisiana flood 2016, uploaded by Kaggle user Rahul T P, which you can view here.\nThe fastai library, a high level PyTorch library, has been used.\nOne of the points of this notebook is to showcase how simple it is to create powerful models. That said, this notebook is not a tutorial or guide.\nfrom fastai.vision.all import *"
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#sort-data.",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#sort-data.",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "Sort data.",
+    "text": "Sort data.\nThe data in the dataset needs to be organized into train and valid folders. Each will contain the same subfolders, 0 and 1, which will be used to label the data. A label of 0 indicates the area shown in the image is not flooded, while a label of 1 indicates the area shown in the image is flooded.\nThe images in the dataset itself has been organized as follows:\n    If no underscore is in the file name, the image shows the area before or after the flood.\n    If an underscore is in the file name, the image shows the area during the flood:\n\nIf a zero follows the underscore, the area was not flooded.\nIf a one follows the underscore, the area was flooded.\n\nCreating the necessary paths.\n\nworking_path = Path.cwd(); print(working_path)\nfolders = ('train', 'valid')\nlabels = ('0', '1')\n\n/kaggle/working\n\n\n\ninput_path = Path('/kaggle/input')\ntrain_image_paths = sorted(input_path.rglob('train/*.png'))\nvalid_image_paths = sorted(input_path.rglob('test/*.png'))\nlen(train_image_paths), len(valid_image_paths)\n\n(270, 52)\n\n\nCreating the necessary directories.\n\nfor folder in folders:\n    if not (working_path/folder).exists():\n        (working_path/folder).mkdir()\n    for label in labels:\n        if not (working_path/folder/label).exists():\n            (working_path/folder/label).mkdir()\n\nMove images to new directories.\n\ntry:\n    for image_path in train_image_paths:\n        if '_1' in image_path.stem:\n            with (working_path/'train'/'1'/image_path.name).open(mode='xb') as f:\n                f.write(image_path.read_bytes())\n        else:\n            with (working_path/'train'/'0'/image_path.name).open(mode='xb') as f:\n                f.write(image_path.read_bytes())\nexcept FileExistsError:\n    print(\"Training images have already been moved.\")\nelse:\n    print(\"Training images moved.\")\n\nTraining images moved.\n\n\n\ntry:\n    for image_path in valid_image_paths:\n        if '_1' in image_path.stem:\n            with (working_path/'valid'/'1'/image_path.name).open(mode='xb') as f:\n                f.write(image_path.read_bytes())\n        else:\n            with (working_path/'valid'/'0'/image_path.name).open(mode='xb') as f:\n                f.write(image_path.read_bytes())\nexcept FileExistsError:\n    print(\"Testing images have already been moved.\")\nelse:\n    print(\"Testing images moved.\")\n\nTesting images moved.\n\n\nCheck that images have been moved.\n\ntraining_images = get_image_files(working_path/'train'); print(len(training_images))\n\n270\n\n\n\nImage.open(training_images[0])\n\n\n\n\n\n\n\n\n\nvalidation_images = get_image_files(working_path/'valid'); print(len(validation_images))\n\n52\n\n\n\nImage.open(validation_images[-1])"
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#load-data",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#load-data",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "Load data",
+    "text": "Load data\nCreate the training and validation dataloaders through fastai’s quick and easy DataBlock class.\n\ndataloaders = DataBlock(\n    blocks = (ImageBlock, CategoryBlock),\n    get_items = get_image_files,\n    splitter = GrandparentSplitter(),\n    get_y = parent_label,\n    item_tfms = [Resize(192, method='squish')]\n).dataloaders(working_path, bs=32)\n\nCheck that data has been loaded correctly.\n\ndataloaders.show_batch(max_n=8)"
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#instantiate-and-train-model",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#instantiate-and-train-model",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "Instantiate and Train Model",
+    "text": "Instantiate and Train Model\n\nlearner = vision_learner(dataloaders, resnet18, metrics=error_rate)\nlearner.fine_tune(9)\n\nDownloading: \"https://download.pytorch.org/models/resnet18-f37072fd.pth\" to /root/.cache/torch/hub/checkpoints/resnet18-f37072fd.pth\n\n\n\n\n\n\n\n\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\nerror_rate\ntime\n\n\n\n\n0\n0.919323\n1.118264\n0.365385\n00:09\n\n\n\n\n\n\n\n\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\nerror_rate\ntime\n\n\n\n\n0\n0.490039\n0.628054\n0.250000\n00:02\n\n\n1\n0.367996\n0.411558\n0.192308\n00:02\n\n\n2\n0.266664\n0.472146\n0.192308\n00:02\n\n\n3\n0.203069\n0.256436\n0.115385\n00:03\n\n\n4\n0.158453\n0.127106\n0.076923\n00:03\n\n\n5\n0.124499\n0.095927\n0.038462\n00:02\n\n\n6\n0.098409\n0.089279\n0.038462\n00:03\n\n\n7\n0.079600\n0.093277\n0.038462\n00:02\n\n\n8\n0.064886\n0.090372\n0.038462\n00:02\n\n\n\n\n\nNice! A relatively low error rate for no tweaking."
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#visualizing-mistakes",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#visualizing-mistakes",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "Visualizing Mistakes",
+    "text": "Visualizing Mistakes\nWe have to see how the model is getting confuzzled.\n\ninterp = ClassificationInterpretation.from_learner(learner)\ninterp.plot_confusion_matrix()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOnly a couple of mistakes. Let’s see what they are.\n\ninterp.plot_top_losses(5, nrows=1)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNothing has been mislabeled, but the first one is especially tricky to determine, even for human eyes."
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#model-inference",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#model-inference",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "Model Inference",
+    "text": "Model Inference\nLet’s test the model on some images of the recent flooding in Pakistan.\n\ndef infer_image(image_path):\n    display(Image.open(image_path))\n    label, _, probabilities = learner.predict(PILImage(PILImage.create(image_path)))\n    if label == '0':\n        print(f\"The area shown in the image is not flooded with probability {probabilities[0]*100:.2f}%.\")\n    elif label == '1':\n        print(f\"The area shown in the image is flooded with probability {probabilities[1]*100:.2f}%.\")\n    else:\n        print(\"Unknown label assigned to image.\")\n\n\ninfer_image(input_path/'floodclassifiertestset'/'1'/'1.jpeg')\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe area shown in the image is not flooded with probability 65.65%.\n\n\nNot bad!\nLet’s try it on another image.\n\ninfer_image(input_path/'floodclassifiertestset'/'1'/'2.jpg')\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe area shown in the image is flooded with probability 99.90%.\n\n\nThe label for this image is kind of meaningless. This is an image of a vast area of land, so certain areas could be flooded, while others are not. That said, it could be used to determine whether there is flooding in the image.\n\ninfer_image(input_path/'floodclassifiertestset'/'1'/'3.jpg')\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe area shown in the image is flooded with probability 99.99%.\n\n\nThe model performed really well in this case: the input image is shown at a different angle. The images in the training set only show areas from a top-down view.\n\ninfer_image(input_path/'floodclassifiertestset'/'1'/'4.jpg')\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe area shown in the image is not flooded with probability 64.56%.\n\n\nOver here, the limitations of the current state of the model can be seen. The model is not performing well on images where the view is more parallel to the ground, since the images in the training set are all top-down.\nLet’s do two more images.\n\ninfer_image(input_path/'floodclassifiertestset'/'1'/'5.jpg')\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe area shown in the image is flooded with probability 99.94%.\n\n\n\ninfer_image(input_path/'floodclassifiertestset'/'1'/'6.jpg')\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe area shown in the image is flooded with probability 100.00%.\n\n\nThe model is working well with images of different sizes too, and has given this image a very high, correct confidence."
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#improving-the-model.",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#improving-the-model.",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "Improving the model.",
+    "text": "Improving the model.\nLet’s see if we can get the model’s performance to improve on the following image through augmenting the training set.\n\nImage.open(input_path/'floodclassifiertestset'/'1'/'4.jpg')\n\n\n\n\n\n\n\n\n\naugmented_dataloaders = DataBlock(\n    blocks = (ImageBlock, CategoryBlock),\n    get_items = get_image_files,\n    splitter = GrandparentSplitter(),\n    get_y = parent_label,\n    item_tfms = RandomResizedCrop(192, min_scale=0.5),\n    batch_tfms=aug_transforms()\n).dataloaders(working_path, bs=32)\n\n\naugmented_dataloaders.show_batch(max_n=8)\n\n\n\n\n\n\n\n\n\naugmented_learner = vision_learner(augmented_dataloaders, resnet18, metrics=error_rate)\naugmented_learner.fine_tune(9)\n\n\n\n\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\nerror_rate\ntime\n\n\n\n\n0\n1.161182\n0.835870\n0.365385\n00:02\n\n\n\n\n\n\n\n\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\nerror_rate\ntime\n\n\n\n\n0\n0.442552\n0.686252\n0.288462\n00:03\n\n\n1\n0.417739\n0.411907\n0.153846\n00:02\n\n\n2\n0.346400\n0.316388\n0.057692\n00:03\n\n\n3\n0.306782\n0.213407\n0.076923\n00:02\n\n\n4\n0.251947\n0.199586\n0.076923\n00:02\n\n\n5\n0.209951\n0.141818\n0.057692\n00:02\n\n\n6\n0.188433\n0.116713\n0.057692\n00:03\n\n\n7\n0.169689\n0.125078\n0.057692\n00:02\n\n\n8\n0.151843\n0.131188\n0.057692\n00:02\n\n\n\n\n\nLet’s try the new model out.\n\ndisplay(Image.open(input_path/'floodclassifiertestset'/'1'/'4.jpg'))\nlabel, _, probabilities = augmented_learner.predict(PILImage(PILImage.create(input_path/'floodclassifiertestset'/'1'/'4.jpg')))\nif label == '0':\n    print(f\"The area shown in the image is not flooded with probability {probabilities[0]*100:.2f}%.\")\nelif label == '1':\n    print(f\"The area shown in the image is flooded with probability {probabilities[1]*100:.2f}%.\")\nelse:\n    print(\"Unknown label assigned to image.\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe area shown in the image is flooded with probability 99.91%.\n\n\nDang, impressive! The correct label and with excellent confidence!\nBefore we get too excited though, we should check the performance on the model with the previous images.\n\ntest_dataloader = learner.dls.test_dl([image_path for image_path in sorted((input_path/'floodclassifiertestset').rglob('*.*'))])\n\n\nprobabilities, _, labels = augmented_learner.get_preds(dl=test_dataloader, with_decoded=True)\n\n\n\n\n\n\n\n\n\nprint(\"Images are numbered horizontally.\")\ntest_dataloader.show_batch()\nfor probability, label, image_number in zip(probabilities, labels, range(1, 7)):\n    if label == 1:\n        print(f\"Image {image_number} is flooded with a probability of {probability[1]*100:.2f}%.\")\n    elif label == 0:\n        print(f\"Image {image_number} is not flooded with a probability of {probability[0]*100:.2f}%.\")\n    else:\n        print(f\"Image {image_number} has been assigned an unknown label.\")\n\nImages are numbered horizontally.\nImage 1 is flooded with a probability of 95.94%.\nImage 2 is flooded with a probability of 99.92%.\nImage 3 is flooded with a probability of 91.34%.\nImage 4 is flooded with a probability of 99.71%.\nImage 5 is flooded with a probability of 100.00%.\nImage 6 is flooded with a probability of 100.00%.\n\n\n\n\n\n\n\n\n\nDrastically improved probabilities! A little augmentation can go a long way."
+  },
+  {
+    "objectID": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#takeaways",
+    "href": "updates/posts_working/5_detecting_floods_for_disaster_relief.html#takeaways",
+    "title": "Detecting Floods for Disaster Relief",
+    "section": "Takeaways",
+    "text": "Takeaways\nThis model was trained on only 270 images and minimal code. Accessbility and abstraction to the field of machine learning has come a long, long way. Given the right data and the right pretrained model, a powerful model can be produced in less than an hour, if not half.\nThis is important: in disasters such as floods, the time taken to produce the logistics required for relief can be drastically reduced. It is also important because the barrier of entry to this field is dramatically lowered; more people can create powerful models, in turn producing better solutions.\nHowever, there could be some improvements and additions made to the model:\n\nInclude a third class to the model. Images that are not flooded, but show signs of having been flooded would be assigned this class. The dataset used for this model includes such images.\nTrain the model on images that include a variety of geographic locations and dwellings. The current dataset only contains images taken in a lush, green area with plenty of trees; infrastructure looks a certain way; the color of the floodwater is also dependent on the surroundings. All this makes the model good a prediciting whether an image is flooded for images with certain features.\n\nIf you have any comments, questions, suggestions, feedback, criticisms, or corrections, please do post them down in the comment section below!"
+  },
+  {
+    "objectID": "updates/posts_working/3_the_confusion_matrix.html",
+    "href": "updates/posts_working/3_the_confusion_matrix.html",
+    "title": "A No Nonsense Guide to Reading a Confusion Matrix",
+    "section": "",
+    "text": "This article was updated on Thursday, 10 November 2022.\nConfusion matrices help model designers view what mistakes a model has made.\nIn this post, I’ll be telling you how to easily read such matrices.\nJump to Section 2 for an ultra concise rundown.\nReady? Here we go."
+  },
+  {
+    "objectID": "updates/posts_working/3_the_confusion_matrix.html#case-1-introduction",
+    "href": "updates/posts_working/3_the_confusion_matrix.html#case-1-introduction",
+    "title": "A No Nonsense Guide to Reading a Confusion Matrix",
+    "section": "Case 1: Introduction",
+    "text": "Case 1: Introduction\n\nIgnore the “Actual” and “Predicted” labels for now.\nLet’s compare grizzly bears to black bears.\nAll comparisons begin at the bottom, with the columns.\nFirst, highlight the grizzly bear column.\n\nNext, highlight the black bear row.\n\nNow find the common entry in the highlighted column and row.\n\nThis common entry is our required information.\nAll entries in the diagonal going from the top left to the bottom right (blue) are correct classifications. All other entries are incorrect classifications.\nOur common entry does not lie in the main diagonal. Therefore, we are looking at incorrect classifications.\nWe have compared grizzly bears to black bears. Therefore, from this deduction, three grizzly bears have been incorrectly classified as black bears.\n\n\n\n\n\n\nNote\n\n\n\nThere is a difference between comparing grizzly bears to black bears and black bears to grizzly bears.\nComparing grizzly bears to black bears means, “How many grizzly bears were misclassified as black bears?”\nComparing black bears to grizzly bears means, “How many black bears were misclassified as grizzly bears?”"
+  },
+  {
+    "objectID": "updates/posts_working/3_the_confusion_matrix.html#sec-case2",
+    "href": "updates/posts_working/3_the_confusion_matrix.html#sec-case2",
+    "title": "A No Nonsense Guide to Reading a Confusion Matrix",
+    "section": "Case 2: Ultra Concise",
+    "text": "Case 2: Ultra Concise\nLet’s compare black bears to grizzly bears.\nHighlight the black bear column.\n\nHighlight the grizzly bear row.\n\nHighlight the common entry.\n\nZero black bears were misclassified as grizzly bears."
+  },
+  {
+    "objectID": "updates/posts_working/3_the_confusion_matrix.html#case-3-correct-classifications",
+    "href": "updates/posts_working/3_the_confusion_matrix.html#case-3-correct-classifications",
+    "title": "A No Nonsense Guide to Reading a Confusion Matrix",
+    "section": "Case 3: Correct Classifications",
+    "text": "Case 3: Correct Classifications\nLet’s see how many teddy bears were correctly classified. We are essentially comparing teddy bears to teddy bears.\nHighlight the teddy bear column.\n\nHighlight the teddy bear row.\n\nHighlight the common entry.\n\nFifty three teddy bears were correctly classified as teddy bears."
+  },
+  {
+    "objectID": "updates/posts_working/3_the_confusion_matrix.html#exercise-do-it-yourself",
+    "href": "updates/posts_working/3_the_confusion_matrix.html#exercise-do-it-yourself",
+    "title": "A No Nonsense Guide to Reading a Confusion Matrix",
+    "section": "Exercise: Do It Yourself",
+    "text": "Exercise: Do It Yourself\nBelow is a confusion matrix of a car classifier that classifies cars into their brand.\n\nYou learn by doing!\n\nHow many Lamborghinis were correctly classified?\nHow many Jaguars were incorrectly classified?\nHow many Chevrolets were misclassified as Fords?\nHow many Fords were misclassified as Chevrolets?\nWhich two car brands did the model have the most trouble differentiating between?\n\nIf you have any comments, questions, suggestions, feedback, criticisms, or corrections, please do post them down in the comment section below!"
+  },
+  {
+    "objectID": "updates/posts_working/1_Revamping website using Quarto.html",
+    "href": "updates/posts_working/1_Revamping website using Quarto.html",
+    "title": "Revamping Website Using Quarto",
+    "section": "",
+    "text": "How you approach making models is crucial. The way AI methods are used in today’s landscape is very different. AI methods are created to solve small, atomic problems. And we’ve got most of the methods to handle these small tasks hammered down. Therefore, applied AI is not about creating models; it’s only a small part of it. It’s 80% problem solving and 20% implementing (I would not be surprised if it actually followed the 80-20 rule1).\n1 The 80/20 Rule, also known as the Pareto PrincipleThink of AI methods as a tool; think of it as a pencil. You can use pencils to draw, take notes, poke holes, and much more. There are also dozens of pencils out there. But what point is there in using any of those pencils if you don’t even know how to properly use a pencil in the first place? The art of creating pencils has already been perfected too.\nOne highly successful approach is the Drivetrain Approach, created by Jeremy Howard — who’s widely known for his fastai course and library —, Margit Zwemer, and Mike Loukides.\nThe goal of the Drivetrain Approach is to not just use data to generate more data — data that is in the form of predictions. But rather to use data to also generate actionable outcomes.\nThe official blogpost goes into much more depth here.\nIn this post, I’ll be providing a short overview of my understanding of this approach by applying it to the Elements of AI course’s final project (this online course was created by the University of Helsinki and Reaktor)."
+  },
+  {
+    "objectID": "updates/posts_working/1_Revamping website using Quarto.html#introduction",
+    "href": "updates/posts_working/1_Revamping website using Quarto.html#introduction",
+    "title": "Revamping Website Using Quarto",
+    "section": "",
+    "text": "How you approach making models is crucial. The way AI methods are used in today’s landscape is very different. AI methods are created to solve small, atomic problems. And we’ve got most of the methods to handle these small tasks hammered down. Therefore, applied AI is not about creating models; it’s only a small part of it. It’s 80% problem solving and 20% implementing (I would not be surprised if it actually followed the 80-20 rule1).\n1 The 80/20 Rule, also known as the Pareto PrincipleThink of AI methods as a tool; think of it as a pencil. You can use pencils to draw, take notes, poke holes, and much more. There are also dozens of pencils out there. But what point is there in using any of those pencils if you don’t even know how to properly use a pencil in the first place? The art of creating pencils has already been perfected too.\nOne highly successful approach is the Drivetrain Approach, created by Jeremy Howard — who’s widely known for his fastai course and library —, Margit Zwemer, and Mike Loukides.\nThe goal of the Drivetrain Approach is to not just use data to generate more data — data that is in the form of predictions. But rather to use data to also generate actionable outcomes.\nThe official blogpost goes into much more depth here.\nIn this post, I’ll be providing a short overview of my understanding of this approach by applying it to the Elements of AI course’s final project (this online course was created by the University of Helsinki and Reaktor)."
+  },
+  {
+    "objectID": "updates/posts_working/1_Revamping website using Quarto.html#overview-of-the-drivetrain-approach",
+    "href": "updates/posts_working/1_Revamping website using Quarto.html#overview-of-the-drivetrain-approach",
+    "title": "Revamping Website Using Quarto",
+    "section": "Overview of the Drivetrain Approach",
+    "text": "Overview of the Drivetrain Approach\nThere are four main steps to this approach:\n\nDefine the objective\nConsider your possible actions\nConsider your data\nCreate the models\n\n\n\n\nImage Source\n\n\n\nDefine the objective\nWrite out what you are really trying to achieve. What is your goal? Writing it out puts it in a tangible manner.\n\n\nConsider your actions\nThink about what actions you can take to achieve your objective.\nAlso think about what would happen if you did those actions.\nWhat would happen if I did x? Would y really be a good idea? What if z worked out too well? Will x lead to y? What would happen if x turned out poorly?\n\n\nConsider your data\nThink about the data you already have and how it could be used.\nThink about any further data that is needed and how it could be collected.\n\n\nCreate the models\nCreate models. But create models that produce actions. Actions that produce the best results for your objective."
+  },
+  {
+    "objectID": "updates/posts_working/1_Revamping website using Quarto.html#endangered-language-chatbot",
+    "href": "updates/posts_working/1_Revamping website using Quarto.html#endangered-language-chatbot",
+    "title": "Revamping Website Using Quarto",
+    "section": "Endangered Language Chatbot",
+    "text": "Endangered Language Chatbot\nThe final project of the Elements of AI course asked me to come up with my own AI method that would solve a problem, and how it would do so.\nThe problem I tackled was the endangerment of languages. The solution I came up with was to create a chatbot that could converse in these endangered languages. I created an overview of how this could be done.\nThe overview can be read here.\nLet’s tackle this problem through the Drivetrain Approach.\n\nDefine the objective\nThe objective is to preserve languages that are in danger of going extinct. Through preserving languages, histories and cultures can be preserved.\n\n\nConsider your actions\nOne way this could be done is to create a chatbot that could converse in endangered languages. However, this would be a monumental task considering the amount of data needed to achieve this.\nAnother action that could be taken is to create an information retrieval (IR) system of sorts. A corpus of written text of the language could be provided, from which insights about the language’s history, culture, and way of conversing could be gained. In turn the language is preserved.\nThe latter action may be easier to achieve.\n\n\nConsider your data\nThe obvious source of data would be a corpora of text.\nHowever, a major problem arises for those languages which are only spoken. Audio recordings of conversations would have to be made which would take a lot of time and effort. This would be especially difficult for those languages where very few speakers remain.\nEven if a language does have written text, gathering enough text for the language can also be a problem: the language may not have much written text. This may especially be the case for endangered languages. Again, one solution is to manually create texts — using an NLP method to create these texts is not viable.\nIn short, for some languages, there may be no choice other than to manually create the data that would be fed into the system — this manual creation also has the chance to skew the performance of the model.\n\n\n\nKuş dili, a whistled language spoken in Turkey. How would such a language be preserved? Image Source\n\n\n\n\nCreate the model\nEither a chatbot needs to be created that speaks as accurately as a native speaker, or an IR system needs to be created that gives meaningful, correct insights into a language and its associated culture.\nThis step may either be easy or hard, depending on the language. Most NLP or IR systems have been built on a few, select languages. Perhaps this step may be easy for those languages that are similar to languages on which NLP or IR systems have already been built on. It will most likely be harder for those languages which are not."
+  },
+  {
+    "objectID": "updates/posts_working/1_Revamping website using Quarto.html#conclusion",
+    "href": "updates/posts_working/1_Revamping website using Quarto.html#conclusion",
+    "title": "Revamping Website Using Quarto",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis concludes my understanding of the Drivetrain Approach, through an example.\nApproaches are crucial: you can have state-of-the-art tools, but they are useless if not correctly applied. The approach you take can either make it or break it. Putting it into a concrete, organized, tangible manner goes a long way.\nIf you have any comments, questions, suggestions, feedback, criticisms, or corrections, please do post them down in the comment section below!"
+  },
+  {
+    "objectID": "updates/index.html",
+    "href": "updates/index.html",
+    "title": "Updates",
+    "section": "",
+    "text": "Here you can find general updates about my work and research.\n\n\n\n\n\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "testing_page.html",
+    "href": "testing_page.html",
+    "title": "Testing Page",
+    "section": "",
+    "text": "Trying to change Quarto Version.\n\n\nForBlog\n\n\n\n\n\nNo matching items\n\n\n\n\nPlayground\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "software/pages/linear_sufficient_dimension_reduction.html",
+    "href": "software/pages/linear_sufficient_dimension_reduction.html",
+    "title": "Linear Sufficient Dimension Reduction",
+    "section": "",
+    "text": "The package linearsdr contains some implementations for simple sufficient dimension reduction methods, including Sliced Inverse Regression (SIR), Sliced Average Variance Estimator (SAVE), Directional Regression (DR) and Outer Product of Gradients (OPG). The package also contains implementation of the Outer Product of Canonical Gradients (OPCG) and Minimum Average Deviance Estimation (MADE) from the paper\n\nQuach, H. and Li, B. “On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses”. Electron. J. Statist. 17 (1) 980 - 1006, 2023. https://doi.org/10.1214/23-EJS2122. Link.\n\nThe package, along with some examples, can be found here\n\nContains R Code for the Outer Prodcut of Canonical Gradients (OPCG) and Minimum Average Deviance Estimation (MADE) methods developed in\nContains R Code for other linear SDR methods: OPG, MAVE, SIR, SAVE, and DR\nProvides a Tikhonov regularization option for SIR, SAVE and DR to naively handle rank-deficient covariance matrices.\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "research/index.html",
+    "href": "research/index.html",
+    "title": "Research",
+    "section": "",
+    "text": "Here you can find my ongoing and past research, projects, and presentations.\n\n\n\n\n\nResearchPresentations\n\n\n\nMethodology\n\nQuach, H., Yang, W, and Guo, W. “Adaptive Knot Selection for Refined Functional Sliced Inverse Regression”. 2024. Ongoing\nQuach, H., Yang, W, and Guo, W. “Refining Functional Sliced Inverse Regression Using Informed Basis Expansions”. 2024. Manuscript.\nQuach, H. and Li, B. “On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses”. Electron. J. Statist. 17 (1) 980 - 1006, 2023. https://doi.org/10.1214/23-EJS2122. Link. supplement\n\n\n\n\n\n\n\n\nFunctional Sliced Inverse Regression via Informed Basis Expansions, 2024 August 4. 2024 Joint Statistical Meeting (Portland, Oregon, USA)  \nFunctional Sliced Inverse Regression via Informed Basis Expansions, 2024 July 17. 2024 ECOSTA (Bejing, China)  \nSmoothed Functional Sliced Inverse Regression with Applications to the CRIC Study, 2023 August 8. 2023 Joint Statistical Meeting (Toronto, Canada)  \nOn Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2022 August 7. 2022 Joint Statistical Meeting (Washington, D.C.)  \nOn Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2022 April 4. Fred Hutchison Post-Doc Seminar (Remote)  \nForward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2021 June 10. Statistical Society of Canada, Annual Conference (Remote)  \nGeneralized Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses, 2021 March 5. Stochastic Modelling And Computing Seminar (Penn State)  \nAccurate Confidence Intervals for Clustered Data and Small Samples, 2017. The Annual Statistical Society of Canada Conference. Meeting (Winnipeg, Canada). (Talk; Masters Work) (Was not able to attend)\nAn Investigation of Composite Likelihood and Indirect Inference, 2016 The 4th Annual Statistical Society of Canada Student Conference. Meeting (St. Catherines, Canada). (Poster; Masters Work)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n    \n      \n      \n    \n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "feedback.html",
+    "href": "feedback.html",
+    "title": "Site Feedback",
+    "section": "",
+    "text": "Loading…"
+  },
+  {
+    "objectID": "extended_posts/pages_working/Outer Product of Canonical Gradients.html",
+    "href": "extended_posts/pages_working/Outer Product of Canonical Gradients.html",
+    "title": "Outer Product of Canonical Gradients",
+    "section": "",
+    "text": "$$\n\n  \n\n\\DeclareMathOperator*{\\argmin}{\\arg\\!\\min}\n\n\\DeclareMathOperator*{\\argmax}{\\arg\\!\\max}\n\n\n\n\\newcommand\\independenT{\\protect\\mathpalette{\\protect\\independenT}{\\perp}}\n\n\\def\\independenT#1{\\mathrel{\\rlap{#1}\\mkern2mu{#1}}}\n\n\n\n\\newcommand{\\rv}[2]{ #1_{1},...,#1_{#2} }\n\n\\newcommand{\\conv}[1]{ \\overset{#1}{\\longrightarrow} }\n\n\\newcommand{\\dnconv}[1]{ \\overset{#1}{\\centernot\\longrightarrow} }\n\n\\newcommand\\smtop{\\mkern-2mu\\raise.25ex\\hbox{$\\scriptscriptstyle\\top$}\\mkern-3mu}\n\n\n\n\n\n\n\n\\def\\ds{\\displaystyle}\n\n\\def\\bs{\\boldsymbol}\n\n\\def\\bsl{\\backslash}\n\n\\def\\ipl{\\langle}\n\n\\def\\ipr{\\rangle} \n\n\n\n\\def\\st{\\text{\\indent s.t \\indent }}\n\n\\def\\bif{\\text{\\indent if \\indent } }\n\n\\def\\a{\\alpha}\n\n\\def\\b{\\beta}\n\n\\def\\g{\\gamma}\n\n\\def\\th{\\theta}\n\n\\def\\bth{\\boldsymbol \\theta}\n\n\\def\\la{\\lambda}\n\n\\def\\La{\\Lambda}\n\n\\def\\k{\\kappa}\n\n\\def\\t{\\tau}\n\n\\def\\r{\\rho}\n\n\\def\\s{\\sigma}\n\n\\def\\ssq{\\sigma^2}\n\n\\def\\d{\\delta}\n\n\\def\\w{\\omega}\n\n\\def\\om{\\Omega}\n\n\\def\\vep{\\varepsilon}\n\n\\def\\vphi{\\varphi}\n\n\\def\\cL{\\mathcal{L}}\n\n\n\n\\def\\indi{\\mathbbm{1}}\n\n\\def\\I{\\mathcal{I}}\n\n\\def\\J{\\mathcal{J}}\n\n\\def\\es{\\emptyset}\n\n\n\n\\def\\var{\\mathrm{var}}\n\n\\def\\Var{\\mathrm{var}}\n\n\\def\\cov{\\mathrm{cov}}\n\n\\def\\sd{\\mathrm{sd}}\n\n\\def\\y{\\textbf{\\textit{y}}}\n\n\n\n\\def\\R{\\mathbb{R}}\n\n\\def\\Q{\\mathbb{Q}}\n\n\\def\\Qc{\\mathbb{Q}^{c}}\n\n\\def\\bE{\\mathbb{E}}\n\n\\def\\bP{\\mathbb{P}}\n\n\\def\\Z{\\mathbb{Z}}\n\n\\def\\C{\\mathbb{C}}\n\n\\def\\N{\\mathbb{N}}\n\n\\def\\H{\\mathbb{H}}\n\n\\def\\Sbb{\\mathbb{S}}\n\n\\def\\sA{\\mathscr{A}}  \n\n\\def\\cA{\\mathcal{A}}\n\n\\def\\sD{\\mathscr{D}} \n\n\\def\\cD{\\mathcal{D}} \n\n\\def\\cG{\\mathcal{G}}\n\n\\def\\G{\\mathscr{G}}\n\n\\def\\F{\\mathscr{F}}\n\n \n\n \n\n\\def\\sR{\\mathscr{R}}\n\n\\def\\cB{\\mathcal{B}}\n\n\\def\\sB{\\mathscr{B}} \n\n\\def\\sC{\\mathscr{C}}\n\n\\def\\cC{\\mathcal{C}}\n\n\\def\\cE{\\mathcal{E}}\n\n\\def\\sE{\\mathscr{E}}\n\n\\def\\fF{\\mathfrak{F}}\n\n\\def\\sF{\\mathscr{F}}\n\n\\def\\fG{\\mathfrak{G}}\n\n\\def\\bG{\\mathbbm{G}}\n\n\\def\\sG{\\mathscr{G}}\n\n\\def\\sH{\\mathscr{H}}\n\n\\def\\cH{\\mathcal{H}}\n\n\\def\\sJ{\\mathscr{J}}\n\n\\def\\cJ{\\mathcal{J}}\n\n\\def\\I{\\mathcal{I}}\n\n\\def\\J{\\mathcal{J}}\n\n\\def\\sT{\\mathscr{T}}\n\n\\def\\cT{\\mathcal{T}}\n\n\\def\\fM{\\mathfrak{M}}\n\n\\def\\cM{\\mathcal{M}}\n\n\\def\\sM{\\mathscr{M}}\n\n\\def\\cN{\\mathcal{N}}\n\n\\def\\sN{\\mathscr{N}}\n\n\\def\\sP{\\mathscr{P}}\n\n\\def\\cP{\\mathcal{P}}\n\n\\def\\cW{\\mathcal{W}}\n\n\\def\\X{\\mathcal{X}}\n\n\\def\\Y{\\mathcal{Y}}\n\n\\def\\cP{\\mathcal{P}}\n\n\\def\\sP{\\mathscr{P}}\n\n\\def\\SS{\\mathscr{S}}\n\n\n\n\n\n\\def\\ker{\\mathrm{ker}}\n\n\\def\\ran{\\mathrm{ran}}\n\n\\def\\vecv{\\mathrm{vec}}\n\n\\def\\wec{\\mathrm{wec}}\n\n\\def\\diag{\\mathrm{diag}}\n\n\\def\\sspan{\\mathrm{span}} % I think this clashes with something; will not work\n\n\\def\\tr{\\mathrm{tr}}\n\n\\def\\rank{\\mathrm{rank}}\n\n\\def\\pr{\\mathrm{pr}}\n\n\\def\\dist{\\mathrm{dist}}\n\n\\def\\BIC{\\mathrm{BIC}}\n\n\\def\\KC{\\mathrm{KC}}\n\n\n\n\\def\\inprob{\\overset{p}{\\longrightarrow}}\n\n\\def\\indist{\\overset{d}{\\longrightarrow}}\n\n\\def\\eqdist{\\overset{d}{=}}\n\n\\def\\as{\\overset{a.s}{\\longrightarrow}}\n\n\\def\\tends{\\longrightarrow}\n\n\\def\\ind{\\;\\;\\;\\;\\;}\n\n\\def\\etal{\\text{et al.} }\n\n\\def\\indep{\\independenT{\\perp}}\n\n\\def\\iid{\\overset{iid}{\\sim}}\n\n\\def\\GEP{\\mathrm{GEP}}\n\n\\def\\sspan{\\mathrm{span}}\n\n\n\n\\def\\bnorm{  \\bigg \\| } \n\n$$\n\n\n\n\n\n\n\n\n\n\n\n\n\nIntroduction\nPlace Holder for OPCG\nSufficient Dimension Reduction (SDR) is an area of statistics that focuses on reducing high dimensional data to a just a few features that reflect, or summarize, all the available information about a specific outcome of interest. In data science parlance, SDR can be considered methods for “supervised dimension reduction” or “supervised learning”.\nIdeally, the supervised features will be more interpretable than trying to use the entire set of predictors. Then any subsequent model built upon the supervised features should be more interpretable as well. In terms of interpretability, the supervised features are easier to visualize, since they are lower dimensional summaries and we only have a few to consider. We can plot the supervised features against the outcome in 1d, 2d, and 3d graphics, which can help build a better understanding of the relationship between the outcome and predictors.\n\n\nAn Illustration\nTo illustrate the objective of SDR methods, we can look at a simple example. Let \\(X = (X_1, X_2) \\in [0,1]^2\\) be a bivariate predictor in the unit square and let \\(Y \\in \\R\\) be a quadratic function of \\(X_1\\) only. Then, if \\(\\beta = (1,0) \\in \\R^2\\), the outcome \\(Y\\) can be expressed as \\(Y = \\beta^\\top X\\).\n\n\n\nsdr plot\n\n\nFor \\[\n\\begin{split}\nY \\indep X \\mid \\beta^\\top X   \n\\end{split}\n\\]\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "extended_posts/index.html",
+    "href": "extended_posts/index.html",
+    "title": "Extended Posts",
+    "section": "",
+    "text": "Here you can find some extended posts, discussions and demonstrations or examples on topics or papers I’ve found interesting.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n    \n      \n      \n    \n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "dictionary/terms/weight_decay.html",
+    "href": "dictionary/terms/weight_decay.html",
+    "title": "Weight Decay",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/transformer.html",
+    "href": "dictionary/terms/transformer.html",
+    "title": "Transformer",
+    "section": "",
+    "text": "To learn more about transformers, you can read this to the point rundown.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/tabular_model.html",
+    "href": "dictionary/terms/tabular_model.html",
+    "title": "Tabular Model",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/softmax.html",
+    "href": "dictionary/terms/softmax.html",
+    "title": "Softmax",
+    "section": "",
+    "text": "Let’s say that we have a model that tells us what sort of vehicle is in a picture. It outputs the following predictions.\n\n\n\n\n\n\n\nVehicle\nPrediction\n\n\n\n\ncar\n\\(-4.89\\)\n\n\nbus\n\\(2.60\\)\n\n\ntruck\n\\(0.59\\)\n\n\nmotorbike\n\\(-2.07\\)\n\n\nbicycle\n\\(-4.57\\)\n\n\n\nThese predictions aren’t very meaningful to us as humans. So what we can do is convert these predictions into probabilities. The steps to do this are below.\n1. Take the exponent of each prediction to base \\(e\\). So for the car category, \\(e^{-4.89} \\approx 7.52 \\cdot 10^{-3}\\).\nThe results of the calculations below are displayed with 3 significant figures.\n\n\n\n\n\n\n\n\nVehicle\nPrediction\n\\(e^{\\text{prediction}}\\)\n\n\n\n\ncar\n\\(-4.89\\)\n\\(7.52 \\cdot 10^{-3}\\)\n\n\nbus\n\\(2.60\\)\n\\(13.4\\)\n\n\ntruck\n\\(0.59\\)\n\\(1.80\\)\n\n\nmotorbike\n\\(-2.07\\)\n\\(0.126\\)\n\n\nbicycle\n\\(-4.57\\)\n\\(0.010\\)\n\n\n\n2. Sum all the calculated values.\n\n\n\n\n\n\n\n\n\nVehicle\nPrediction\n\\(e^{\\text{prediction}}\\)\n\\(\\text{sum of} e^{\\text{prediction}}\\)\n\n\n\n\ncar\n\\(-4.89\\)\n\\(7.52 \\cdot 10^{-3}\\)\n\\(15.4\\)\n\n\nbus\n\\(2.60\\)\n\\(13.4\\)\n\\(15.4\\)\n\n\ntruck\n\\(0.59\\)\n\\(1.80\\)\n\\(15.4\\)\n\n\nmotorbike\n\\(-2.07\\)\n\\(0.126\\)\n\\(15.4\\)\n\n\nbicycle\n\\(-4.57\\)\n\\(0.010\\)\n\\(15.4\\)\n\n\n\n3. For each respective category, divide \\(e^{\\text{prediction}}\\) by \\(\\text{sum of} e^{\\text{prediction}}\\). This is your probability. So the probability of the vehicle in the picture being a car is\n\\[\n\\frac{7.52 \\cdot 10^{-3}}{15.4} \\approx 4.88 \\cdot 10^{-4} = 0.000488 = 0.0488 \\%\n\\]\n\n\n\n\n\n\n\n\n\n\nVehicle\nPrediction\n\\(e^{\\text{prediction}}\\)\n\\(\\text{sum of} e^{\\text{prediction}}\\)\n\\(\\frac{e^{\\text{prediction}}}{\\text{sum of}e^{\\text{prediction}}}\\)\n\n\n\n\ncar\n\\(-4.89\\)\n\\(7.52 \\cdot 10^{-3}\\)\n\\(15.4\\)\n\\(4.88 \\cdot 10^{-4}\\)\n\n\nbus\n\\(2.60\\)\n\\(13.4\\)\n\\(15.4\\)\n\\(0.874\\)\n\n\ntruck\n\\(0.59\\)\n\\(1.80\\)\n\\(15.4\\)\n\\(0.117\\)\n\n\nmotorbike\n\\(-2.07\\)\n\\(0.126\\)\n\\(15.4\\)\n\\(8.19 \\cdot 10^{-3}\\)\n\n\nbicycle\n\\(-4.57\\)\n\\(0.010\\)\n\\(15.4\\)\n\\(6.72 \\cdot 10^{-4}\\)\n\n\n\nFrom the table above, it can be seen that the vehicle in the picture is most likely a bus with probability \\(87.4\\%\\).\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/sampler.html",
+    "href": "dictionary/terms/sampler.html",
+    "title": "Sampler",
+    "section": "",
+    "text": "Metaphorically speaking, if we let a dataset be a warehouse, a dataloader be a human, a batch be a crate, and the sampler be the manager, then the manager is responsible for informing the human what items to gather from the warehouse, who then puts them into crates.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/root_mean_squared_logarithmic_error_rmsle.html",
+    "href": "dictionary/terms/root_mean_squared_logarithmic_error_rmsle.html",
+    "title": "Root Mean Squared Logarithmic Error (RMSLE)",
+    "section": "",
+    "text": "It is calculated by:\n\nFirst taking the logarithm of all predicted values.\nTaking the logarithm of all actual values.\nThen taking the difference between each respective predicted and actual value.\nNext squaring all obtained values.\nTaking the averge.\nAnd lastly taking the square root.\n\nLet’s say we have a set of predicted values \\(1, 2, 3, 4\\). The set of actual values is \\(1, 4, 3, 3\\)\n\n\\(\\ln(1), \\ln(2), \\ln(3), \\ln(4) \\approx 0, 0.69, 1.10, 1.39\\)\n\\(\\ln(1), \\ln(4), \\ln(3), \\ln(3) \\approx 0, 1.39, 1.10, 1.10\\)\n\\(0-0, 0.69-1.39, 1.10-1.10, 1.39-1.10 = 0, -0.70, 0, 0.29\\)\n\\((0)^2, (-0.70)^2, (0)^2, (0.29)^2 \\approx 0, 0.49, 0, 0.08\\)\n\\(\\frac{0 + 0.49 + 0 + 0.08}{4} = \\frac{0.57}{4}\\)\n\\(\\sqrt{\\frac{0.57}{4}} \\approx 0.38\\)\n\nThis tells us, that on average, our set of predicted values is \\(0.38\\) units off from the actual values.\nIn a nutshell, you take the root of the mean of the square of the differences between the predicted and actual values.\n\nThe main difference between RMSE and RMSLE is that RMSLE works better for very large values, since the logarithm of the predicted values and actual values is taken. The downside is that negative values will not work, since the logarithm of a negative value is undefined.\n\n\n\n\n\n\n\nNote\n\n\n\n\n\nThe reason the square value is taken is due to the averaging step. Let’s say the first predicted value is off from the first actual value by \\(-3\\) units. And let’s say that the second predicted value is off from the second actual value by \\(3\\) units.\nIf we didn’t take the square, the average would be zero \\(\\left( \\frac{-3 + 3}{2} = \\frac{0}{2} = 0 \\right)\\). This is incorrect as both values are off from the actual value.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/rectified_linear_unit.html",
+    "href": "dictionary/terms/rectified_linear_unit.html",
+    "title": "Rectified Linear Unit (ReLU)",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/optimizer.html",
+    "href": "dictionary/terms/optimizer.html",
+    "title": "Optimizer",
+    "section": "",
+    "text": "An optimizer in its most basic form looks like this.\nwith torch.no_grad(): \n  for p in model.parameters(): p -= p.grad * lr \n  model.zero_grad() \n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/one_hot_encoding.html",
+    "href": "dictionary/terms/one_hot_encoding.html",
+    "title": "One Hot Encoding",
+    "section": "",
+    "text": "Let’s say we have a categorical feature, speed, that can be either slow or fast. Instead of assigning a value of 0 to slow and a value of 1 to fast, a slow column can be created and a fast column can be created. If the speed is slow, slow is true and fast is false. If the speed is fast, slow is false and fast is true.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/numericalization.html",
+    "href": "dictionary/terms/numericalization.html",
+    "title": "Numericalization",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/named_entity_recognition.html",
+    "href": "dictionary/terms/named_entity_recognition.html",
+    "title": "Named Entity Recognition (NER)",
+    "section": "",
+    "text": "Take the sentence “Tim went to the Moon.” as an example. The sentence would first be broken into ‘Tim’, ‘went’, ‘to’, the’, ‘Moon’. The model could then give ‘Tim’ the label of ‘person’, and ‘Moon’ the label of ‘location’.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/metric.html",
+    "href": "dictionary/terms/metric.html",
+    "title": "Metric",
+    "section": "",
+    "text": "Examples of metrics are, but not limited to, accuracy, error rate, MAE, and MSE\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/mean_columnwise_root_mean_square_error_mcrmse.html",
+    "href": "dictionary/terms/mean_columnwise_root_mean_square_error_mcrmse.html",
+    "title": "Mean Columnwise Root Mean Squared Error (MCRMSE)",
+    "section": "",
+    "text": "Let’s say a model had to predict the velocity, acceleration, and drag force for 3 cars.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/matrix.html",
+    "href": "dictionary/terms/matrix.html",
+    "title": "Matrix",
+    "section": "",
+    "text": "The order of a matrix is row by column.\nBelow is \\(3 \\times 2\\) matrix. \\[\n\\begin{bmatrix}\n1 & 2 \\\\\n3 & 4 \\\\\n5 & 6 \\\\\n\\end{bmatrix}\n\\]\nBelow is \\(2 \\times 3\\) matrix. \\[\n\\begin{bmatrix}\n1 & 2 & 3 \\\\\n4 & 5 & 6 \\\\\n\\] \\end{bmatrix}\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/linear_combination.html",
+    "href": "dictionary/terms/linear_combination.html",
+    "title": "Linear Combination",
+    "section": "",
+    "text": "\\[\n\\begin{bmatrix}\n1 \\\\\n2 \\\\\n3 \\\\\n\\end{bmatrix}\n\\cdot\n\\begin{bmatrix}\n4 \\\\\n5 \\\\\n6 \\\\\n\\end{bmatrix}\n= (1 \\cdot 4) + (2 \\cdot 5) + (3 \\cdot 6) = 32\n\\]\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/latent.html",
+    "href": "dictionary/terms/latent.html",
+    "title": "Latent (Diffusion)",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/inference.html",
+    "href": "dictionary/terms/inference.html",
+    "title": "Inference",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/gradient_accumulation.html",
+    "href": "dictionary/terms/gradient_accumulation.html",
+    "title": "Gradient Accumulation",
+    "section": "",
+    "text": "Let’s say you want to use a batch size of 64, but the model doesn’t fit with that size on your GPU.\n\nFirst determine the largest possible batch size that can fit on your GPU. Let’s say it’s 16. It may be better to use batch sizes that are a power of 2.\nCalculate the gradients for \\(X\\) batches without updating the parameters.\n\n\\(X\\) is your desired batch size divided by the batch size you are using.\nDesired batch size is 64; batch size we are using is 16.\n\\(64 ÷ 16 = 4\\)\n\\(X\\) is 4. This is because the size of 4 batches, in this case, sums to 64.\n\nNext, sum all respective gradients — hence the term ‘gradient accumulation’.\nNow update your parameters based on these summed gradients. This will have the same effect as if you used a batch size of 64.\n\n\n\n\n\n\n\nNote\n\n\n\n\n\nUsing a smaller batch size to fit a larger model onto your GPU isn’t optimal. A smaller batch size means you would have to tweak your optimal hyperparameters, such as the learning rate. Your loss would also become less accurate since it is being calculated on a smaller group of items.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/forward_pass.html",
+    "href": "dictionary/terms/forward_pass.html",
+    "title": "Forward Pass",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/ensemble.html",
+    "href": "dictionary/terms/ensemble.html",
+    "title": "Ensemble",
+    "section": "",
+    "text": "The reason why this works is that some models will overestimate while others will underestimate, cancelling out each others’ errors.\nThere are different methods for ensembling.\n\n\n\n\n\n\nEnsembling only works when all models are independent of each other. That is, the models do not depend on one another.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/embedding.html",
+    "href": "dictionary/terms/embedding.html",
+    "title": "Embedding",
+    "section": "",
+    "text": "An example of how two embeddings can be combined together is shown below.\nLet’s say we have an embedding of users, where each column represents a feature about movies. Users like certain features of movies, and a value between -1 and 1 represents this.\n\n\n\nUser\nLong Duration\nSci-Fi\nFantasy\nAnimated\nAction\n\n\n\n\nBilly\n-0.9\n0.3\n0.2\n0.8\n0.25\n\n\nBob\n-0.85\n1\n-0.25\n0\n0.75\n\n\nJoe\n0.9\n0.85\n0.95\n0.35\n1\n\n\n\nNow let’s say we have an embedding of movies, where each column represents a feature about movies.\n\n\n\n\n\n\n\n\n\n\n\nMovie\nLong Duration\nSci-Fi\nFantasy\nAnimated\nAction\n\n\n\n\nThe Lord of the Rings\n1\n-1\n1\n-0.5\n1\n\n\nCars\n-0.9\n-1\n0.8\n1\n0\n\n\nInterstellar\n0.75\n1\n0\n0\n0.3\n\n\n\nWe want to find out which movie would be the best for Billy to watch. To do so, let’s take the dot product between Billy and each of the respective movies.\n\n\n\n\n\n\nBilly & The Lord of the Rings\n\n\n\n\n\n\\[\n(-0.9 \\cdot 1) + (0.3 \\cdot -1) + (0.2 \\cdot 1) + (0.8 \\cdot -0.5) + (0.25 \\cdot 1) = -1.15\n\\]\n\n\n\n\n\n\n\n\n\nBilly & Cars\n\n\n\n\n\n\\[\n(-0.9 \\cdot -0.9) + (0.3 \\cdot -1) + (0.2 \\cdot 0.8) + (0.8 \\cdot 1) + (0.25 \\cdot 0) = 1.47\n\\]\n\n\n\n\n\n\n\n\n\nBilly & Interstellar\n\n\n\n\n\n\\[\n(-0.9 \\cdot 0.75) + (0.3 \\cdot 1) + (0.2 \\cdot 0) + (0.8 \\cdot 0) + (0.25 \\cdot 0.3) = -0.3\n\\]\n\n\n\nWe have obtained the values \\(-1.15\\), \\(1.47\\), and \\(-0.3\\) for each of the movies respectively. From this, we can deduce that Cars ($1.47) is probably the best movie for Billy to watch, based on his taste.\nAfter similarly calculating the dot product between Joe and each of the movies, we get the following respective values: \\(1.82\\), \\(-0.55\\), \\(1.82\\). This tells us that both The Lord of the Rings and Interstellar are equally the best movies for Joe to watch.\nAs for Bob, it would be Interstellar.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/document.html",
+    "href": "dictionary/terms/document.html",
+    "title": "Document",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/decision_tree.html",
+    "href": "dictionary/terms/decision_tree.html",
+    "title": "Decision Tree",
+    "section": "",
+    "text": "A split is made for each feature in the data. If the feature of a certain data sample is larger than or less than the split for that respective feature, the next appropriate split is made.\nBelow is an example determining whether a car is fast or slow.\n\n\n\n\n\nflowchart TB\n  A([Weight &lt; 2000kg])\n  B([Is Engine Powerful])\n  C([Is Windy Day])\n  D1([Car Is Fast])\n  E1([Car Is Slow])\n  D2([Car Is Fast])\n  E2([Car Is Slow])\n\n\n  A -- Yes --&gt; B\n  A -- No --&gt; C\n  B -- Yes --&gt; D1\n  B -- No --&gt; E1\n  C -- Yes --&gt; E2\n  C -- No --&gt; D2\n\n\n\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/dataloader.html",
+    "href": "dictionary/terms/dataloader.html",
+    "title": "Dataloader",
+    "section": "",
+    "text": "Metaphorically speaking, if we let a dataset be a warehouse, a dataloader be a human, a batch be a crate, and the sampler be the manager, then the manager is responsible for informing the human what items to gather from the warehouse, who then puts them into crates.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/batch.html",
+    "href": "dictionary/terms/batch.html",
+    "title": "Batch",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/backward_pass.html",
+    "href": "dictionary/terms/backward_pass.html",
+    "title": "Backward Pass",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/architecture.html",
+    "href": "dictionary/terms/architecture.html",
+    "title": "Architecture",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/accuracy.html",
+    "href": "dictionary/terms/accuracy.html",
+    "title": "Accuracy",
+    "section": "",
+    "text": "It can be calculated by dividing the number of correct predictions by the number of total predictions. Optionally multiply the result by 100 to obtain a percentage.\n\\[\n\\frac{\\text{number of correct predictions}}{\\text{number of total predictions}}\n\\]\n\n\n\n\n\n\nNote\n\n\n\n\n\nAccuracy is also 1 - error rate.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Harris Quach",
+    "section": "",
+    "text": "I am a Postdoctoral Researcher supervised by Dr. Wensheng Guo and Dr. Wei Yang in the Department of Biostatistcs, Epidemiology and Informations (DBEI) at the Perelman School of Medicine, University of Pennsylvania. My research focuses on developing methods to construct summary statistics that describe features in the data that are most relevant to some outcome of interest.\nCurrently, my methods development are motivated by electrocardiogram data and cardiovascular endpoints in renal disease patients participating in the Chronic Renal Insufficiency Cohort (CRIC) study.\nPart of my duties as a postdoctoral researcher includes providing biostatistical support for clinical trials and cohort studies.\nI obtained my PhD in Statistics at Penn State University, under the supervision of Dr. Bing Li, where I researched and developed sufficient dimension reduction methods for classification and functional data."
+  },
+  {
+    "objectID": "about.html#current",
+    "href": "about.html#current",
+    "title": "Harris Quach",
+    "section": "Current",
+    "text": "Current\nFall 2022 - Present – Postdoctoral Researcher in Biostatistics | Perelman School of Medicine, University of Pennsylvania\n\nSupervisor(s): Dr. Wensheng Guo and Dr. Wei Yang\nDeveloping methodological advances for summarizing Electrocardiograms\nAnalyzing crossover trial for vascular effects of e-cigarette"
+  },
+  {
+    "objectID": "dictionary/index.html",
+    "href": "dictionary/index.html",
+    "title": "The AI Dictionary",
+    "section": "",
+    "text": "I often find explanations online to be more complicated than they need to be. Here, I hope to fix that. New terms will continue to be added over time.\nClick terms to view expanded definitions.\nDo let me know of any corrections and improvements, and of any terms you would like added!\n\n\n\n    \n      \n      \n    \n\n\n\n\n\nAccuracy\n\n\n\n\n\nA type of metric. It is a value that tells us how often a model produces correct predictions. The higher the accuracy, the better.\n\n\n\n\n\n\n\n\n\n\nActivation Function\n\n\n\n\n\nA function that follows the linear function in a neuron, to introduce nonlinearity.\n\n\n\n\n\n\n\n\n\n\nArchitecture\n\n\n\n\n\nA model that is used as a template or a starting point for another model.\n\n\n\n\n\n\n\n\n\n\nBackpropagation\n\n\n\n\n\nThe name given to the algorithm that computes the gradients for the weights in a model. Note that it does not update the weights, and hence is not an optimizer\n\n\n\n\n\n\n\n\n\n\nBackward Pass\n\n\n\n\n\nThe pass that begins with the outputs, and ends with the gradients. Also see forward pass.\n\n\n\n\n\n\n\n\n\n\nBagging\n\n\n\n\n\nAn ensembling technique. When bagging, each model is trained on random subset of the rows, and a random subset of the columns, with replacement.\n\n\n\n\n\n\n\n\n\n\nBatch\n\n\n\n\n\nA small collection of data from the dataset.\n\n\n\n\n\n\n\n\n\n\nCross Entropy Loss\n\n\n\n\n\nA technique for calculating the loss for categorical models with multiple categories.\n\n\n\n\n\n\n\n\n\n\nDataloader\n\n\n\n\n\nAn object that takes data from the dataset, and assembles them into batches. Note that this object does not decide what indices to load from, and hence is not a sampler.\n\n\n\n\n\n\n\n\n\n\nDataset\n\n\n\n\n\nA collection of data.\n\n\n\n\n\n\n\n\n\n\nDecision Tree\n\n\n\n\n\nA type of model that acts like an if-else statement.\n\n\n\n\n\n\n\n\n\n\nDecoder (Transformers)\n\n\n\n\n\nA component of a transformer that is used for generating text. An example is the autocomplete feature on a smartphone’s keyboard.\n\n\n\n\n\n\n\n\n\n\nDocument\n\n\n\n\n\nThe name given to a piece or collection of text. It can range from anything from a single word to a sentence to a paragraph to a page of text to a full book, and so on. Also referred to as sequence.\n\n\n\n\n\n\n\n\n\n\nDot Product\n\n\n\n\n\nThe operation given to the process of taking the product of each corresponding element in a vector, and summing all products. Also known as linear combination.\n\n\n\n\n\n\n\n\n\n\nEmbedding\n\n\n\n\n\nA table, or matrix, where each row represents an item and each column describes the items in some way. The real magic of embeddings happen when you combine two embeddings together in some way to obtain further information.\n\n\n\n\n\n\n\n\n\n\nEncoder (Transformers)\n\n\n\n\n\nA component of a transformer that is used for “understanding” text. Encoders are typically used for classifying sentences by sentiment and figuring out what parts of a sentence refers, for example, to a person or location.\n\n\n\n\n\n\n\n\n\n\nEnsemble\n\n\n\n\n\nA collection of models whos’ predictions are averaged to obtain the final prediction.\n\n\n\n\n\n\n\n\n\n\nError Rate\n\n\n\n\n\nA type of metric. It is a value that tells us how often a model produces incorrect predictions. The lower the error rate, the better.\n\n\n\n\n\n\n\n\n\n\nForward Pass\n\n\n\n\n\nThe pass that begins with the inputs, and ends with the outputs and loss. Also see backward pass.\n\n\n\n\n\n\n\n\n\n\nGradient\n\n\n\n\n\nA numerical value that informs us how to adjust a parameter of the model.\n\n\n\n\n\n\n\n\n\n\nGradient Accumulation\n\n\n\n\n\nA technique for running or fitting large models on a not-so-powerful GPU.\n\n\n\n\n\n\n\n\n\n\nGradient Boosting Machine (GBM)\n\n\n\n\n\nAn ensembling technique where instead of averaging the predictions of all models, each successive model predicts the error of the previous model. The errors are then summed to obtain the final prediction.\n\n\n\n\n\n\n\n\n\n\nInference\n\n\n\n\n\nUsing a trained model for predictions.\n\n\n\n\n\n\n\n\n\n\nK-Fold Cross Validation\n\n\n\n\n\nAn ensembling technique where models are trained on a different set percent of the dataset. For example each model is trained on a different 80% of the dataset.\n\n\n\n\n\n\n\n\n\n\nLatent (Diffusion)\n\n\n\n\n\nA compressed image.\n\n\n\n\n\n\n\n\n\n\nLearning Rate\n\n\n\n\n\nA numerical value which controls how much the gradients update the parameters of a model.\n\n\n\n\n\n\n\n\n\n\nLinear Combination\n\n\n\n\n\nThe operation given to the process of taking the product of each corresponding element in a vector, and summing all products. Also known as dot product.\n\n\n\n\n\n\n\n\n\n\nLoss\n\n\n\n\n\nA measure of performance of a model. It is used by the model to improve itself. Typically, the lower the loss, the better.\n\n\n\n\n\n\n\n\n\n\nMatrix\n\n\n\n\n\nA table of values. See also vector\n\n\n\n\n\n\n\n\n\n\nMean Absolute Error (MAE)\n\n\n\n\n\nA type of metric. It is a value that tells us, on average, how close a set of predicted values is from the actual values. The smaller the MAE, the better.\n\n\n\n\n\n\n\n\n\n\nMean Columnwise Root Mean Squared Error (MCRMSE)\n\n\n\n\n\nA metric used for those tasks where multiple targets need to be predicted. This metric simply takes the average of the RMSE of each target.\n\n\n\n\n\n\n\n\n\n\nMean Squared Error (MSE)\n\n\n\n\n\nA type of metric. It is a value that tells us, on average, how close a set of predicted values is from the actual values. The smaller the MSE, the better.\n\n\n\n\n\n\n\n\n\n\nMetric\n\n\n\n\n\nA measure of performance of a model. It is used by humans to judge the performance of the model.\n\n\n\n\n\n\n\n\n\n\nModel\n\n\n\n\n\nA mathematical equation that mimicks a real life phenomenon. This equation can be used to predict desired quantities.\n\n\n\n\n\n\n\n\n\n\nNamed Entity Recognition (NER)\n\n\n\n\n\nA NLP classification task where a sentence is broken into its components, and the model attempts to assign each component to a specific entity (e.g., person, place, organization).\n\n\n\n\n\n\n\n\n\n\nNeuron\n\n\n\n\n\nA basic processor of information. It consists of the linear combination and an activation function.\n\n\n\n\n\n\n\n\n\n\nNumericalization\n\n\n\n\n\nA process where numbers are assigned to each token. Occurs after tokenization.\n\n\n\n\n\n\n\n\n\n\nOne Hot Encoding\n\n\n\n\n\nA data processing technique where each class in a categorical feature is given its own column that contains true and false values.\n\n\n\n\n\n\n\n\n\n\nOneR Classifier\n\n\n\n\n\nThe simplest type of decision tree. The tree only contains a single split.\n\n\n\n\n\n\n\n\n\n\nOptimizer\n\n\n\n\n\nThe name given to the algorithm that updates the weights in a model. Note that it does not compute the gradients, and hence is not part of backpropagation.\n\n\n\n\n\n\n\n\n\n\nRandom Forest\n\n\n\n\n\nThe name given to a bagged ensemble of decision trees.\n\n\n\n\n\n\n\n\n\n\nRectified Linear Unit (ReLU)\n\n\n\n\n\nAn activation function that clips any value less than zero, to zero.\n\n\n\n\n\n\n\n\n\n\nRoot Mean Squared Error (RMSE)\n\n\n\n\n\nA type of metric. It is a value that tells us, on average, how close a set of predicted values is from the actual values. The smaller the RMSE, the better.\n\n\n\n\n\n\n\n\n\n\nRoot Mean Squared Logarithmic Error (RMSLE)\n\n\n\n\n\nA type of metric. It is a value that tells us, on average, how close a set of predicted values is from the actual values. The smaller the RMSLE, the better.\n\n\n\n\n\n\n\n\n\n\nSample\n\n\n\n\n\nA row in a dataset.\n\n\n\n\n\n\n\n\n\n\nSampler\n\n\n\n\n\nAn algorithm that decides what indices of a dataset to load. Note that this algorithm does not load data, and hence is not a dataloader.\n\n\n\n\n\n\n\n\n\n\nSequence\n\n\n\n\n\nThe name given to a piece or collection of text. It can range from anything from a single word to a sentence to a paragraph to a page of text to a full book, and so on. Also referred to as document.\n\n\n\n\n\n\n\n\n\n\nSoftmax\n\n\n\n\n\nA function that calculates the probabilities of a set of predictions.\n\n\n\n\n\n\n\n\n\n\nTabular Data\n\n\n\n\n\nData in the form of a table.\n\n\n\n\n\n\n\n\n\n\nTabular Model\n\n\n\n\n\nA model trained on tabular data. It is used to predict a specified column in the data.\n\n\n\n\n\n\n\n\n\n\nTokenization\n\n\n\n\n\nSplitting a document into its component words.\n\n\n\n\n\n\n\n\n\n\nTransformer\n\n\n\n\n\nThe name given to a Natural Language Processing (NLP) architecture that, in a nutshell, either fills-in-the-blanks or autocompletes text. Transformers consist of either an encoder, decoder, or both.\n\n\n\n\n\n\n\n\n\n\nVector\n\n\n\n\n\nA table of values that has either a single row or a single column. See also matrix.\n\n\n\n\n\n\n\n\n\n\nWeight Decay\n\n\n\n\n\nA technique for making sure weights do not grow too large, and in turn overfit the data.\n\n\n\n\n\n\n\n\n\n\nZero-shot\n\n\n\n\n\nA prefix given to a pretrained model that can be used without finetuning.\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/activation_function.html",
+    "href": "dictionary/terms/activation_function.html",
+    "title": "Activation Function",
+    "section": "",
+    "text": "If there existed no activation function, there would be no point in having individual neurons, as the entire network would become a single, big linear equation.\n\n\n\n\n\n\nWith Activation Function\n\n\n\n\\(w_2 \\cdot \\text{activation}(w_1 x + b_1) + b_2\\)\n\n\n\n\n\n\n\n\nWithout Activation Function\n\n\n\n\\(w_2 \\cdot (w_1 x + b_1) + b_2 = w_2 w_1 x + w_2 b_1 + b_2\\)\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/backpropagation.html",
+    "href": "dictionary/terms/backpropagation.html",
+    "title": "Backpropagation",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/bagging.html",
+    "href": "dictionary/terms/bagging.html",
+    "title": "Bagging",
+    "section": "",
+    "text": "“with replacement” means that if a model, for example, randomly chooses row number 5, another model can also randomly choose row number 5.\n\n\n\n\n\n\nNote\n\n\n\n\n\nThrough this technique, each model ends up training on roughly 63% of the entire dataset.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/cross_entropy_loss.html",
+    "href": "dictionary/terms/cross_entropy_loss.html",
+    "title": "Cross Entropy Loss",
+    "section": "",
+    "text": "Let’s say that we have a model that tells us what sort of vehicle is in a picture. It outputs the following predictions.\n\n\n\n\n\n\n\n\nVehicle\nActuals\nPrediction\n\n\n\n\ncar\n0\n\\(-4.89\\)\n\n\nbus\n1\n\\(2.60\\)\n\n\ntruck\n0\n\\(0.59\\)\n\n\nmotorbike\n0\n\\(-2.07\\)\n\n\nbicycle\n0\n\\(-4.57\\)\n\n\n\nActuals is a one hot encoded column that tells us what is the correct vehicle in the picture.\nTo convert these predictions into loss, first take the softmax of each prediction.\n\n\n\n\n\n\n\n\n\nVehicle\nActuals\nPrediction\nSoftmax\n\n\n\n\ncar\n0\n\\(-4.89\\)\n\\(4.88 \\cdot 10^{-4}\\)\n\n\nbus\n1\n\\(2.60\\)\n\\(0.874\\)\n\n\ntruck\n0\n\\(0.59\\)\n\\(0.117\\)\n\n\nmotorbike\n0\n\\(-2.07\\)\n\\(8.19 \\cdot 10^{-3}\\)\n\n\nbicycle\n0\n\\(-4.57\\)\n\\(6.72 \\cdot 10^{-4}\\)\n\n\n\nNext take the logarithm of each softmax value.\n\n\n\n\n\n\n\n\n\n\nVehicle\nActuals\nPrediction\nSoftmax\n\\(\\ln(\\text{Softmax})\\)\n\n\n\n\ncar\n0\n\\(-4.89\\)\n\\(4.88 \\cdot 10^{-4}\\)\n\\(-7.63\\)\n\n\nbus\n1\n\\(2.60\\)\n\\(0.874\\)\n\\(-1.35\\)\n\n\ntruck\n0\n\\(0.59\\)\n\\(0.117\\)\n\\(-2.14\\)\n\n\nmotorbike\n0\n\\(-2.07\\)\n\\(8.19 \\cdot 10^{-3}\\)\n\\(-4.81\\)\n\n\nbicycle\n0\n\\(-4.57\\)\n\\(6.72 \\cdot 10^{-4}\\)\n\\(-7.31\\)\n\n\n\nMultiply the actuals with the computed logarithms.\n\n\n\n\n\n\n\n\n\n\n\nVehicle\nActuals\nPrediction\nSoftmax\n\\(\\ln(\\text{Softmax})\\)\n\\(\\text{Actuals} \\cdot \\ln(\\text{Softmax})\\)\n\n\n\n\ncar\n0\n\\(-4.89\\)\n\\(4.88 \\cdot 10^{-4}\\)\n\\(-7.63\\)\n\\(0\\)\n\n\nbus\n1\n\\(2.60\\)\n\\(0.874\\)\n\\(-1.35\\)\n\\(-1.35\\)\n\n\ntruck\n0\n\\(0.59\\)\n\\(0.117\\)\n\\(-2.14\\)\n\\(0\\)\n\n\nmotorbike\n0\n\\(-2.07\\)\n\\(8.19 \\cdot 10^{-3}\\)\n\\(-4.81\\)\n\\(0\\)\n\n\nbicycle\n0\n\\(-4.57\\)\n\\(6.72 \\cdot 10^{-4}\\)\n\\(-7.31\\)\n\\(0\\)\n\n\n\nSum the the results of the multiplications.\n\\[\n0 + -1.35 + 0 + 0 + 0 = -1.35\n\\]\nAnd there you have your loss!\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/dataset.html",
+    "href": "dictionary/terms/dataset.html",
+    "title": "Dataset",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/decoder.html",
+    "href": "dictionary/terms/decoder.html",
+    "title": "Decoder (Transformers)",
+    "section": "",
+    "text": "To learn more about decoders, you can read this to the point rundown.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/dot_product.html",
+    "href": "dictionary/terms/dot_product.html",
+    "title": "Dot Product",
+    "section": "",
+    "text": "\\[\n\\begin{bmatrix}\n1 \\\\\n2 \\\\\n3 \\\\\n\\end{bmatrix}\n\\cdot\n\\begin{bmatrix}\n4 \\\\\n5 \\\\\n6 \\\\\n\\end{bmatrix}\n= (1 \\cdot 4) + (2 \\cdot 5) + (3 \\cdot 6) = 32\n\\]\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/encoder.html",
+    "href": "dictionary/terms/encoder.html",
+    "title": "Encoder (Transformers)",
+    "section": "",
+    "text": "To learn more about decoders, you can read this to the point rundown.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/error_rate.html",
+    "href": "dictionary/terms/error_rate.html",
+    "title": "Error Rate",
+    "section": "",
+    "text": "It can be calculated by dividing the number of incorrect predictions by the number of total predictions. Optionally multiply the result by 100 to obtain a percentage.\n\\[\n\\frac{\\text{number of incorrect predictions}}{\\text{number of total predictions}}\n\\]\n\n\n\n\n\n\nNote\n\n\n\n\n\nError rate is also 1 - accuracy.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/gradient.html",
+    "href": "dictionary/terms/gradient.html",
+    "title": "Gradient",
+    "section": "",
+    "text": "The gradients update the parameters by multiplying the two together. How much the gradients update the parameters is controlled by the learning rate.\nA positive gradient tells us that increasing the parameters will increase the loss. On the other hand, decreasing the parameters will decrease the loss.\nA negative gradient tells us that decreasing the parameters will increase the loss On the other hand, increasing the parameters will decrease the loss.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/gradient_boosting_machine_gbm.html",
+    "href": "dictionary/terms/gradient_boosting_machine_gbm.html",
+    "title": "Gradient Boosting Machine (GBM)",
+    "section": "",
+    "text": "The first model produces a prediction.\nThe difference between this prediction and the actual value is obtained.\nThe difference is now set as the target.\nThe next model now attempts to predict this difference.\nRepeat steps 2-4 for as many models as desired.\nSum all obtained differences.\n\n\n\n\n\n\n\nNote\n\n\n\n\n\nWhile this technique tends to produce better results, is more likely to overfit. This is because the machine is trying to minimize the difference between the predictions and actual values in the training set.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/k_fold_cross_validation.html",
+    "href": "dictionary/terms/k_fold_cross_validation.html",
+    "title": "K-Fold Cross Validation",
+    "section": "",
+    "text": "Another way to think of it is that the dataset is split into \\(K\\) pieces. Then each model is trained on a different set of \\(K-1\\) pieces.\nFor example, let’s say that the dataset is split into 5 pieces. Then each model is trained on a different set of 4 pieces.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/learning_rate.html",
+    "href": "dictionary/terms/learning_rate.html",
+    "title": "Learning Rate",
+    "section": "",
+    "text": "The learning rate controls how much the gradients adjust the parameters by multiplying the learning rate and gradients together.\n\n\n\n\n\n\nNote\n\n\n\n\n\nA learning rate that is too high can cause the training system to either get stuck in a loop or diverge from the optimal weights.\nA learning rate that is too low can cause the training system to take a very long time to reach the optimal weights.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/loss.html",
+    "href": "dictionary/terms/loss.html",
+    "title": "Loss",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/mean_absolute_error_mae.html",
+    "href": "dictionary/terms/mean_absolute_error_mae.html",
+    "title": "Mean Absolute Error (MAE)",
+    "section": "",
+    "text": "It is calculated by: 1. First taking the difference between each respective predicted and actual value. 1. Then removing all negative signs — this is known as taking the absolute value. 1. And finally taking the average.\nLet’s say we have a set of predicted values \\(1, 2, 3, 4\\). The set of actual values is \\(1, 4, 3, 3\\)\n\n\\(1-1, 2-4, 3-3, 4-3, = 0, -2, 0, 1\\)\n\\(|0|, |-2|, |0|, |1| = 0, 2, 0, 1\\)\n\\(\\frac{0 + 2 + 0 + 1}{4} = \\frac{2}{4} = 0.5\\)\n\nThis tells us, that on average, our set of predicted values is \\(0.5\\) units off from the actual values.\nIn a nutshell, you take the mean of the absolute differences between the predicted and actual values.\n\nThe main difference between MAE and MSE is that MSE penalizes smaller differences more heavily.\n\n\n\n\n\n\n\nNote\n\n\n\n\n\nThe reason the absolute value is taken is due to the averaging step. Let’s say the first predicted value is off from the first actual value by \\(-3\\) units. And let’s say that the second predicted value is off from the second actual value by \\(3\\) units.\nIf we didn’t take the absolute value, the average would be zero \\(\\left( \\frac{-3 + 3}{2} = \\frac{0}{2} = 0 \\right)\\). This is incorrect as both values are off from the actual value.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/mean_squared_error_mse.html",
+    "href": "dictionary/terms/mean_squared_error_mse.html",
+    "title": "Mean Squared Error (MSE)",
+    "section": "",
+    "text": "It is calculated by:\n\nFirst taking the difference between each respective predicted and actual value.\nThen the squaring all obtained values.\nAnd finally taking the average.\n\nLet’s say we have a set of predicted values \\(1, 2, 3, 4\\). The set of actual values is \\(1, 4, 3, 3\\)\n\n\\(1-1, 2-4, 3-3, 4-3, = 0, -2, 0, 1\\)\n\\((0)^2, (-2)^2, (0)^2, (1)^2 = 0, 4, 0, 1\\)\n\\(\\frac{0 + 4 + 0 + 1}{4} = \\frac{5}{4} = 1.25\\)\n\nThis tells us, that on average, our set of predicted values is \\(1.25\\) units off from the actual values.\nIn a nutshell, you take the mean of the square of the differences between the predicted and actual values.\n\nThe main difference between MAE and MSE is that MSE penalizes smaller differences more heavily.\n\n\n\n\n\n\n\nNote\n\n\n\n\n\nThe reason the square value is taken is due to the averaging step. Let’s say the first predicted value is off from the first actual value by \\(-3\\) units. And let’s say that the second predicted value is off from the second actual value by \\(3\\) units.\nIf we didn’t take the square, the average would be zero \\(\\left( \\frac{-3 + 3}{2} = \\frac{0}{2} = 0 \\right)\\). This is incorrect as both values are off from the actual value.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/model.html",
+    "href": "dictionary/terms/model.html",
+    "title": "Model",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/neuron.html",
+    "href": "dictionary/terms/neuron.html",
+    "title": "Neuron",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/oner_classifier.html",
+    "href": "dictionary/terms/oner_classifier.html",
+    "title": "OneR Classifier",
+    "section": "",
+    "text": "Below is an example determining whether a car is fast or slow.\n\n\n\n\n\nflowchart TB\n  A([Weight &lt; 2000kg])\n  B([Car Is Fast])\n  C([Car Is Slow])\n\n  A -- Yes --&gt; B\n  A -- No --&gt; C\n\n\n\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/random_forest.html",
+    "href": "dictionary/terms/random_forest.html",
+    "title": "Random Forest",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/root_mean_squared_error_rmse.html",
+    "href": "dictionary/terms/root_mean_squared_error_rmse.html",
+    "title": "Root Mean Squared Error (RMSE)",
+    "section": "",
+    "text": "It is calculated by:\n\nFirst taking the difference between each respective predicted and actual value.\nThen the squaring all obtained values.\nTaking the average.\nAnd finally taking the square root.\n\nLet’s say we have a set of predicted values \\(1, 2, 3, 4\\). The set of actual values is \\(1, 4, 3, 3\\)\n\n\\(1-1, 2-4, 3-3, 4-3, = 0, -2, 0, 1\\)\n\\((0)^2, (-2)^2, (0)^2, (1)^2 = 0, 4, 0, 1\\)\n\\(\\frac{0 + 4 + 0 + 1}{4} = \\frac{5}{4} = 1.25\\)\n\\(\\sqrt{1.25} \\approx 1.12\\)\n\nThis tells us, that on average, our set of predicted values is \\(1.12\\) units off from the actual values.\nIn a nutshell, you take the root of the mean of the square of the differences between the predicted and actual values.\n\nThe main difference between MSE and RMSE is that RMSE undoes the squaring step by taking the square root.\n\n\n\n\n\n\n\nNote\n\n\n\n\n\nThe reason the square value is taken is due to the averaging step. Let’s say the first predicted value is off from the first actual value by \\(-3\\) units. And let’s say that the second predicted value is off from the second actual value by \\(3\\) units.\nIf we didn’t take the square, the average would be zero \\(\\left( \\frac{-3 + 3}{2} = \\frac{0}{2} = 0 \\right)\\). This is incorrect as both values are off from the actual value.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/sample.html",
+    "href": "dictionary/terms/sample.html",
+    "title": "Sample",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/sequence.html",
+    "href": "dictionary/terms/sequence.html",
+    "title": "Sequence",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/tabular_data.html",
+    "href": "dictionary/terms/tabular_data.html",
+    "title": "Tabular Data",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/tokenization.html",
+    "href": "dictionary/terms/tokenization.html",
+    "title": "Tokenization",
+    "section": "",
+    "text": "Note\n\n\n\n\n\nIf a word is too long or very uncommon, the word itself may be split. Take the word “supercalifragilisticexpialidocious” as an example. It could be split into “super”, “cali”, “fragilistic”, “expi”, “ali”, and “docious”.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/vector.html",
+    "href": "dictionary/terms/vector.html",
+    "title": "Vector",
+    "section": "",
+    "text": "The order of a vector is row by column.\nBelow is a \\(1 \\times 3\\) column vector. \\[\n\\begin{bmatrix}\n1 \\\\\n2 \\\\\n3 \\\\\n\\end{bmatrix}\n\\]\nBelow is a \\(3 \\times 1\\) row vector. \\[\n\\begin{bmatrix}\n1 & 2 & 3\n\\end{bmatrix}\n\\]\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "dictionary/terms/zero_shot.html",
+    "href": "dictionary/terms/zero_shot.html",
+    "title": "Zero-shot",
+    "section": "",
+    "text": "Back to top"
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "Functional Sliced Inverse Regression (FSIR) is an extension of the classical Sliced Inverse Regression (SIR), tailored for functional data. Functional data arises when the predictors are not scalar or vector values but functions, such as curves or trajectories over a continuous domain. This fundamental difference necessitates specialized methods like FSIR, as functional data requires handling infinite-dimensional spaces and smooth trajectories, unlike finite-dimensional Euclidean data.\n\n\nIn regression problems with functional predictors, the goal is to understand how a response variable \\(Y\\) depends on a set of functional predictors \\(X(t)\\), where \\(t\\) represents a continuous domain (e.g., time, wavelength). Unlike Euclidean data, where predictors are represented as points or vectors in finite-dimensional space, functional data consists of entire functions observed over a continuum. Standard dimension reduction techniques may not be directly applicable due to the infinite-dimensional nature of functional predictors. FSIR adapts the principles of SIR to handle this complexity.\nFSIR identifies directions in the functional predictor space that are most informative about the response variable. These directions, referred to as effective dimension reduction (EDR) directions, reduce the functional data to a finite-dimensional subspace while retaining the essential relationship between \\(Y\\) and \\(X(t)\\).\n\n\n\nFSIR builds on the classical SIR framework but incorporates functional data concepts. The algorithm can be summarized as follows:\n\n\n\nCenter and standardize the functional predictors:\n\nCompute the mean function of \\(X(t)\\) across all observations.\nSubtract the mean function from each \\(X(t)\\) to center the data.\nStandardize the data to have unit variance over the domain \\(t\\).\n\nSlice the response variable \\(Y\\):\n\nDivide the range of \\(Y\\) into \\(H\\) non-overlapping slices, typically based on quantiles.\nAssign each observation to a slice based on the value of \\(Y\\).\n\nCompute mean functions for each slice:\n\nFor each slice \\(h\\), calculate the mean function \\(m_h(t)\\) of the functional predictors \\(X(t)\\) belonging to that slice.\n\nEstimate the covariance operator:\n\nCalculate the covariance operator of the mean functions \\(m_h(t)\\) across slices. This captures the variation in \\(X(t)\\) that corresponds to variations in \\(Y\\).\n\nPerform eigen-decomposition:\n\nPerform eigen-decomposition on the covariance operator to extract its leading eigenfunctions.\nThese eigenfunctions represent the functional EDR directions.\n\nProject the functional data:\n\nProject each functional predictor \\(X(t)\\) onto the leading eigenfunctions to obtain a finite-dimensional representation.\n\nModel the reduced representation:\n\nUse the reduced representation to model the relationship between \\(Y\\) and \\(X(t)\\) using appropriate regression or classification techniques.\n\n\n\n\n\n\n\nLinearity condition: The marginal distribution of \\(X(t)\\) is such that any linear combination of \\(X(t)\\) is approximately normally distributed. This ensures that slicing captures the relevant information about \\(Y\\).\nSufficient dimension reduction (SDR): The relationship between \\(Y\\) and \\(X(t)\\) is fully captured by a finite-dimensional projection of \\(X(t)\\). This assumption parallels that for Euclidean data but must account for the infinite-dimensional nature of functional predictors.\n\n\n\n\nFSIR is widely applied in fields such as: - Neuroscience: To analyze brain activity curves and relate them to cognitive outcomes. - Environmental science: To model relationships between environmental variables (e.g., temperature curves) and ecological responses. - Finance: To study the impact of functional predictors like stock price trajectories on financial outcomes.\n\n\n\nConsider a dataset with functional predictors \\(X(t)\\) representing temperature curves over a day and a continuous response \\(Y\\) indicating crop yield. Using FSIR, we may find that only a few functional EDR directions explain the majority of the relationship between \\(Y\\) and \\(X(t)\\). This enables us to reduce the problem from an infinite-dimensional regression to a finite-dimensional one, simplifying analysis and interpretation.\n\n\n\n\nDependence on slicing: The choice of slicing method and the number of slices can influence the results.\nLinearity assumption: Violations of the linearity condition can lead to inaccurate estimates of functional EDR directions.\nComplex interactions: FSIR may struggle with capturing complex nonlinear interactions among functional predictors.\n\n\n\n\nFor a deeper dive into the theoretical foundations and practical applications of FSIR, consider the following references:\n\nFerré, L., & Yao, A. F. (2003). “Functional sliced inverse regression analysis.” Statistics, 37(6), 475-488.\nRamsay, J. O., & Silverman, B. W. (2005). Functional Data Analysis. Springer.\nLi, B., & Hsing, T. (2010). “Sufficient dimension reduction for functional data.” Annals of Statistics, 38(5), 332-354.\n\nFSIR provides a powerful tool for exploring and simplifying regression problems involving functional data, enabling better understanding and interpretation of complex relationships."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#motivation",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#motivation",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "In regression problems with functional predictors, the goal is to understand how a response variable \\(Y\\) depends on a set of functional predictors \\(X(t)\\), where \\(t\\) represents a continuous domain (e.g., time, wavelength). Unlike Euclidean data, where predictors are represented as points or vectors in finite-dimensional space, functional data consists of entire functions observed over a continuum. Standard dimension reduction techniques may not be directly applicable due to the infinite-dimensional nature of functional predictors. FSIR adapts the principles of SIR to handle this complexity.\nFSIR identifies directions in the functional predictor space that are most informative about the response variable. These directions, referred to as effective dimension reduction (EDR) directions, reduce the functional data to a finite-dimensional subspace while retaining the essential relationship between \\(Y\\) and \\(X(t)\\)."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#the-fsir-algorithm",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#the-fsir-algorithm",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "FSIR builds on the classical SIR framework but incorporates functional data concepts. The algorithm can be summarized as follows:\n\n\n\nCenter and standardize the functional predictors:\n\nCompute the mean function of \\(X(t)\\) across all observations.\nSubtract the mean function from each \\(X(t)\\) to center the data.\nStandardize the data to have unit variance over the domain \\(t\\).\n\nSlice the response variable \\(Y\\):\n\nDivide the range of \\(Y\\) into \\(H\\) non-overlapping slices, typically based on quantiles.\nAssign each observation to a slice based on the value of \\(Y\\).\n\nCompute mean functions for each slice:\n\nFor each slice \\(h\\), calculate the mean function \\(m_h(t)\\) of the functional predictors \\(X(t)\\) belonging to that slice.\n\nEstimate the covariance operator:\n\nCalculate the covariance operator of the mean functions \\(m_h(t)\\) across slices. This captures the variation in \\(X(t)\\) that corresponds to variations in \\(Y\\).\n\nPerform eigen-decomposition:\n\nPerform eigen-decomposition on the covariance operator to extract its leading eigenfunctions.\nThese eigenfunctions represent the functional EDR directions.\n\nProject the functional data:\n\nProject each functional predictor \\(X(t)\\) onto the leading eigenfunctions to obtain a finite-dimensional representation.\n\nModel the reduced representation:\n\nUse the reduced representation to model the relationship between \\(Y\\) and \\(X(t)\\) using appropriate regression or classification techniques."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#key-assumptions",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#key-assumptions",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "Linearity condition: The marginal distribution of \\(X(t)\\) is such that any linear combination of \\(X(t)\\) is approximately normally distributed. This ensures that slicing captures the relevant information about \\(Y\\).\nSufficient dimension reduction (SDR): The relationship between \\(Y\\) and \\(X(t)\\) is fully captured by a finite-dimensional projection of \\(X(t)\\). This assumption parallels that for Euclidean data but must account for the infinite-dimensional nature of functional predictors."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#applications",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#applications",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "FSIR is widely applied in fields such as: - Neuroscience: To analyze brain activity curves and relate them to cognitive outcomes. - Environmental science: To model relationships between environmental variables (e.g., temperature curves) and ecological responses. - Finance: To study the impact of functional predictors like stock price trajectories on financial outcomes."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#example",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#example",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "Consider a dataset with functional predictors \\(X(t)\\) representing temperature curves over a day and a continuous response \\(Y\\) indicating crop yield. Using FSIR, we may find that only a few functional EDR directions explain the majority of the relationship between \\(Y\\) and \\(X(t)\\). This enables us to reduce the problem from an infinite-dimensional regression to a finite-dimensional one, simplifying analysis and interpretation."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#limitations",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#limitations",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "Dependence on slicing: The choice of slicing method and the number of slices can influence the results.\nLinearity assumption: Violations of the linearity condition can lead to inaccurate estimates of functional EDR directions.\nComplex interactions: FSIR may struggle with capturing complex nonlinear interactions among functional predictors."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#further-reading",
+    "href": "extended_posts/pages_working/Functional Sliced Inverse Regression.html#further-reading",
+    "title": "Functional Sliced Inverse Regression",
+    "section": "",
+    "text": "For a deeper dive into the theoretical foundations and practical applications of FSIR, consider the following references:\n\nFerré, L., & Yao, A. F. (2003). “Functional sliced inverse regression analysis.” Statistics, 37(6), 475-488.\nRamsay, J. O., & Silverman, B. W. (2005). Functional Data Analysis. Springer.\nLi, B., & Hsing, T. (2010). “Sufficient dimension reduction for functional data.” Annals of Statistics, 38(5), 332-354.\n\nFSIR provides a powerful tool for exploring and simplifying regression problems involving functional data, enabling better understanding and interpretation of complex relationships."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Sufficient Dimension Reduction.html",
+    "href": "extended_posts/pages_working/Sufficient Dimension Reduction.html",
+    "title": "Sufficient Dimension Reduction",
+    "section": "",
+    "text": "::: {.cell}\n:::"
+  },
+  {
+    "objectID": "extended_posts/pages_working/Sufficient Dimension Reduction.html#dimensionality-reduction",
+    "href": "extended_posts/pages_working/Sufficient Dimension Reduction.html#dimensionality-reduction",
+    "title": "Sufficient Dimension Reduction",
+    "section": "3.1 Dimensionality Reduction",
+    "text": "3.1 Dimensionality Reduction\nDimensionality reduction techniques aim to simplify datasets by reducing the number of variables (features) while retaining as much meaningful information as possible.\nTraditional methods include: - Principal Component Analysis (PCA): Focuses on maximizing variance. - Factor Analysis: Models data with latent variables.\nIn contrast, SDR identifies a lower-dimensional subspace of predictors that retains all the information about the response."
+  },
+  {
+    "objectID": "extended_posts/pages_working/Sufficient Dimension Reduction.html#sufficiency",
+    "href": "extended_posts/pages_working/Sufficient Dimension Reduction.html#sufficiency",
+    "title": "Sufficient Dimension Reduction",
+    "section": "3.2 Sufficiency",
+    "text": "3.2 Sufficiency\nThe term “sufficient” refers to the statistical concept that a set of variables or transformations of variables is sufficient if it retains all the information needed to predict the response variable. In the context of SDR, this means finding a subspace such that the conditional distribution of the response given the original predictors is the same as that given the reduced predictors.\nFormally, let \\(\\mathbf{X}\\) denote the predictor variables and \\(Y\\) denote the response variable. SDR seeks a reduction \\(\\mathbf{R}(\\mathbf{X})\\) such that:\n\\[ Y \\perp \\mathbf{X} | \\mathbf{R}(\\mathbf{X}) \\]\nwhere \\(\\perp\\) denotes conditional independence."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Harris Quach, PhD",
+    "section": "",
+    "text": "Developing statistical methods and dimension reduction tools for summarizing and visualizing data  to facilitate interpretable models and insightful analyses.\nRead more about me here.\n\n \n  \n   \n  \n    \n     Github\n  \n  \n    \n     LinkedIn\n  \n  \n      Google Scholar\n  \n  \n     Stat Jobs"
+  },
+  {
+    "objectID": "index.html#updates",
+    "href": "index.html#updates",
+    "title": "Harris Quach, PhD",
+    "section": "Updates",
+    "text": "Updates\nClick here to find more updates.\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html#extended-posts",
+    "href": "index.html#extended-posts",
+    "title": "Harris Quach, PhD",
+    "section": "Extended Posts",
+    "text": "Extended Posts\nClick here for extended posts on topics I find interesting or are related to my work.\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "patch_notes.html",
+    "href": "patch_notes.html",
+    "title": "Site Patch Notes",
+    "section": "",
+    "text": "Detailed patchnotes are unavailable prior to site version 2.0.0.0."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.1.5-26-may-2024",
+    "href": "patch_notes.html#version-2.2.1.5-26-may-2024",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.1.5 | 26 May 2024",
+    "text": "Version 2.2.1.5 | 26 May 2024\n\nRemoved buttons.\nTweaked footer text."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.1.4-23-may-2024",
+    "href": "patch_notes.html#version-2.2.1.4-23-may-2024",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.1.4 | 23 May 2024",
+    "text": "Version 2.2.1.4 | 23 May 2024\n\nFixed Mermaid diagram rendering issue."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.1.3-1-january-2024",
+    "href": "patch_notes.html#version-2.2.1.3-1-january-2024",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.1.3 | 1 January 2024",
+    "text": "Version 2.2.1.3 | 1 January 2024\n\nUpdated copyright notices for 2024."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.1.2-3-august-2023",
+    "href": "patch_notes.html#version-2.2.1.2-3-august-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.1.2 | 3 August 2023",
+    "text": "Version 2.2.1.2 | 3 August 2023\n\nRemoved featured posts section in the ForBlog."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.1.1-1-august-2023",
+    "href": "patch_notes.html#version-2.2.1.1-1-august-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.1.1 | 1 August 2023",
+    "text": "Version 2.2.1.1 | 1 August 2023\n\nSplit website footer into 3 sections."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.1.0-31-july-2023",
+    "href": "patch_notes.html#version-2.2.1.0-31-july-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.1.0 | 31 July 2023",
+    "text": "Version 2.2.1.0 | 31 July 2023\n\nAdded a featured posts section in the ForBlog.\nIncreased thumbnail size in the App Playground.\nFixed Ship of Theseus link in patch notes."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.0.2-15-july-2023",
+    "href": "patch_notes.html#version-2.2.0.2-15-july-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.0.2 | 15 July 2023",
+    "text": "Version 2.2.0.2 | 15 July 2023\n\nRe-enabled App Playground."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.0.1-13-may-2023",
+    "href": "patch_notes.html#version-2.2.0.1-13-may-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.0.1 | 13 May 2023",
+    "text": "Version 2.2.0.1 | 13 May 2023\n\nFixed animations for the App Playground.\nFixed back-to-top button covering content on the About Me page."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.2.0.0-13-may-2023",
+    "href": "patch_notes.html#version-2.2.0.0-13-may-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.2.0.0 | 13 May 2023",
+    "text": "Version 2.2.0.0 | 13 May 2023\n\nImplemented site-wide animations!\nConsolidated unsubscribe form and all subscribe forms into a single form.\nAdded a back-to-top button.\nRSS and source code navbar icons are now positioned more cleanly when accessed from the drop down menu on smaller screens.\nIncreased number of displayed posts on the ForBlog from 5 per page to 7 per page.\nChanged Home navbar icon.\nTemporarily disabled App Playground."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.1.0.1-25-march-2023",
+    "href": "patch_notes.html#version-2.1.0.1-25-march-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.1.0.1 | 25 March 2023",
+    "text": "Version 2.1.0.1 | 25 March 2023\n\nTweaked the various subscription forms’ positioning."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.1.0.0-23-february-2023",
+    "href": "patch_notes.html#version-2.1.0.0-23-february-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.1.0.0 | 23 February 2023",
+    "text": "Version 2.1.0.0 | 23 February 2023\n\nLaunched the AI dictionary.\nShortened navbar text."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.3.2-22-february-2023",
+    "href": "patch_notes.html#version-2.0.3.2-22-february-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.3.2 | 22 February 2023",
+    "text": "Version 2.0.3.2 | 22 February 2023\n\nUpdated copyright notices for 2023."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.3.1-28-january-2023",
+    "href": "patch_notes.html#version-2.0.3.1-28-january-2023",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.3.1 | 28 January 2023",
+    "text": "Version 2.0.3.1 | 28 January 2023\n\nChanged comment section theme."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.3.0-27-november-2022",
+    "href": "patch_notes.html#version-2.0.3.0-27-november-2022",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.3.0 | 27 November 2022",
+    "text": "Version 2.0.3.0 | 27 November 2022\n\nFully implemented Twitter Cards."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.2.0-26-november-2022",
+    "href": "patch_notes.html#version-2.0.2.0-26-november-2022",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.2.0 | 26 November 2022",
+    "text": "Version 2.0.2.0 | 26 November 2022\n\nFully implemented Open Graph.\nAdded button for direct link to site’s source code.\nTweaked landing page description."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.1.2-17-november-2022",
+    "href": "patch_notes.html#version-2.0.1.2-17-november-2022",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.1.2 | 17 November 2022",
+    "text": "Version 2.0.1.2 | 17 November 2022\n\nFixed broken license link."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.1.1-17-november-2022",
+    "href": "patch_notes.html#version-2.0.1.1-17-november-2022",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.1.1 | 17 November 2022",
+    "text": "Version 2.0.1.1 | 17 November 2022\n\nFixed broken site feedback link.\nUpdated site version references."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.1.0-17-november-2022",
+    "href": "patch_notes.html#version-2.0.1.0-17-november-2022",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.1.0 | 17 November 2022",
+    "text": "Version 2.0.1.0 | 17 November 2022\n\nFixed a bunch of broken links.\nFixed RSS buttons.\nShifted links on the landing page."
+  },
+  {
+    "objectID": "patch_notes.html#version-2.0.0.0-16-november-2022",
+    "href": "patch_notes.html#version-2.0.0.0-16-november-2022",
+    "title": "Site Patch Notes",
+    "section": "Version 2.0.0.0 | 16 November 2022",
+    "text": "Version 2.0.0.0 | 16 November 2022\n\nCreated, erm, site patch notes.\nSite is now entirely remade in Quarto.\nUI overhaul.\nForBlog is no longer the main landing page.\nApp playground has been added; a place where I can host my various creations.\n\nNew…\n\nfavicon.\nabout me page.\nlanding page.\nForBlog home page.\nForBlog post layout.\nglobal search bar.\n\nAdded…\n\na ForBlog only search bar.\nForBlog post filters.\nForBlog and App Playground subscriptions.\na form for site feedback.\ncopyright licences.\nnew fancy buttons."
+  },
+  {
+    "objectID": "patch_notes.html#version-1.0.0.0-15-may-2022",
+    "href": "patch_notes.html#version-1.0.0.0-15-may-2022",
+    "title": "Site Patch Notes",
+    "section": "Version 1.0.0.0 | 15 May 2022",
+    "text": "Version 1.0.0.0 | 15 May 2022\n\nInitial release.\nSite is built on fastpages, by fastai."
+  },
+  {
+    "objectID": "software/index.html",
+    "href": "software/index.html",
+    "title": "Software",
+    "section": "",
+    "text": "Here you can find code and packages from my work.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\nStat Jobs\n\n\nA webscraper for statistics jobs.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLinear Sufficient Dimension Reduction\n\n\nA package for some SDR methods.\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "software/pages/stat_jobs.html",
+    "href": "software/pages/stat_jobs.html",
+    "title": "Stat Jobs",
+    "section": "",
+    "text": "A web scraper of some popular job boards for mostly academic jobs in statistics or biostatistics. Find it here\n\n\n\nScreenshot of scraper.\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "unsubscribe.html",
+    "href": "unsubscribe.html",
+    "title": "Unsubscribe from ForBlog and App Playground Notifications",
+    "section": "",
+    "text": "Loading…\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "updates/posts_working/1_how_to_approach_creating_ai_models.html",
+    "href": "updates/posts_working/1_how_to_approach_creating_ai_models.html",
+    "title": "How to Approach Creating AI Models",
+    "section": "",
+    "text": "This article was rewritten on Monday, 31 October 2022."
+  },
+  {
+    "objectID": "updates/posts_working/1_how_to_approach_creating_ai_models.html#introduction",
+    "href": "updates/posts_working/1_how_to_approach_creating_ai_models.html#introduction",
+    "title": "How to Approach Creating AI Models",
+    "section": "Introduction",
+    "text": "Introduction\nHow you approach making models is crucial. The way AI methods are used in today’s landscape is very different. AI methods are created to solve small, atomic problems. And we’ve got most of the methods to handle these small tasks hammered down. Therefore, applied AI is not about creating models; it’s only a small part of it. It’s 80% problem solving and 20% implementing (I would not be surprised if it actually followed the 80-20 rule1).\n1 The 80/20 Rule, also known as the Pareto PrincipleThink of AI methods as a tool; think of it as a pencil. You can use pencils to draw, take notes, poke holes, and much more. There are also dozens of pencils out there. But what point is there in using any of those pencils if you don’t even know how to properly use a pencil in the first place? The art of creating pencils has already been perfected too.\nOne highly successful approach is the Drivetrain Approach, created by Jeremy Howard — who’s widely known for his fastai course and library —, Margit Zwemer, and Mike Loukides.\nThe goal of the Drivetrain Approach is to not just use data to generate more data — data that is in the form of predictions. But rather to use data to also generate actionable outcomes.\nThe official blogpost goes into much more depth here.\nIn this post, I’ll be providing a short overview of my understanding of this approach by applying it to the Elements of AI course’s final project (this online course was created by the University of Helsinki and Reaktor)."
+  },
+  {
+    "objectID": "updates/posts_working/1_how_to_approach_creating_ai_models.html#overview-of-the-drivetrain-approach",
+    "href": "updates/posts_working/1_how_to_approach_creating_ai_models.html#overview-of-the-drivetrain-approach",
+    "title": "How to Approach Creating AI Models",
+    "section": "Overview of the Drivetrain Approach",
+    "text": "Overview of the Drivetrain Approach\nThere are four main steps to this approach:\n\nDefine the objective\nConsider your possible actions\nConsider your data\nCreate the models\n\n\n\n\nImage Source\n\n\n\nDefine the objective\nWrite out what you are really trying to achieve. What is your goal? Writing it out puts it in a tangible manner.\n\n\nConsider your actions\nThink about what actions you can take to achieve your objective.\nAlso think about what would happen if you did those actions.\nWhat would happen if I did x? Would y really be a good idea? What if z worked out too well? Will x lead to y? What would happen if x turned out poorly?\n\n\nConsider your data\nThink about the data you already have and how it could be used.\nThink about any further data that is needed and how it could be collected.\n\n\nCreate the models\nCreate models. But create models that produce actions. Actions that produce the best results for your objective."
+  },
+  {
+    "objectID": "updates/posts_working/1_how_to_approach_creating_ai_models.html#endangered-language-chatbot",
+    "href": "updates/posts_working/1_how_to_approach_creating_ai_models.html#endangered-language-chatbot",
+    "title": "How to Approach Creating AI Models",
+    "section": "Endangered Language Chatbot",
+    "text": "Endangered Language Chatbot\nThe final project of the Elements of AI course asked me to come up with my own AI method that would solve a problem, and how it would do so.\nThe problem I tackled was the endangerment of languages. The solution I came up with was to create a chatbot that could converse in these endangered languages. I created an overview of how this could be done.\nThe overview can be read here.\nLet’s tackle this problem through the Drivetrain Approach.\n\nDefine the objective\nThe objective is to preserve languages that are in danger of going extinct. Through preserving languages, histories and cultures can be preserved.\n\n\nConsider your actions\nOne way this could be done is to create a chatbot that could converse in endangered languages. However, this would be a monumental task considering the amount of data needed to achieve this.\nAnother action that could be taken is to create an information retrieval (IR) system of sorts. A corpus of written text of the language could be provided, from which insights about the language’s history, culture, and way of conversing could be gained. In turn the language is preserved.\nThe latter action may be easier to achieve.\n\n\nConsider your data\nThe obvious source of data would be a corpora of text.\nHowever, a major problem arises for those languages which are only spoken. Audio recordings of conversations would have to be made which would take a lot of time and effort. This would be especially difficult for those languages where very few speakers remain.\nEven if a language does have written text, gathering enough text for the language can also be a problem: the language may not have much written text. This may especially be the case for endangered languages. Again, one solution is to manually create texts — using an NLP method to create these texts is not viable.\nIn short, for some languages, there may be no choice other than to manually create the data that would be fed into the system — this manual creation also has the chance to skew the performance of the model.\n\n\n\nKuş dili, a whistled language spoken in Turkey. How would such a language be preserved? Image Source\n\n\n\n\nCreate the model\nEither a chatbot needs to be created that speaks as accurately as a native speaker, or an IR system needs to be created that gives meaningful, correct insights into a language and its associated culture.\nThis step may either be easy or hard, depending on the language. Most NLP or IR systems have been built on a few, select languages. Perhaps this step may be easy for those languages that are similar to languages on which NLP or IR systems have already been built on. It will most likely be harder for those languages which are not."
+  },
+  {
+    "objectID": "updates/posts_working/1_how_to_approach_creating_ai_models.html#conclusion",
+    "href": "updates/posts_working/1_how_to_approach_creating_ai_models.html#conclusion",
+    "title": "How to Approach Creating AI Models",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis concludes my understanding of the Drivetrain Approach, through an example.\nApproaches are crucial: you can have state-of-the-art tools, but they are useless if not correctly applied. The approach you take can either make it or break it. Putting it into a concrete, organized, tangible manner goes a long way.\nIf you have any comments, questions, suggestions, feedback, criticisms, or corrections, please do post them down in the comment section below!"
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html",
+    "href": "updates/posts_working/2_bear_classifier_model.html",
+    "title": "My first AI model",
+    "section": "",
+    "text": "This article was updated on Tuesday, 1 November 2022."
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#introduction",
+    "href": "updates/posts_working/2_bear_classifier_model.html#introduction",
+    "title": "My first AI model",
+    "section": "Introduction",
+    "text": "Introduction\nThis is my first attempt at creating an AI model: an image classifier. This classifier can tell whether a grizzly bear, black bear, or teddy bear is in an image.\nYou can visit the classifier here to test it out for yourself!"
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#load-libraries",
+    "href": "updates/posts_working/2_bear_classifier_model.html#load-libraries",
+    "title": "My first AI model",
+    "section": "Load libraries",
+    "text": "Load libraries\n\n# No need to fret! fastai is specifically designed to be used with import *.\nfrom fastbook import *\nfrom fastai.vision.all import *"
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#download-image-files",
+    "href": "updates/posts_working/2_bear_classifier_model.html#download-image-files",
+    "title": "My first AI model",
+    "section": "Download image files",
+    "text": "Download image files\nSpecify the bear images we wish to download.\n\nbear_types = ('grizzly', 'black', 'teddy',)\npath = Path('bears')\n\nDownload 200 of each bear (search_images_ddg defaults to 200 URLs) and assign them to a specific directory.\n\nif not path.exists():\n    path.mkdir()\n    for bear_type in bear_types:\n        destination = (path / bear_type)\n        destination.mkdir(exist_ok=True)\n        urls = search_images_ddg(f\"{bear_type} bear\")\n        download_iamges(destination, urls=urls)\n\nCheck if our folder has the image files.\n\nfns = get_image_files(path)\nfns\n\n(#802) [Path('bears/grizzly/00000238.jpg'),Path('bears/grizzly/00000047.jpg'),Path('bears/grizzly/00000199.jpg'),Path('bears/grizzly/00000237.jpg'),Path('bears/grizzly/00000055.jpg'),Path('bears/grizzly/00000000.png'),Path('bears/grizzly/00000235.jpg'),Path('bears/grizzly/00000159.jpg'),Path('bears/grizzly/00000268.jpg'),Path('bears/grizzly/00000266.jpg')...]\n\n\nCheck for corrupt images.\n\ncorrupt_images = verify_images(fns)\ncorrupt_images\n\n(#0) []\n\n\nRemove corrupt images.\n\ncorrupt_images.map(pathlib.Path.unlink)\n\n(#0) []"
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#load-image-files",
+    "href": "updates/posts_working/2_bear_classifier_model.html#load-image-files",
+    "title": "My first AI model",
+    "section": "Load image files",
+    "text": "Load image files\nThe DataBlock API for creates the necessary DataLoaders for us.\n\nbears = DataBlock(\n    blocks=(ImageBlock, CategoryBlock),\n    get_items=get_image_files,\n    splitter=RandomSplitter(valid_pct=0.2, seed=42),\n    get_y=parent_label,\n    item_tfms=Resize(128),\n)\n\nThe blocks parameter allows us to specify the independent and dependent variables.\nThe get_items parameter tells fastai how to obtain our data. We use the get_image_files function to obtain our images.\nThe splitter parameter allows us to tell fastai how to split our data into training and validation sets. Since our data is one big set, we use the RandomSplitter class and tell it to use 20% of our data as the validation set. We specify a seed so the same split occurs each time.\nThe get_y parameter obtains our labels. The parent_label function simply gets the name of the folder a file is in. Since we have organized our bear images into different folders, this will nicely handle our target labels.\nThe item_tfms parameter allows us to specify a transform to apply to our data. Since we want all our images to be of the same size, we use the Resize() class.\nWe now have a DataBlock object from which can load the data.\n\ndataloaders = bears.dataloaders(path)\n\nLet us view a few images in the validation set.\n\ndataloaders.valid.show_batch(max_n=4, nrows=1)"
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#data-augmentation",
+    "href": "updates/posts_working/2_bear_classifier_model.html#data-augmentation",
+    "title": "My first AI model",
+    "section": "Data Augmentation",
+    "text": "Data Augmentation\nData augmentation refers to creating random variations to our input data. This produces new data points based on the existing data points. This allows each data point to look different, without changing their meaning.\nTypical examples of image augmentation include rotation, flipping, perspective warping, brightness changing, and contrast changing.\n\nCropping\nThe validation set images shown above are cropped. We achieved this by specifying the Resize argument when defining the DataBlock. Resize crops images to the size specified.\nCropping results in detail being lost.\nAlternatively, we can squish or stretch images, or pad them to a desired size.\n\n\nSquishing/Stretching\nThe problem with squishing or stretching images is that the model will learn to “see” images the way they are not supposed to be.\n\nbears = bears.new(item_tfms=Resize(128, ResizeMethod.Squish))\ndataloaders = bears.dataloaders(path)\ndataloaders.valid.show_batch(max_n=4, nrows=1)\n\n\n\n\n\n\n\n\n\n\nPadding\nBy padding, the image is surrounded typically by black, meaningless pixels. This results in extra, wasted computation.\n\nbears = bears.new(item_tfms=Resize(128, ResizeMethod.Pad, pad_mode='zeros'))\ndataloaders = bears.dataloaders(path)\ndataloaders.valid.show_batch(max_n=4, nrows=1)\n\n\n\n\n\n\n\n\nThe best approach is to take random crops of different parts of the same image. This makes sure that the model does not miss out on any details whilst letting it “know” how an object fully looks like.\nBelow, we have unique=True so that the same image is repeated with different variations.\n\nbears = bears.new(item_tfms=RandomResizedCrop(128, min_scale=0.3))\ndataloaders = bears.dataloaders(path)\ndataloaders.train.show_batch(max_n=4, nrows=1, unique=True)\n\n\n\n\n\n\n\n\nfastai comes with a function that applies a variety of augmentations to images. This can allow a model to “see” and recognize images in a variety of scenarios.\n\nbears = bears.new(item_tfms=Resize(128), batch_tfms=aug_transforms(mult=2))\ndataloaders  = bears.dataloaders(path)\ndataloaders.train.show_batch(max_n=8, nrows=2, unique=True)\n\n\n\n\n\n\n\n\nI have not used RandomResizedCrop here so that the different augmentations can be seen more clearly. RandomResizedCrop will be used when the model is trained.\nbatch_tfms tells fastai that we want to use these transforms on a batch."
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#training-the-model",
+    "href": "updates/posts_working/2_bear_classifier_model.html#training-the-model",
+    "title": "My first AI model",
+    "section": "Training the model",
+    "text": "Training the model\nWe do not have a lot of data. Only 200 images of each bear at most. Therefore, we will augment our images not only to get more data, but so that the model can recognize data in a variety of situations.\n\nbears = bears.new(\n    item_tfms=RandomResizedCrop(224, min_scale=0.5),\n    batch_tfms=aug_transforms(),\n)\ndataloaders = bears.dataloaders(path)\n\nWe will now create our learner and fine-tune it.\nWe will be using the ResNet18 architecture (which is a convolutional neural network, or CNN for short). Error rate will be the metric.\n\nlearn = cnn_learner(dataloaders, resnet18, metrics=error_rate)\nlearn.fine_tune(4)\n\nDownloading: \"https://download.pytorch.org/models/resnet18-f37072fd.pth\" to /root/.cache/torch/hub/checkpoints/resnet18-f37072fd.pth\n\n\n\n\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\nerror_rate\ntime\n\n\n\n\n0\n0.985666\n0.104632\n0.025000\n00:20\n\n\n\n\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\nerror_rate\ntime\n\n\n\n\n0\n0.132230\n0.073527\n0.012500\n00:22\n\n\n1\n0.106222\n0.054833\n0.018750\n00:22\n\n\n2\n0.087129\n0.058497\n0.012500\n00:20\n\n\n3\n0.069890\n0.058845\n0.018750\n00:19\n\n\n\n\n\nOur model only has a 1.9% error rate! Not bad! Though it seems if I had done an extra epoch, the error rate may have gone down to 1.3%, judging by the previous epochs’ error rates."
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#visualizing-mistakes",
+    "href": "updates/posts_working/2_bear_classifier_model.html#visualizing-mistakes",
+    "title": "My first AI model",
+    "section": "Visualizing mistakes",
+    "text": "Visualizing mistakes\nWe can visualize the mistakes the model is making by a confusion matrix.\n\ninterp = ClassificationInterpretation.from_learner(learn)\ninterp.plot_confusion_matrix()\n\n\n\n\n\n\n\n\n\n\n\n3 grizzly bears were misclassified as black bears.\nLet us see where the errors are occurring, so we can determine if they are due to a dataset problem or a model problem.\nTo do this, we will sort images by their loss.\n\ninterp.plot_top_losses(5, nrows=1)"
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#data-cleaning",
+    "href": "updates/posts_working/2_bear_classifier_model.html#data-cleaning",
+    "title": "My first AI model",
+    "section": "Data cleaning",
+    "text": "Data cleaning\nThe intuitive approach to data cleaning is to do it before training the model. However, a trained model can help us clean the data. For example, we can see some mislabaled bears in the above cases.\nfastai includes a GUI for data cleaning. This GUI allows you to choose a category/label and its associated training and validation sets. It then shows you images in order of highest-loss first, from which you can select images for removal or relabeling.\n\ncleaner = ImageClassifierCleaner(learn)\ncleaner\n\n\n\n\n\n\n\n\n\n\nImageClassifierCleaner does not actually delete or relabel. It just returns the indices that are to be deleted or relabeled.\n\n# Delete images selected for deletion.\nfor index in cleaner.delete():\n    cleaner.fns[index].unlink()\n\n# Relabel images selected for relabeling.\nfor index, category in cleaner.change():\n    shutil.move(str(cleaner.fns[index]), path/category)\n\nWe can now retrain and better performance should be expected."
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#saving-the-model",
+    "href": "updates/posts_working/2_bear_classifier_model.html#saving-the-model",
+    "title": "My first AI model",
+    "section": "Saving the model",
+    "text": "Saving the model\nA model consists of two parts: the architecture and the parameters.\nWhen we use the export() method, both of these are saved.\nThis method also saves the definition of our DataLoaders. This is done so that we do not have to redefine how to transform our data when the model is used in production.\nfastai uses our validation set DataLoader by default, so the data augmentation will not be applied, which is generally what is wanted.\nThe export() method creates a file named “export.pkl”.\n\nlearn.export()\n\nLet us check that the file exists.\n\npath = Path()\npath.ls(file_exts='.pkl')\n\n(#1) [Path('export.pkl')]\n\n\nIf you wish to deploy an app, this is the file you will need."
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#loading-the-model-for-inference",
+    "href": "updates/posts_working/2_bear_classifier_model.html#loading-the-model-for-inference",
+    "title": "My first AI model",
+    "section": "Loading the model for inference",
+    "text": "Loading the model for inference\nNow obviously we do not need to load the model as we already have the learner variable. But I shall do so anyways.\n\nlearn_inf = load_learner(path/'export.pkl')\n\nWe generally do inference for a single image at a time.\n\nlearn_inf.predict('images/grizzly.jpg')\n\n\n\n\n('grizzly', TensorBase(1), TensorBase([1.4230e-06, 1.0000e+00, 3.9502e-08]))\n\n\nThree things have been returned: the predicted category, the index of the predicted category, and the probabilities of each category.\nThe order of each category is based on the order of the vocabulary of the DataLoaders; that is, the stored tuple of all possible categories.\nThe DataLoaders can be accessed as an attribute of the Learner.\n\nlearn_inf.dataloaders.vocab\n\n['black', 'grizzly', 'teddy']"
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#why-cnns-work-so-well",
+    "href": "updates/posts_working/2_bear_classifier_model.html#why-cnns-work-so-well",
+    "title": "My first AI model",
+    "section": "Why CNNs work so well",
+    "text": "Why CNNs work so well\nThe ResNet18 architecture is a sort of CNN. Below is my understanding as to why CNNs work so well.\nA neural network is comprised of many layers. Each layer is comprised of many neurons. In a CNN, each neuron in the same layer is given the exact same weights, while being given different input data. This allows all neurons in a layer to fire upon detecting the same pattern.\nBecause of this, CNNs can become really good at detecting objects in various patterns, orientations, shapes, positions, and so on."
+  },
+  {
+    "objectID": "updates/posts_working/2_bear_classifier_model.html#conclusion",
+    "href": "updates/posts_working/2_bear_classifier_model.html#conclusion",
+    "title": "My first AI model",
+    "section": "Conclusion",
+    "text": "Conclusion\nWell then, that wraps up my first deep learning model! I have to say, it is much easier than I thought it would be to implement a model. You do not need to go into the nitty gritty details of artificial intelligence. A high level understanding can suffice in the beginning. It is like playing a sport: you do not need to understand the physics to be able to play it.\nIf you have any comments, questions, suggestions, feedback, criticisms, or corrections, please do post them down in the comment section below!"
+  },
+  {
+    "objectID": "updates/posts_working/4_data_quality_is_important.html",
+    "href": "updates/posts_working/4_data_quality_is_important.html",
+    "title": "Data Quality is Important | Car Classifier",
+    "section": "",
+    "text": "This article was updated on Thursday, 10 November 2022.\n\nI recently created a car classifier that classified cars into their respective brands.\nDespite having almost 5000 images in my training set, I ended up trying out over a hundred layers in my model, and twenty epochs. Even then, I had an error rate of 17.4%.\nThe culprit? My dataset.\nI scraped 5000 images of cars (500 for each company) from DuckDuckGo. Naturally, as expected, the data quality is not so good.\nWhy? Below are some potential reasons:\n\nNoncar images present in dataset\nCars of incorrect company present in dataset\nF1 cars present in dataset\nA large variety of cars from different time periods present in dataset\nDifferent companys’ cars look similar\nModded cars present in dataset\nConcept cars present in dataset\nMultiple cars present in a single image\nCertain angles of cars appear more than others\nCars appear in certain backgrounds more than others\nThe search term {car_brand} car could be skewing results\n\nI could have absolutely achieved better results with fewer layers and fewer epochs if I trained the model on better quality data — or manually combed through the 5000 images 💀. However, I did use fastai’s GUI for data cleaning. This GUI sorts images by their loss which helps to determine if certain images should be relabeled or deleted.\nBelow is the confusion matrix for this model.\n\nIt can be seen that this model “confuses” between quite a few different brands: Ford and Chevrolet, Chevrolet and Ford, Jaguar and Aston Martin, Renault and Ford.\nBut why is data quality important? Because without good data, the model will not be able to “see” things the way they actually are, and in turn end up making worse predictions and not generalize to other data.\nLet’s say you did not know how, say, a toaster looked like. So I taught you by showing you pictures of a kettle. Then to test you, I showed you a set of pictures depicting various kitchen appliances and told you to find the toaster. You would not be able to.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nExtending upon this example, say I showed you toasters only from the last two years and from two brands only. You would not be able to identify toasters older than two years, and toasters from other brands to much success.\nObviously, humans are smarter and can infer. AI methods can only infer to a certain degree, mainly based on what is in their dataset. This talk does start to become more philosophical.\nThe point of this post is to emphasize the importance of data quality and different aspects to consider as to why data quality may not be good. You can have the best architecture in the world, but it is useless if you do not have good data.\nIf you have any comments, questions, suggestions, feedback, criticisms, or corrections, please do post them down in the comment section below!\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "updates/posts_working/6_ai_in_a_nutshell.html",
+    "href": "updates/posts_working/6_ai_in_a_nutshell.html",
+    "title": "AI in a Nutshell",
+    "section": "",
+    "text": "This blog post was updated on Saturday, 12 November 2022.\nArtificial Intelligence. Machine Learning. Neural Networks. Deep Learning. Fancy Words. Deceptively Simple. All really the same.\nThe basic workflow to create such a system is below.\nVery simple, eh? Of course, it’s a very high level abstraction, but this high level view will make this seemingly complex topic very simple.\nFirst, what’s the main thing modern AI methods try to do? They try to make predictions about certain things.\nSo a function of sorts is needed to achieve this. A function that can make these predictions. Think of a function as a machine. You put something into the machine and then, with whatever was input, the machine then produces an output.\nThe machine that we will be working with has two input slots: one slot is for training and the other slot is for predictions.\nTo create a function that produces predictions, we need to tell the function what sort of predictions it needs to make.\nTo do that, we can pour some data into the training slot. This data will tell the function what sort of predictions to output. This process is known as fitting the function to the data.\nTo fit the function onto data, you train the function."
+  },
+  {
+    "objectID": "updates/posts_working/6_ai_in_a_nutshell.html#simple-case-quadratic-function",
+    "href": "updates/posts_working/6_ai_in_a_nutshell.html#simple-case-quadratic-function",
+    "title": "AI in a Nutshell",
+    "section": "Simple Case: Quadratic Function",
+    "text": "Simple Case: Quadratic Function\nGasp! A quadratic?? What’s this nonsense!\nA quadratic is a very simple equation. When shown on a graph, it looks like this.\n\n\n\n\n\n\n\n\n\nWe’ll be using this equation to demonstrate a very simple example.\nThe basic workflow for fitting a function to data is below.\n\n\n\n\n\n\n\n\n\n\nflowchart TB\n    B[Calculate Loss] --&gt; C[Calculate Gradients] --&gt; D[Update Parameters] --&gt; B\n\n\n\n\n\n\n\n\n\n\n\nIt can seem like a lot at first glance; quite a few new terms too.\nWe’ll break this down by going over the very simple example.\nLet’s say we have the following data points that describe, say, the speed of an object with respect to time. We want to predict what the speed of an object would be outside these data points.\nThe horizontal axis is time and the vertical axis is the object’s speed.\n\n\n\n\n\n\n\n\n\nWe can see that the data looks like the quadratic function shown above! Therefore, we could use the quadratic to predict what the speed of the object would be after 2.0 s and before -2.0 s.\nA quadratic equation includes three numbers which we will call \\(a\\), \\(b\\), and \\(c\\). These three numbers affect or control how our quadratic function will end up looking. \\(a\\), \\(b\\), and \\(c\\) are our parameters.\nLet’s let \\(a\\), \\(b\\), and \\(c\\) all equal \\(1\\) to begin with.\n\n\n\n\n\n\n\n\n\nHmm, not a very good fit.\nLet’s try another set of values for the parameters: \\(2\\), \\(1\\), \\(1.5\\).\n\n\n\n\n\n\n\n\n\nLooking much better now!\nLet’s see what \\(2\\), \\(0\\), and \\(1.5\\) gives us.\n\n\n\n\n\n\n\n\n\nEyeballing this is difficult. A certain set of parameters we use may be good by looking at the resulting graph, but in reality, it may not be.\nWhat we need is something that can tell us how good our function is; something that tells us whether the changes we are making are actually good or not. To do this, we can calculate a number called the loss. The smaller the loss, the better the function is.\nThere are many different ways loss can be calculated. The way we will be doing it is known as mean absolute error (MAE). In simple terms, it tells us how far off each prediction is from the actual value. For example, if we have a MAE of 1, this means that, on average, each prediction we make is 1 unit off from the real value.\nIn our case, a MAE of 1 would mean that each prediction is on average 1 m/s off from the real value.\nLet’s repeat what we did above, but this time, we’ll also see what the MAE is.\n\n\n\n\n\n\n\n\n\nAgain, this means that on average, each prediction we will make is 2.61 m/s off from the real value.\n\n\n\n\n\n\n\n\n\nThat’s a big jump!\n\n\n\n\n\n\n\n\n\nHmm, things got worse.\nDoing this process by hand is very tedious. How do we know if the new set of parameters we are using would improve the function? There needs to be a way to automate this so we don’t have to sit down and do this by hand.\nWhat we can do is update the parameters based on the loss. This would in turn create new parameters that would decrease the loss.\n\n\n\n\n\n\n\n\n\n\nflowchart TB\n    A[Loss] -- Updates ---&gt; B[Parameters] -- Updates ---&gt; A\n\n\n\n\n\n\n\n\n\n\n\nLet’s give \\(a\\), \\(b\\), and \\(c\\) an arbitrary set of parameters \\(1.1\\), \\(1.1\\), and \\(1.1\\).\nNow let’s create a quadratic with this set of parameters and calculate its mean absolute error.\n\n\n\n\n\n\n\n\nCode Output\n\n\n\nThe MAE is 2.42.\n\n\n\n\nNow comes the next step: how do we update the parameters based on this loss we have calculated?\nTo do this, we calculate a new set of quantities known as the gradients. Each parameter has its own gradient.\nLet’s say \\(a\\) has the value of \\(1\\). If \\(a\\) has a gradient of value \\(0.5\\), this would mean that if we increase \\(a\\) by \\(1\\), the loss would increase by \\(0.5\\). Therefore, if we decrease \\(a\\) by \\(1\\), this would mean the loss would decrease by \\(0.5\\), which is what we want!\nRead over this once more and it’ll make sense!\nLet’s quickly go over the inverse: if \\(a\\) has a gradient of value \\(-0.5\\), increasing \\(a\\) by \\(1\\) would decrease the loss by \\(0.5\\) — again, this is what we want! Similarly, decreasing \\(a\\) by \\(1\\) would increase the loss by \\(0.5\\).\nThe gradients are calculated from the loss. Then the gradients, the current parameters, and along with another value, the parameters are updated to new values. The “another value” is known as the learning rate. The learning rate controls how much the gradients update the parameters.\n\n\n\n\n\n\n\n\n\n\nflowchart TB\n    A[Gradients]\n    B[Current Parameters]\n    C[Learning Rate]\n    D[Magical Box]\n    E[Updated Paramters]\n    A & B & C ---&gt; D ---&gt; E\n\n\n\n\n\n\n\n\n\n\n\nLets see this tangibly.\n\n\n\n\n\n\n\n\nCode Output\n\n\n\nThe gradients for each parameter respectively are [-1.35, -0.03, -0.5].\n\n\n\n\nOkay, let’s break this down. The gradient for the first parameter \\(a\\) is \\(-1.35\\). This tells us that if we increase the parameter \\(a\\) by \\(1\\), our loss will decrease by \\(-1.35\\). Similary, if we increase the parameter \\(b\\) by \\(1\\), this will result in the loss being decreased by \\(-0.03\\). The same logic holds for \\(c\\).\nLet’s now update the parameters. Remember, the current set of parameters, their gradients, and the learning rate all update the current set of parameters to new values.\n\n\n\n\n\n\n\n\nCode Output\n\n\n\nThe new parameters are [1.11, 1.1, 1.11].\n\n\n\n\nWe can now repeat the process as many times as desired. Let’s do it 4 times.\n\n\nPass: 0; Loss: 2.4010409560416095\nPass: 1; Loss: 1.9847692009423128\nPass: 2; Loss: 1.498316818239171\nPass: 3; Loss: 1.171195547258246\n\n\n\n\n\n\n\n\nCode Output\n\n\n\nThe MAE after 4 passes is 1.17.\n\n\n\n\n\n\n\n\n\n\n\nAnd there you go! An even better fitting quadratic!\nLet’s see what the object’s speed is at 1 second.\n\n\n\n\n\n\n\n\nCode Output\n\n\n\nThe object’s velocity at 1 seconds is 5.65 m/s.\n\n\n\n\nThat roughly seems right!\nLet’s see what the object’s speed would be at 3 seconds.\n\n\n\n\n\n\n\n\nCode Output\n\n\n\nThe object’s velocity at 1 seconds is 30.31 m/s.\n\n\n\n\nAnd now, the diagram below should make sense!\n\n\n\n\n\n\n\n\n\n\nflowchart TB\n    B[Calculate Loss] --&gt; C[Calculate Gradients] --&gt; D[Update Parameters] --&gt; B"
+  },
+  {
+    "objectID": "updates/posts_working/6_ai_in_a_nutshell.html#the-cool-case-relus",
+    "href": "updates/posts_working/6_ai_in_a_nutshell.html#the-cool-case-relus",
+    "title": "AI in a Nutshell",
+    "section": "The Cool Case: ReLUs",
+    "text": "The Cool Case: ReLUs\nThe quadratic example above is a nice, simple way to get a grasp of things. However, you may be wondering, “What if the data doesn’t follow a quadratic shape? What do we do then?”\nAnd that’s a good question! What if our data doesn’t follow any sort of mathematical shape? What if we don’t even know the shape the data will follow? How do we know what function to use in that case?\nThere is a solution to that! There is an easy way to create a function that bends and twists itself to fit the data; an “unbound” function of sorts, as I like to call it.\nThis can be achieved by using another equation known as the ReLU. Another fancy word that can make you sound like a professional, while also being really simple. ReLU is short for Rectified Linear Unit.\nThe ReLU takes any value that is less than 0, and converts to 0.\nLet’s see this.\nTake the following line. It has both positive and negative values on the vertical axis.\n\n\n\n\n\n\n\n\n\nWhen we use a ReLU, all negative values are converted to zero.\n\n\n\n\n\n\n\n\n\nLet’s return to our original data.\n\n\n\n\n\n\n\n\n\nNow a single ReLU won’t work as seen below.\n\n\n\n\n\n\n\n\n\nEven after we try to fit it.\n\n\n\n\n\n\n\n\n\nBut look at what happens when two ReLUs are, literally, added together!\n\n\n\n\n\n\n\n\n\n\nPretty neat, hey?\nLet’s add a third ReLU to the mix.\n\n\n\n\n\n\n\n\n\n\nYou can see here how the function is adapting to the shape of the data.\nWith some extra experimentation, I was able to get the loss down to 1.08!\n\n\n\n\n\n\n\n\n\nThat said, it’s not too much of a difference when compared to two ReLUs.\nWhat if we add 5 more to the mix, for a total of 8?\n\n\n\n\n\n\n\n\n\nNice! The MAE has gone below 1!\nIt’s even beat the quadratic function from before! With some expermimenting, I had managed to get the quadratic’s loss down to 1.03.\n\n\n\n\n\n\n\n\n\n\nLet’s use the model that has 8 ReLUs to predict what the object’s velocity would be at 1 second.\n\n\n\n\n\n\n\n\nCode Output\n\n\n\nThe object’s speed at 1 s is 4.9 m/s.\n\n\n\n\nHmm, yes, that is a bit off. But that is fine because overall, the function is a lot more accurate for all the datapoints."
+  },
+  {
+    "objectID": "updates/posts_working/6_ai_in_a_nutshell.html#conclusion",
+    "href": "updates/posts_working/6_ai_in_a_nutshell.html#conclusion",
+    "title": "AI in a Nutshell",
+    "section": "Conclusion",
+    "text": "Conclusion\nSee how easy this stuff all is? All those fancy terms makes this feel complex when in reality, it’s all really simple.\nWhy not now go and venture off to learn more and implement your own models!\nBelow are two free courses I can recommend:\n\nElements of AI\nA great primer into AI. The course goes over the history, the implementations, and the implications of this field, all without needing the knowledge of programming or complex mathematics.\nPractical Deep Learning for Coders\nThis course is different from other AI courses you’ll find. How? Because instead of starting off with the nitty gritty basics, you begin by actually implementing your own simple image classifier (a model that can tell what thing is in an image). You’ll be surprised at how simple it is to implement models with minimal code, and how little you need to know to get started (hint: you only really need high-school maths).\n\nIf you have any questions, comments, suggestions, or feedback, please do post them down in the comment section below!"
+  },
+  {
+    "objectID": "updates/posts_working/6_ai_in_a_nutshell.html#acknowledgements",
+    "href": "updates/posts_working/6_ai_in_a_nutshell.html#acknowledgements",
+    "title": "AI in a Nutshell",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThis article was inspired by the How does a neural net really work Kaggle Notebook by Jeremy Howard, and lesson 3 of Practical Deep Learning for Coders."
+  }
+]

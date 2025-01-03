@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Salman Naqvi">
+<meta name="description" content="An alternative way to write matrix operations.">
+
+<title>Intuitively Approaching Einstein Summation Notation – Harris Quach</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-01c78b5cd655e4cd89133cf59d535862.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-7331fc5fb3004fb5c05405bee798322f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/quarto-contrib/academicons-1.9.4/all.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/academicons-1.9.4/size.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Intuitively Approaching Einstein Summation Notation – Harris Quach">
+<meta property="og:description" content="An alternative way to write matrix operations.">
+<meta property="og:image" content="https://harrisq.github.io/updates/images/16_einstein_summation/thumbnail.png">
+<meta property="og:site_name" content="Harris Quach">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:width" content="1200">
+<meta name="twitter:title" content="Intuitively Approaching Einstein Summation Notation – Harris Quach">
+<meta name="twitter:description" content="An alternative way to write matrix operations.">
+<meta name="twitter:image" content="https://harrisq.github.io/updates/images/16_einstein_summation/thumbnail.png">
+<meta name="twitter:image-height" content="1200">
+<meta name="twitter:image-width" content="1200">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Harris Quach</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> <i class="bi bi-house-door" role="img">
+</i> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../updates/index.html"> <i class="bi bi-newspaper" role="img">
+</i> 
+<span class="menu-text">Updates+Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../extended_topics/index.html"> <i class="bi bi-sliders2" role="img">
+</i> 
+<span class="menu-text">Extended Topics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> <i class="bi bi-file-person" role="img">
+</i> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/HarrisQ/harrisq.github.io" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-code-slash"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#general-rules" id="toc-general-rules" class="nav-link active" data-scroll-target="#general-rules">General Rules</a></li>
+  <li><a href="#a-more-intuitive-way" id="toc-a-more-intuitive-way" class="nav-link" data-scroll-target="#a-more-intuitive-way">A More Intuitive Way</a>
+  <ul>
+  <li><a href="#hadamard-product" id="toc-hadamard-product" class="nav-link" data-scroll-target="#hadamard-product">Hadamard Product</a></li>
+  <li><a href="#matrix-multiplication" id="toc-matrix-multiplication" class="nav-link" data-scroll-target="#matrix-multiplication">Matrix Multiplication</a></li>
+  </ul></li>
+  <li><a href="#various-examples" id="toc-various-examples" class="nav-link" data-scroll-target="#various-examples">Various Examples</a>
+  <ul>
+  <li><a href="#d-operations" id="toc-d-operations" class="nav-link" data-scroll-target="#d-operations">1D Operations</a>
+  <ul class="collapse">
+  <li><a href="#returning-a-view-of-a" id="toc-returning-a-view-of-a" class="nav-link" data-scroll-target="#returning-a-view-of-a">Returning a View of <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#summing-the-values-of-a" id="toc-summing-the-values-of-a" class="nav-link" data-scroll-target="#summing-the-values-of-a">Summing the Values of <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#hadamard-product-of-a-and-b" id="toc-hadamard-product-of-a-and-b" class="nav-link" data-scroll-target="#hadamard-product-of-a-and-b">Hadamard Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></a></li>
+  <li><a href="#dot-product-of-a-and-b" id="toc-dot-product-of-a-and-b" class="nav-link" data-scroll-target="#dot-product-of-a-and-b">Dot Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></a></li>
+  <li><a href="#outer-product-of-a-and-b" id="toc-outer-product-of-a-and-b" class="nav-link" data-scroll-target="#outer-product-of-a-and-b">Outer Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></a></li>
+  </ul></li>
+  <li><a href="#d-operations-1" id="toc-d-operations-1" class="nav-link" data-scroll-target="#d-operations-1">2D Operations</a>
+  <ul class="collapse">
+  <li><a href="#return-a-view-of-a" id="toc-return-a-view-of-a" class="nav-link" data-scroll-target="#return-a-view-of-a">Return a View of <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#transpose-a" id="toc-transpose-a" class="nav-link" data-scroll-target="#transpose-a">Transpose <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#return-the-main-diagonal-of-a" id="toc-return-the-main-diagonal-of-a" class="nav-link" data-scroll-target="#return-the-main-diagonal-of-a">Return the Main Diagonal of <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#obtain-the-trace-of-a" id="toc-obtain-the-trace-of-a" class="nav-link" data-scroll-target="#obtain-the-trace-of-a">Obtain the Trace of <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#sum-the-rows-of-a" id="toc-sum-the-rows-of-a" class="nav-link" data-scroll-target="#sum-the-rows-of-a">Sum the Rows of <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#sum-the-columns-of-a" id="toc-sum-the-columns-of-a" class="nav-link" data-scroll-target="#sum-the-columns-of-a">Sum the Columns of <span class="math inline">\(A\)</span></a></li>
+  <li><a href="#hadamard-product-of-a-and-b-1" id="toc-hadamard-product-of-a-and-b-1" class="nav-link" data-scroll-target="#hadamard-product-of-a-and-b-1">Hadamard Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></a></li>
+  <li><a href="#hadamard-product-of-a-and-b-transposed-a-odot-bt" id="toc-hadamard-product-of-a-and-b-transposed-a-odot-bt" class="nav-link" data-scroll-target="#hadamard-product-of-a-and-b-transposed-a-odot-bt">Hadamard Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> Transposed (<span class="math inline">\(A \odot B^{T}\)</span>)</a></li>
+  <li><a href="#matrix-product-of-a-and-b" id="toc-matrix-product-of-a-and-b" class="nav-link" data-scroll-target="#matrix-product-of-a-and-b">Matrix Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></a></li>
+  <li><a href="#each-row-of-a-multiplied-with-b" id="toc-each-row-of-a-multiplied-with-b" class="nav-link" data-scroll-target="#each-row-of-a-multiplied-with-b">Each Row of <span class="math inline">\(A\)</span> Multiplied with <span class="math inline">\(B\)</span></a></li>
+  <li><a href="#every-element-of-a-multiplied-with-b" id="toc-every-element-of-a-multiplied-with-b" class="nav-link" data-scroll-target="#every-element-of-a-multiplied-with-b">Every Element of <span class="math inline">\(A\)</span> Multiplied with <span class="math inline">\(B\)</span></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Intuitively Approaching Einstein Summation Notation</h1>
+<p class="subtitle lead">Putting it in an einsum-ple manner.</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Mathematics</div>
+    <div class="quarto-category">Programming</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    An alternative way to write matrix operations.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Salman Naqvi </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Tuesday, 06 June 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-simple callout-warning">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>This post covers einstein summation notation syntax in terms of programming languages.</p>
+</div>
+</div>
+</div>
+<p><img src="../images/16_einstein_summation/thumbnail.png" class="img-fluid"></p>
+<p>Einstein summation notation (or einsum notation for short) is a handy way to write various matrix operations in a succinct, universal manner. With it, you can probably forget all the various symbols and operators there are and stick to one common syntax, that once understood, can be more intuitive.</p>
+<p>For example, matrix multiplication can be written as <code>ik, kj -&gt; ij</code> and a transpose of a matrix can be written as <code>ij -&gt; ji</code>.</p>
+<p>Let’s figure this out.</p>
+<section id="general-rules" class="level2">
+<h2 class="anchored" data-anchor-id="general-rules">General Rules</h2>
+<p>The following are two general rules one can use to quickly write einsum notation.</p>
+<blockquote class="blockquote">
+<p>Repeating letters between input arrays means that values along those axes will be multiplied together.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Omitting a letter from the output means that values along that axis will be summed.</p>
+</blockquote>
+<p>However, I don’t find these rules intuitive, even a little confusing. Why?</p>
+<p>Matrices have the order of row by column. A 2x3 matrix has 2 rows and 3 columns. When we perform matrix multiplication, we take the dot product of each row in the first matrix with each column in the second matrix.</p>
+<p>However, when the einsum rules above — specifically the first rule — are used to denote matrix multiplication (<span class="math inline">\(ik, kj \rightarrow ij\)</span>, as depicted below), the order of a matrix appears to change.</p>
+<p><img src="../images/16_einstein_summation/1.png" class="img-fluid"></p>
+<p>In order for the einsum rules and the definition of matrix multiplcation above to stay consistent, <span class="math inline">\(k\)</span> now denotes the rows in the first matrix and columns in the second matrix, thereby changing the order of a matrix to column by row.</p>
+<p>But even if we let <span class="math inline">\(k\)</span> denote the columns in the first matrix, we end up doing dot products with each <em>column</em> in the first matrix and with each <em>row</em> in the second matrix.</p>
+<p>Not intuitive.</p>
+</section>
+<section id="a-more-intuitive-way" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="a-more-intuitive-way">A More Intuitive Way</h2>
+<p>The key to understanding einsum notation is to not think of axes, but of iterators. For example, <span class="math inline">\(i\)</span> is an iterator that returns the rows of a matrix. <span class="math inline">\(j\)</span> is an iterator that returns the columns of a matrix.</p>
+<p>Let’s begin with a relatively more simple example: the hadamard product (also known as the elementwise product or elementwise multiplication.)</p>
+<section id="hadamard-product" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="hadamard-product">Hadamard Product</h3>
+<p>We have the following two matrices.</p>
+<p><span class="math display">\[
+A
+=
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 \\
+4 &amp; 5 &amp; 6 \\
+7 &amp; 8 &amp; 9
+\end{bmatrix},
+B
+=
+\begin{bmatrix}
+9 &amp; 8 &amp; 7 \\
+6 &amp; 5 &amp; 4 \\
+3 &amp; 2 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>To access the element 8 in matrix <span class="math inline">\(A\)</span>, we need to return the second row and first column<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. This can be denoted as <span class="math inline">\(a_{21}\)</span>. The first digit in the subscript refers to the row and the second refers to the column. We can refer to any entry generally as <span class="math inline">\(a_{ij}\)</span>.</p>
+<div class="no-row-height column-margin column-container"><div id="fn1"><p><sup>1</sup>&nbsp;This assumes the matrix is zero indexed. This means <span class="math inline">\(\begin{bmatrix} 1 &amp; 2 &amp; 3 \end{bmatrix}\)</span> is the zeroth row of <span class="math inline">\(A\)</span>.</p></div></div><p>Taking the hadamard product looks like this.</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 \\
+4 &amp; 5 &amp; 6 \\
+7 &amp; 8 &amp; 9
+\end{bmatrix}
+\odot
+\begin{bmatrix}
+9 &amp; 8 &amp; 7 \\
+6 &amp; 5 &amp; 4 \\
+3 &amp; 2 &amp; 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \cdot 9 &amp; 2 \cdot 8 &amp; 3 \cdot 7 \\
+4 \cdot 6 &amp; 5 \cdot 5 &amp; 6 \cdot 4 \\
+7 \cdot 3 &amp; 8 \cdot 2 &amp; 9 \cdot 1
+\end{bmatrix}
+=
+C
+\]</span></p>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+An alternative way to look at it…
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="callout callout-style-simple callout-warning">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Don’t dwell too much on this; it may help to refer back to this later to help understand the einsum notation below.</p>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+\begin{bmatrix} 1 &amp; 2 &amp; 3 \\ 4 &amp; 5 &amp; 6 \\ 7 &amp; 8 &amp; 9 \end{bmatrix} \odot \begin{bmatrix} 9 &amp; 8 &amp; 7 \\ 6 &amp; 5 &amp; 4 \\ 3 &amp; 2 &amp; 1 \end{bmatrix} = \begin{bmatrix} a_{00}b_{00} &amp; a_{01}b_{01} &amp; a_{02}b_{02} \\ a_{10}b_{10} &amp; a_{11}b_{11} &amp; a_{12}b_{12} \\ a_{20}b_{20} &amp; a_{21}b_{21} &amp; a_{22}b_{22} \\ \end{bmatrix} = C
+\]</span></p>
+</div>
+</div>
+</div>
+<p>In words, what’s happening is that we’re looping through all the rows of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>. For each row, we also loop through each column and multiply those columns together.</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(\text{for row in } A \text{ and } B\)</span></p>
+<p>&nbsp;&nbsp;<span class="math inline">\(\text{for col in } A \text{ and } B\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="math inline">\(a_{\text{rowcol}} \cdot b_{\text{rowcol}} = c_{\text{rowcol}}\)</span></p>
+</blockquote>
+<blockquote class="blockquote">
+<p><span class="math inline">\(\text{for } i \text{ in } A \text{ and } B\)</span></p>
+<p>&nbsp;&nbsp;<span class="math inline">\(\text{for } j \text{ in } A \text{ and } B\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="math inline">\(a_{ij} \cdot b_{ij} = c_{ij}\)</span></p>
+</blockquote>
+<p>Let’s focus on that last line above.</p>
+<p><span class="math display">\[a_{ij} \cdot b_{ij} = c_{ij}\]</span></p>
+<p>This line represents elementwise multiplication. For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, we iterate through each column <span class="math inline">\(j\)</span> in those rows, and take their product.</p>
+<p>In einsum notation, we can more succinctly write this as <span class="math inline">\(ij, ij \rightarrow ij\)</span>. This has 4 parts.</p>
+<ol type="1">
+<li><span class="math inline">\(ij\)</span> refers to the iterators working on the rows and columns of <span class="math inline">\(A\)</span> — <span class="math inline">\(i\)</span> works on the rows and <span class="math inline">\(j\)</span> works on the columns.</li>
+<li><span class="math inline">\(ij\)</span> refers to the exact same iterators working on <span class="math inline">\(B\)</span>.</li>
+<li><span class="math inline">\(\rightarrow\)</span> tells us an output will be returned.</li>
+<li><span class="math inline">\(ij\)</span> refers to the exact same iterators that will be responsble for making up the output matrix <span class="math inline">\(C\)</span>. The location <span class="math inline">\(ij\)</span> says where the product of two elements will be located in <span class="math inline">\(C\)</span>.</li>
+</ol>
+</section>
+<section id="matrix-multiplication" class="level3">
+<h3 class="anchored" data-anchor-id="matrix-multiplication">Matrix Multiplication</h3>
+<p>Let’s cover matrix multiplication in the same manner as above.</p>
+<p><span class="math display">\[
+A
+=
+\begin{bmatrix}
+1 &amp; 2 \\
+3 &amp; 4
+\end{bmatrix}
+,
+B
+=
+\begin{bmatrix}
+5 &amp; 6 \\
+7 &amp; 8
+\end{bmatrix}
+\]</span></p>
+<p><span class="math display">\[
+\begin{bmatrix}
+1 &amp; 2 \\
+3 &amp; 4
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+5 &amp; 6 \\
+7 &amp; 8
+\end{bmatrix}
+=
+\begin{bmatrix}
+(1 \cdot 5) + (2 \cdot 7) &amp; (1 \cdot 6) + (2 \cdot 8) \\
+(3 \cdot 5) + (4 \cdot 7) &amp; (3 \cdot 6) + (4 \cdot 8)
+\end{bmatrix}
+=
+C
+\]</span></p>
+<!-- TODO: Might want to remove the example below or position it after the einsum notation for matrix multiplication. -->
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+An alternative way to look at it…
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="callout callout-style-simple callout-warning">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Don’t dwell too much on this; it may help to refer back to this later to help understand the einsum notation below.</p>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+\begin{bmatrix}
+1 &amp; 2 \\
+3 &amp; 4
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+5 &amp; 6 \\
+7 &amp; 8
+\end{bmatrix}
+=
+\begin{bmatrix}
+(a_{00}b_{00} + a_{01}b_{10}) &amp; (a_{00}b_{01} + a_{01}b_{11}) \\
+(a_{10}b_{00} + a_{11}b_{10}) &amp; (a_{10}b_{01} + a_{11}b_{11})
+\end{bmatrix}
+=
+C
+\]</span></p>
+</div>
+</div>
+</div>
+<p>Matrix multiplication simply involves taking the dot product of each row in the first matrix with each column in the second matrix.</p>
+<p>We’ll need to use 3 iterators for this: one iterator <span class="math inline">\(i\)</span> to loop through the rows of <span class="math inline">\(A\)</span>, another iterator <span class="math inline">\(j\)</span> to loop through the columns of <span class="math inline">\(B\)</span>, and a third iterator <span class="math inline">\(k\)</span> to loop through the elements in a row and column.</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(\text{for row in } A\)</span></p>
+<p>&nbsp;&nbsp;<span class="math inline">\(\text{for col in } B\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="math inline">\(\text{for ele in } A_{\text{row}} \text{ and } B_{\text{col}}\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="math inline">\(a_{\text{rowele}} \cdot b_{\text{elecol}} \mathrel{+}= c_{\text{rowcol}}\)</span></p>
+</blockquote>
+<blockquote class="blockquote">
+<p><span class="math inline">\(\text{for } i \text{ in } A\)</span></p>
+<p>&nbsp;&nbsp;<span class="math inline">\(\text{for } j \text{ in } B\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <span class="math inline">\(\text{for } k \text{ in } A_{i} \text{ and } B_{j}\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="math inline">\(a_{ik} \cdot b_{kj} \mathrel{+}= c_{ij}\)</span></p>
+</blockquote>
+<p>Let’s focus in on the last line above.</p>
+<p><span class="math display">\[
+a_{ik} \cdot b_{kj} \mathrel{+}= c_{ij}
+\]</span></p>
+<p>This can more succinctly be written in einsum notation as <span class="math inline">\(ik, kj \rightarrow ij\)</span> — for each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span>, and for each column <span class="math inline">\(j\)</span> in <span class="math inline">\(B\)</span>, iterate through each element <span class="math inline">\(k\)</span>, take their product, and sum the those products. The location of the output of the dot product in the output matrix <span class="math inline">\(C\)</span> is <span class="math inline">\(c_{ij}\)</span>.</p>
+</section>
+</section>
+<section id="various-examples" class="level2">
+<h2 class="anchored" data-anchor-id="various-examples">Various Examples</h2>
+<section id="d-operations" class="level3">
+<h3 class="anchored" data-anchor-id="d-operations">1D Operations</h3>
+<p><span class="math display">\[
+A = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}, B = \begin{bmatrix} 4 \\ 5 \\ 6 \end{bmatrix}
+\]</span></p>
+<section id="returning-a-view-of-a" class="level4">
+<h4 class="anchored" data-anchor-id="returning-a-view-of-a">Returning a View of <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span>, output the row.</p>
+</section>
+<section id="einsum-notation" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(i \rightarrow i\)</span></p>
+<hr>
+</section>
+</section>
+<section id="summing-the-values-of-a" class="level4">
+<h4 class="anchored" data-anchor-id="summing-the-values-of-a">Summing the Values of <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode-1" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-1"><strong>Pseudocode</strong></h5>
+<p>Iterate through each row <span class="math inline">\(i\)</span>, and sum all rows.</p>
+</section>
+<section id="einsum-notation-1" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-1"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(i \rightarrow \phantom{i}\)</span></p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A scalar is output, hence no output iterator.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="hadamard-product-of-a-and-b" class="level4">
+<h4 class="anchored" data-anchor-id="hadamard-product-of-a-and-b">Hadamard Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></h4>
+<section id="pseudocode-2" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-2"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, multiply them together.</p>
+</section>
+<section id="einsum-notation-2" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-2"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(i, i \rightarrow i\)</span></p>
+<hr>
+</section>
+</section>
+<section id="dot-product-of-a-and-b" class="level4">
+<h4 class="anchored" data-anchor-id="dot-product-of-a-and-b">Dot Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></h4>
+<section id="pseudocode-3" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-3"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, multiply them together, and sum the products.</p>
+</section>
+<section id="einsum-notation-3" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-3"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(i, i \rightarrow \phantom{i}\)</span></p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A scalar is output, hence no output iterator.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="outer-product-of-a-and-b" class="level4">
+<h4 class="anchored" data-anchor-id="outer-product-of-a-and-b"><a href="https://en.wikipedia.org/wiki/Outer_product">Outer Product</a> of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></h4>
+<section id="pseudocode-4" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-4"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span>, multiply it with each row <span class="math inline">\(j\)</span> in <span class="math inline">\(B\)</span>.</p>
+</section>
+<section id="einsum-notation-4" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-4"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(i, j \rightarrow ij\)</span></p>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Expanded example
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The outer product involves multiplying each element in <span class="math inline">\(A\)</span> with all elements in <span class="math inline">\(B\)</span>.</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(\text{for row in } A\)</span></p>
+<p>&nbsp;&nbsp;<span class="math inline">\(\text{for another-row in } B\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <span class="math inline">\(a_{\text{row}} \cdot b_{\text{another-row}} = c_{\text{rowanother-row}}\)</span></p>
+</blockquote>
+<blockquote class="blockquote">
+<p><span class="math inline">\(\text{for } i \text{ in } A\)</span></p>
+<p>&nbsp;&nbsp; <span class="math inline">\(\text{for } j \text{ in } B\)</span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <span class="math inline">\(a_{i} \cdot b_{j} = c_{ij}\)</span></p>
+</blockquote>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="d-operations-1" class="level3">
+<h3 class="anchored" data-anchor-id="d-operations-1">2D Operations</h3>
+<p><span class="math display">\[
+A
+=
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 \\
+4 &amp; 5 &amp; 6 \\
+7 &amp; 8 &amp; 9
+\end{bmatrix}
+,
+B
+=
+\begin{bmatrix}
+9 &amp; 8 &amp; 7 \\
+6 &amp; 5 &amp; 4 \\
+3 &amp; 2 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<section id="return-a-view-of-a" class="level4">
+<h4 class="anchored" data-anchor-id="return-a-view-of-a">Return a View of <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode-5" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-5"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span>, iterate through each column <span class="math inline">\(j\)</span> and output it.</p>
+</section>
+<section id="einsum-notation-5" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-5"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ij \rightarrow ij\)</span></p>
+<hr>
+</section>
+</section>
+<section id="transpose-a" class="level4">
+<h4 class="anchored" data-anchor-id="transpose-a">Transpose <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode-6" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-6"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span>, iterate through each column <span class="math inline">\(j\)</span> and output it in <span class="math inline">\(C\)</span> at row <span class="math inline">\(j\)</span> and column <span class="math inline">\(i\)</span>.</p>
+</section>
+<section id="einsum-notation-6" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-6"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ij \rightarrow ji\)</span></p>
+<hr>
+</section>
+</section>
+<section id="return-the-main-diagonal-of-a" class="level4">
+<h4 class="anchored" data-anchor-id="return-the-main-diagonal-of-a">Return the Main Diagonal of <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode-7" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-7"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span>, iterate through each column <span class="math inline">\(i\)</span> and output it.</p>
+</section>
+<section id="einsum-notation-7" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-7"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ii \rightarrow i\)</span></p>
+<hr>
+</section>
+</section>
+<section id="obtain-the-trace-of-a" class="level4">
+<h4 class="anchored" data-anchor-id="obtain-the-trace-of-a">Obtain the Trace of <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode-8" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-8"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span>, iterate through each column <span class="math inline">\(i\)</span> and sum them.</p>
+</section>
+<section id="einsum-notation-8" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-8"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ii \rightarrow \phantom{i}\)</span></p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A scalar is output, hence no output iterator.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sum-the-rows-of-a" class="level4">
+<h4 class="anchored" data-anchor-id="sum-the-rows-of-a">Sum the Rows of <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode-9" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-9"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span>, iterate through each column <span class="math inline">\(j\)</span> and sum them.</p>
+</section>
+<section id="einsum-notation-9" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-9"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ij \rightarrow i\)</span></p>
+<hr>
+</section>
+</section>
+<section id="sum-the-columns-of-a" class="level4">
+<h4 class="anchored" data-anchor-id="sum-the-columns-of-a">Sum the Columns of <span class="math inline">\(A\)</span></h4>
+<section id="pseudocode-10" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-10"><strong>Pseudocode</strong></h5>
+<p>For each column <span class="math inline">\(j\)</span>, iterate through each row <span class="math inline">\(i\)</span> and sum them.</p>
+</section>
+<section id="einsum-notation-10" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-10"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ij \rightarrow j\)</span></p>
+<hr>
+</section>
+</section>
+<section id="hadamard-product-of-a-and-b-1" class="level4">
+<h4 class="anchored" data-anchor-id="hadamard-product-of-a-and-b-1">Hadamard Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></h4>
+<section id="pseudocode-11" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-11"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, iterate throuch each column <span class="math inline">\(j\)</span>, and take their product.</p>
+</section>
+<section id="einsum-notation-11" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-11"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ij, ij \rightarrow ij\)</span></p>
+<hr>
+</section>
+</section>
+<section id="hadamard-product-of-a-and-b-transposed-a-odot-bt" class="level4">
+<h4 class="anchored" data-anchor-id="hadamard-product-of-a-and-b-transposed-a-odot-bt">Hadamard Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> Transposed (<span class="math inline">\(A \odot B^{T}\)</span>)</h4>
+<section id="pseudocode-12" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-12"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span>, and for each row <span class="math inline">\(j\)</span> in <span class="math inline">\(B\)</span>, iterate through each column <span class="math inline">\(j\)</span> in <span class="math inline">\(A\)</span> and each column <span class="math inline">\(i\)</span> in <span class="math inline">\(B\)</span>, and take their product.</p>
+</section>
+<section id="einsum-notation-12" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-12"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ij, ji \rightarrow ij\)</span></p>
+<hr>
+</section>
+</section>
+<section id="matrix-product-of-a-and-b" class="level4">
+<h4 class="anchored" data-anchor-id="matrix-product-of-a-and-b">Matrix Product of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></h4>
+<section id="pseudocode-13" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-13"><strong>Pseudocode</strong></h5>
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span>, and for each column <span class="math inline">\(j\)</span> in <span class="math inline">\(B\)</span>, iterate through each element <span class="math inline">\(k\)</span>, take their product, and then sum those products.</p>
+</section>
+<section id="einsum-notation-13" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-13"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ik, kj \rightarrow ij\)</span></p>
+<hr>
+</section>
+</section>
+<section id="each-row-of-a-multiplied-with-b" class="level4">
+<h4 class="anchored" data-anchor-id="each-row-of-a-multiplied-with-b">Each Row of <span class="math inline">\(A\)</span> Multiplied with <span class="math inline">\(B\)</span></h4>
+<section id="pseudocode-14" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-14"><strong>Pseudocode</strong></h5>
+<!-- TODO: may want to reword this one. -->
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span>, and for each row <span class="math inline">\(j\)</span> in <span class="math inline">\(B\)</span>, iterate through each column <span class="math inline">\(k\)</span> and take their product.</p>
+</section>
+<section id="einsum-notation-14" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-14"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ik, jk \rightarrow ijk\)</span></p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A three dimensional tensor is output, hence the three output iterators.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="every-element-of-a-multiplied-with-b" class="level4">
+<h4 class="anchored" data-anchor-id="every-element-of-a-multiplied-with-b">Every Element of <span class="math inline">\(A\)</span> Multiplied with <span class="math inline">\(B\)</span></h4>
+<section id="pseudocode-15" class="level5">
+<h5 class="anchored" data-anchor-id="pseudocode-15"><strong>Pseudocode</strong></h5>
+<!-- TODO: may want to reword this one. -->
+<p>For each row <span class="math inline">\(i\)</span> in <span class="math inline">\(A\)</span>, iterate through each column <span class="math inline">\(j\)</span> and multiply it with each row <span class="math inline">\(k\)</span> in <span class="math inline">\(B\)</span> by iterating through each column <span class="math inline">\(l\)</span> in that row <span class="math inline">\(k\)</span>.</p>
+</section>
+<section id="einsum-notation-15" class="level5">
+<h5 class="anchored" data-anchor-id="einsum-notation-15"><strong>Einsum Notation</strong></h5>
+<p><span class="math inline">\(ij, kl \rightarrow ijkl\)</span></p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A four dimensional tensor is output, hence the four output iterators.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>And that’s that! The key is to think in terms of iterators that return locations in a matrix.</p>
+<p>It may help to implement the operations above by yourself through pencil and paper, and in a programming languge too.</p>
+<p>If you have any comments, questions, suggestions, feedback, criticisms, or corrections, please do post them down in the comment section below!</p>
+
+
+</section>
+
+
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/harrisq\.github\.io\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="HarrisQ/harrisq.github.io" data-repo-id="" data-category="Giscus Comments" data-category-id="DIC_kwDOICXnAM4CR8YX" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" data-loading="lazy" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="light">
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><a href="https://harrisq.github.io/">Harris Quach</a> © 2024</p>
+</div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="https://github.com/harrisq">
+<p>Github</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.linkedin.com/in/harrisquach/">
+<p>LinkedIn</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=2hH69DkAAAAJ&amp;hl=en">
+<p><i class="ai  ai-google-scholar" aria-label="google-scholar"></i> Google Scholar</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://harrisq.github.io/patch_notes.html">Version 2.2.1.5</a> | <a href="https://harrisq.github.io/feedback.html">Feedback</a> | Website made with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

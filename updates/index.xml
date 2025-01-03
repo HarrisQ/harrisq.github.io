@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Harris Quach</title>
+<link>https://harrisq.github.io/updates/</link>
+<atom:link href="https://harrisq.github.io/updates/index.xml" rel="self" type="application/rss+xml"/>
+<description></description>
+<image>
+<url>https://harrisq.github.io/images/profile_4_2.png</url>
+<title>Harris Quach</title>
+<link>https://harrisq.github.io/updates/</link>
+</image>
+<generator>quarto-1.6.36</generator>
+<lastBuildDate>Fri, 03 Jan 2025 19:38:03 GMT</lastBuildDate>
+</channel>
+</rss>
