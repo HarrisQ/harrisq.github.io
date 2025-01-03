@@ -1,0 +1,21 @@
+---
+title: "Linear Sufficient Dimension Reduction"
+image: ../images/coming_soon/thumbnail.png
+description: "A package for some SDR methods."
+---
+
+
+The package *linearsdr* contains some implementations for simple sufficient dimension reduction methods, including **Sliced Inverse Regression (SIR)**, **Sliced Average Variance Estimator (SAVE)**, **Directional Regression (DR)** and **Outer Product of Gradients (OPG)**.
+The package also contains implementation of the **Outer Product of Canonical Gradients (OPCG)** and **Minimum Average Deviance Estimation (MADE)** from the paper 
+
+* Quach, H. and Li, B. "On Forward Sufficient Dimension Reduction for Categorical and Ordinal Responses". Electron. J. Statist. 17 (1) 980 - 1006, 2023. https://doi.org/10.1214/23-EJS2122. [Link](https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-17/issue-1/On-forward-sufficient-dimension-reduction-for-categorical-and-ordinal-responses/10.1214/23-EJS2122.full?tab=ArticleLink).
+
+The package, along with some examples, can be found [here](https://harrisq.github.io/linearsdr/)
+
+  * Contains R Code for the Outer Prodcut of Canonical Gradients (OPCG) and Minimum Average Deviance Estimation (MADE) methods developed in 
+
+  * Contains R Code for other linear SDR methods: OPG, MAVE, SIR, SAVE, and DR
+
+  * Provides a Tikhonov regularization option for SIR, SAVE and DR to naively handle rank-deficient covariance matrices.
+  
+ 

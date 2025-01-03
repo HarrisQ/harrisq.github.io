@@ -1,0 +1,9 @@
+---
+title: "Stat Jobs"
+# image: ../images/coming_soon/thumbnail.png
+description: "A webscraper for statistics jobs."
+---
+
+A web scraper of some popular job boards for mostly academic jobs in statistics or biostatistics. Find it [here](https://harrisq.shinyapps.io/stat_jobs/)  
+
+![Screenshot of scraper.](../images/stat_jobs.png){fig-align="left" fig-alt="screenshot of scraper."}

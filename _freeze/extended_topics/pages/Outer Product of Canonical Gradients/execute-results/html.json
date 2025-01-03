@@ -1,0 +1,15 @@
+{
+  "hash": "7941177c91ce7783914faac3eaa7781d",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\nauthor: Harris Quach\ntitle: \"Outer Product of Canonical Gradients\"\n# image: ../images/coming_soon/thumbnail.png\ndescription: \" \"\nbibliography: sdr.bib\ndate:  \"01 Dec 2024\"\nformat: \n  html:      \n    code_download: false\n    toc: true \n---\n\n\n\n<!-- Google tag (gtag.js) -->\n\n<!-- <script async src=\"https://www.googletagmanager.com/gtag/js?id=G-KY1JY0C53S\"></script> -->\n\n<!-- <script> -->\n\n<!--   window.dataLayer = window.dataLayer || []; -->\n\n<!--   function gtag(){dataLayer.push(arguments);} -->\n\n<!--   gtag('js', new Date()); -->\n\n<!--   gtag('config', 'G-KY1JY0C53S'); -->\n\n<!-- </script> -->\n\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n\n\n# Introduction\n\nPlace Holder for OPCG\n\nSufficient Dimension Reduction (SDR) is an area of statistics that\nfocuses on reducing high dimensional data to a just a few features that\nreflect, or summarize, all the available information about a specific outcome of interest.\nIn data science parlance, SDR can be considered methods for \"supervised dimension reduction\" or \"supervised learning\".\n\nIdeally, the supervised features will be more interpretable than trying to use the entire set of predictors. Then any subsequent model built upon the supervised features should be more interpretable as well. In terms of interpretability, the supervised features are easier to visualize, since they are lower dimensional summaries and we only have a few to consider. We can plot the supervised features against the outcome in 1d, 2d, and 3d graphics, which can help build a better understanding of the relationship between the outcome and predictors. \n\n\n# An Illustration\n\nTo illustrate the objective of SDR methods, we can look at a simple example. \nLet $X = (X_1, X_2) \\in [0,1]^2$ be a bivariate predictor in the unit square and let $Y \\in \\R$ be a quadratic function of $X_1$ only. \nThen, if $\\beta = (1,0) \\in \\R^2$, the outcome $Y$ can be expressed as $Y = \\beta^\\top X$.\n\n![sdr plot](../images/sdr/sdr_plot.png){width=40% fig-align=\"center\"}\n\n\nFor $$\n\\begin{split}\nY \\indep X \\mid \\beta^\\top X   \n\\end{split}\n$$\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
