@@ -1,0 +1,79 @@
+# TODO: Add date format.
+# TODO: Separate this file into further yaml files?
+website:
+  title: "Harris Quach"
+  site-url: https://harrisq.github.io/
+  description: ""
+  favicon: favicon.ico
+#  favicon: cover.png
+  image: images/profile_4_2.png
+  back-to-top-navigation: true
+  navbar:
+    # Currently have set pinned to true because it isn't smooth.
+#    logo: cover.png
+    pinned: True
+    left:
+      - icon: house-door
+        text: Home
+        href: index.qmd
+      - icon: file-person
+        text: About
+        href: about.qmd 
+      - icon: newspaper
+        text: Updates
+        href: updates/index.qmd    
+      - text: "{{< fa book >}} Research" 
+        href: research/index.qmd    
+      - text: "{{< fa file-code >}} Software" 
+        href: software/index.qmd
+      - icon: sliders2
+        text: Extended Posts
+        href: extended_posts/index.qmd  
+     
+    tools:
+      - icon: code-slash
+        href: https://github.com/HarrisQ/harrisq.github.io
+      # - icon: rss
+      #   href: forblog/index.xml
+  page-footer:
+    left: "[Harris Quach](https://harrisq.github.io/) © 2024" #"and ForBlog™ by [Harris Quach](https://harrisq.github.io/about.html)"
+    center:
+      - icon: github
+        text: Github
+        url: https://github.com/harrisq 
+      - icon: linkedin
+        text: LinkedIn
+        url: https://www.linkedin.com/in/harrisquach/
+      - text: "{{< ai google-scholar >}} Google Scholar"
+        url: https://scholar.google.com/citations?user=2hH69DkAAAAJ&hl=en  
+      # - icon: twitter
+      #   href: https://twitter.com/ForBo7_
+      # - icon: brush
+      #   href: https://www.artstation.com/forbo7
+      # - icon: envelope
+      #   href: mailto:salmananaqvii+forblog@gmail.com
+      # - icon: rss
+      #   href: forblog/index.xml
+    right: "[Version 2.2.1.5](https://harrisq.github.io/patch_notes.html) | [Feedback](https://harrisq.github.io/feedback.html) | Website made with [Quarto](https://quarto.org/)"
+  # twitter-card:
+  #   title: "ForBo7 // Salman Naqvi"
+  #   description: "The world of ForBo7!"
+  #   image: cover.png
+  #   card-style: summary_large_image
+  #   creator: "@ForBo7"
+  #   site: "@ForBo7"
+  # open-graph:
+  #   description: "The world of ForBo7!"
+  #   image: cover.png
+  comments:
+    giscus:
+      repo: HarrisQ/harrisq.github.io
+      # repo-id: R_kgDOICXnAA
+      category: Giscus Comments
+      category-id: DIC_kwDOICXnAM4CR8YX
+      mapping: title
+      reactions-enabled: true
+      loading: lazy
+      input-position: top
+      theme: light 
+  google-analytics: "G-RP3VXX4HME"
