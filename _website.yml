@@ -75,5 +75,5 @@ website:
       reactions-enabled: true
       loading: lazy
       input-position: top
-      theme: light
-  
+      theme: light 
+  google-analytics: "G-RP3VXX4HME"
