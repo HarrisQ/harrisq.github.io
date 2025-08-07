@@ -1,0 +1,68 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: Rectified Linear Unit (ReLU)\n",
+        "description: An [activation function](activation_function.qmd) that clips any value less than zero, to zero.\n",
+        "execute: \n",
+        "  enabled: false\n",
+        "---"
+      ],
+      "id": "b1a1922a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "\n",
+        "x = np.linspace(-5, 5, 100)\n",
+        "y = x**3\n",
+        "df = pd.DataFrame({'x': x, 'x^3': np.clip(y, a_min=0, a_max=None)})"
+      ],
+      "id": "f4c4dbd9",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "import plotly.graph_objects as go\n",
+        "forbo7_template = go.layout.Template()\n",
+        "forbo7_template.layout = go.Layout(plot_bgcolor='#fcfcfc', paper_bgcolor='#fcfcfc', width=1024, height=576)\n",
+        "forbo7_template.data.scatter = [go.Scatter(marker_color='#d92310')]"
+      ],
+      "id": "80445495",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "go.Figure(data=[go.Scatter(x=df['x'], y=df['x^3'], marker_color='#d92310')], layout={'title': 'Cubic function passed through a ReLU.', 'xaxis_title': 'x', 'yaxis_title': 'x^3'}, layout_template=forbo7_template).show()"
+      ],
+      "id": "fd0ee815",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\quachhar\\AppData\\Local\\Programs\\Python\\Python311\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
