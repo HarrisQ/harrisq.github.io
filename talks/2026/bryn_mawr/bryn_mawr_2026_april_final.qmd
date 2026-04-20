@@ -1,0 +1,1001 @@
+---
+title: "A Natural Projection for Supervised Feature Extraction"
+subtitle: "with Application to Electrocardiograms in Chronic Kidney Disease"
+date: "2026 April 20"
+format:
+  revealjs:   
+    title-slide-attributes:
+      data-background-image: "figures/logos/MED_Formal_Red_Black.png"
+      data-background-size: 25% # or cover, or a specific size like "50%"
+      data-background-position: "5% 5%"
+    logo: "figures/logos/temple_t_nobox.png" 
+    include-in-header:
+        - file: "local_tex.html" 
+    theme: [lksom_theme_quarto.scss]
+    footer: "[https://harrisq.github.io](https://harrisq.github.io)"
+    slide-number: false
+editor: source
+---
+
+### Overview
+
+:::{.extrapad style="font-size: 100%;"}
+
+  - **Motivation:** Chronic Renal Insufficiency Cohort (CRIC) study and Heart Failure
+
+  - **Methodology:** Supervised Functional Feature Extraction
+
+    - Existing methods: FPCA and FSIR
+
+    - Our proposed alternative approach
+    
+  - **Application:** Construct features characterizing HF with promise for tracking disease progression in CKD patients
+
+:::
+
+---
+
+### Chronic Renal Insufficiency Cohort (CRIC) Study
+
+:::{layout="[30, 70]"}
+ 
+
+:::{.extrapad}   
+
+ <br/>  
+ 
+  - An observational study, ages 21-74, varying stages of chronic kidney disease (CKD)
+    
+  - Examine risk factors for the progression of CKD and cardiovascular disease (CVD) in CKD patients.  
+  
+:::    
+
+::: {style="text-align:center;"}
+![](/figures/cric_phases.png){fig-align="center" height="350"}
+:::
+
+:::
+
+---
+
+### Heart Failure among CKD patients
+ 
+ <br/> 
+ 
+::::{.extrapad style="font-size: 90%;"}
+
+- CKD patients at a higher risk of Heart Failure[^3][^4]; 
+  - [**incidence of Heart Failure can exacerbate co-morbidities and renal disease progression**]{style="color: #a41e35;"}
+
+- Find features for heart failure in CKD patients from their electrocardiograms (ECGs) 
+  - ECGs are non-invasive and abundant in CRIC study
+  - ECGs measured in initial steps of diagnosing Heart Failure 
+
+::::
+ 
+
+
+[^3]: Pfeffer MA, Shah AM, Borlaug BA. Heart Failure With Preserved Ejection Fraction In Perspective. Circ Res. 2019 May 24;124(11):1598-1617. doi: 10.1161/CIRCRESAHA.119.313572. PMID: 31120821; PMCID: PMC6534165.
+[^4]: Murphy SP, Ibrahim NE, Januzzi JL. Heart Failure With Reduced Ejection Fraction: A Review. JAMA. 2020;324(5):488–504. doi:10.1001/jama.2020.10262
+
+---
+ 
+### Phases of Electrocardiograms 
+
+::: {style="font-size: 100%;"}
+Electrocardiograms (ECGs) record the electrical activity from the heart impulses during the cardiac cycle - the sequence of events for one complete heartbeat.
+:::
+
+::: {style="text-align:center;"}
+![Phases of the cardiac cycle[^17]](/figures/ecg_phases.jpg){fig-align="center" height="400"}
+:::
+
+
+[^17]: Bernal, Daniel. Phases of the Cardiac Cycle. https://bernalstudio.artstation.com/projects/ZLrON
+
+---
+
+### Visualizing Electrocardiograms
+
+Electrocardiograms (ECGs) record the electrical activity from the heart impulses during the cardiac cycle - the sequence of events for one complete  heartbeat.
+
+::: {style="text-align:center;"}
+![One full cardiac cycle[^21]](/figures/ecg_demo.gif){fig-align="center" height="350"}
+:::
+
+[^21]: Alila Medical Media. https://www.alilamedicalmedia.com/
+
+---
+
+### 12-lead Electrocardiograms
+
+Full 12-lead ECG recorded per visit in CRIC; but only interested in lead I
+
+::: {style="text-align:center;"}
+![A normal 12-lead ECG tracing[^22]](/figures/norm_2x.png){fig-align="center" height="450"}
+:::
+
+[^22]: Jenkins, Dean and Gerred, Stephen. ECG Library. https://ecglibrary.com/norm.php 
+
+
+---
+
+###  Importance of Heart Failure Subtypes[^14][^15]   
+
+
+:::{layout="[[30],[-5], [70]]"}
+ 
+
+:::{.extrapad}   
+
+  - Heart Failure (HF) has conventionally been classified by the left ventricular ejection fraction (LVEF) measurment from an echocardiogram
+    
+  - Most HF (> 80%) cases are classified as  HF with preserved ejection fraction (HFpEF), or HF with reduced ejection fraction (HFrEF) 
+  
+:::    
+
+
+:::{layout.ncol=2}
+
+:::{.column width="45%" .column style="font-size: 100%;" .extrapad }
+
+HF with preserved EF (LVEF $\geq 50$):
+  
+  - Diastolic (relaxation) Dysfunction
+  
+  - Therapies: SGLT2, lifestyle
+  
+::: 
+
+
+:::{.column width="45%" .column style="font-size: 100%;" .extrapad} 
+
+HF with reduced EF (LVEF $\leq 40$):
+
+  - Systolic (contraction) Dysfunction
+  
+  - Therapies: ACE-inhibitors/ARB/ARNI/$\beta$-blockers, device implants, SGLT2, lifestyle
+
+::: 
+
+
+
+:::
+
+:::
+
+
+
+ 
+
+ 
+[^14]: Murphy, S. P., Ibrahim, N. E., & Januzzi, J. L., Jr (2020). Heart Failure With Reduced Ejection Fraction: A Review. JAMA, 324(5), 488–504. https://doi.org/10.1001/jama.2020.10262
+[^15]: Redfield MM, Borlaug BA. Heart Failure With Preserved Ejection Fraction: A Review. JAMA. 2023;329(10):827–838. doi:10.1001/jama.2023.2020
+
+
+---
+
+### CRIC Objective
+#### Our approach
+
+**"The primary objectives of the CRIC Study were to examine risk factors for progression of CKD and CVD ... study aimed to develop predictive models to identify high-risk subgroups..."[^16]**
+
+:::{.extrapad}
+  
+  - Use dimension reduction to construct features of Heart Failure sub-types from patient ECGs
+  
+  - Develop models for tracking disease progression over multi-year visits
+
+:::
+ 
+[^16]: Dember, Laura (2024). Chronic Renal Insufficiency Cohort Study (CRIC) (Version 13) [Dataset] NIDDK Central Repository. https://doi.org/10.58020/6dxf-ed78
+
+
+
+---
+
+### Existing Work
+
+<br/>
+
+:::{.extrapad style="font-size: 90%;"} 
+
+Papers that address using ECGs for analyzing HFpEF and HFrEF:
+  
+  - conventional statistical methods compare ECG summary parameters to identify and differentiate HFpEF and HFrEF
+  
+    - ECG parameters are summary quantities of the ECG recordings, like heart rate, QRS duration, QT interval, etc.
+
+    - Cumbersome and inefficient; 
+  
+  - DL and AI methods[^27][^28] focus on prediction error
+    - are blackboxes; little work on tracking longitudinally; uses ECGs as raw images - potentially inefficient; 
+:::
+  
+ 
+[^27]: Choi, J., Lee, S., Chang, M., Lee, Y., Oh, G. C., & Lee, H. Y. (2022). Deep learning of ECG waveforms for diagnosis of heart failure with a reduced left ventricular ejection fraction. Scientific reports, 12(1), 14235. https://doi.org/10.1038/s41598-022-18640-8
+
+[^28]: Unterhuber, M., Rommel, K. P., Kresoja, K. P., Lurz, J., Kornej, J., Hindricks, G., Scholz, M., Thiele, H., & Lurz, P. (2021). Deep learning detects heart failure with preserved ejection fraction using a baseline electrocardiogram. European heart journal. Digital health, 2(4), 699–703. https://doi.org/10.1093/ehjdh/ztab081
+
+
+---
+
+### Overview of Aims
+#### Objectives
+ 
+:::{.extrapad} 
+
+  1. Leverage functional nature of ECGs to improve feature extraction
+
+  2. Derive features reflective of physiological mechanisms and interpretable to clinicians
+  
+  3. Use features to perform longitudinal analysis of disease progression
+ 
+:::
+ 
+
+---
+
+### Leveraging Functional Data
+ 
+
+
+:::{.column width="40%" .extrapad .add-colspace}
+
+Functional data:
+
+  - Assume recorded observations ${X(t_1), X(t_2), \ldots, X(t_J)}$ come from underlying smooth function $\{X(t): t \in [0,1]\}$
+  
+  - Current value of observation depends on values adjacent
+ 
+  - Ideal to account for functional nature instead of using as raw image or euclidean vector.
+  
+
+::: 
+
+
+:::{.column width="40%" .extrapad} 
+Applications:
+
+  - Electrocardiograms
+  
+  - Accelerometer data from activity and gait analyses 
+  
+  - Real-time monitoring devices for biomarkers
+  
+  - Circadian rhythms from wearable devices 
+::: 
+
+:::{.fragment}
+**But the underlying curves are infinite dimensional; need to project into finite space**
+:::
+---
+ 
+### Functional Principcal Component Analysis (FPCA)
+#### Leveraging Functional Data 
+
+::::{layout="[60,-1, 40]"}
+
+::: {style="font-size: 150%;"}
+
+  - **PCA**: Unsupervised feature extraction method in multivariate analysis, $X \in \R^p$
+  
+  - $\var(X) = \sum_{j=1}^p \lambda_j v_j v_j^\top$
+  
+  - Features $v_1, \ldots, v_p$ represent the variability in $X$, from largest to smallest
+  
+  - **FPCA**: extends PCA to functional $X(t) \in \sH$; 
+  
+  - $\var(X) = \sum_{j=1}^\infty \lambda_j (\psi_j \otimes \psi_j )$
+
+  - Feature functions 
+  $\{\psi_j(t)\}_{j=1}^{\infty}$ represent variability in $X(t)$
+  
+  - Limitation: FPCA extracts the leading features most relevant to $X(t)$; not necessarily relevant to outcome, $Y$
+ 
+:::
+
+::: {.column width="30%" style="text-align:center;"}
+![First 3 FPCA features (top) relative to ECGs (bottom). Solid-blue are healthy; dashed-red are HF.](/figures/fpca_ecgs.png){fig-align="center" height="400"}
+
+:::
+
+::::
+
+<!-- ## Supervised Feature Extraction -->
+
+<!-- :::{layout="[50, -1, 50]"} -->
+
+<!-- :::{.column .extrapad } -->
+
+<!-- Sliced Inverse Regression (1991); $X \in \R^p, Y \in \R$: -->
+
+<!--   - GEV: $\{\var(X)\}^{-1} \cov\{E(X|Y)\}$  -->
+
+<!--     - GEV effectively re-orders features of $\var(X)$ by relevance to $Y$  -->
+
+
+<!-- ::: -->
+
+<!-- :::{.column .extrapad } -->
+
+<!-- Functional Sliced Inverse Regression (2003); $X(t), Y \in \R$: -->
+
+<!--   - GEP: $\{\var(X)\}^{\dagger} \cov\{E(X|Y)\}$ -->
+
+<!--   - Generalized inverse of $\var(X)$ requires truncating $\var(X)$  -->
+
+<!--     - Usual basis representations for $X(t)$ truncates $\var(X)$ based on features most relevant to $X(t)$; but most relevant to $X(t)$ not necessarily relevant to $Y$ -->
+
+<!--     - Then GEP re-orders features that have already lost information on $Y$ -->
+
+<!-- ::: -->
+
+<!-- ::: -->
+
+
+---
+
+### Supervised Feature Extraction
+#### Deriving outcome-relevant features
+
+<br/>
+
+
+:::{.extrapad}
+Use Sufficient Dimension Reduction (SDR) derive features that are relevant to the outcome $Y$.
+
+- Sufficient Dimension Reduction (SDR) problem:
+
+  - For $X \in \R^p$ and $Y \in \R$, assume $Y \indep X | \ipl \beta_1, X \ipr, \ldots, \ipl \beta_d, X \ipr$.
+
+  - Finding the $d$ features $\beta_1, \ldots, \beta_d$ are sufficient for characterizing the relationship between $X$ and $Y$.
+
+    - Estimating a $d$-dimensional subspace of $\var(X)$ that captures the relationship between $X$ and $Y$;
+
+:::
+
+---
+
+### Sliced Inverse Regression (SIR; Li, 1991) 
+#### Deriving outcome-relevant features
+
+<br/>
+
+:::{.extrapad}
+ Seminal SDR method: Sliced Inverse Regression (SIR) (1991); $X \in \R^p, Y \in \R$:
+  
+  - Generalized Eigenvalue Problem; $GEP(\cov\{E(X|Y)\}, \var(X))$: 
+  
+    - $\max_{\beta_j} \beta_j^\top \cov\{E(X|Y)\} \beta_j$ such that $\beta_j^\top \var(X) \beta_k = \delta_{jk}$ for $j, k = 1, \ldots, d$;
+  
+    - Returns features related to $Y$ as opposed to just characterizing $X$ like FPCA;
+
+:::
+
+---
+
+### Sliced Inverse Regression (SIR) 
+#### Deriving outcome-relevant features
+
+
+::::{layout-ncol=2} 
+
+::: {style="text-align:left; font-size: 50%;".column width="30%"}
+
+  - Let $X = (X_1, X_2) \in [0,1]^2$
+
+  - $Y = X_1^2 = (\beta^\top X)^2$, where $\beta = (1,0)^\top$
+
+:::
+
+
+::: {style="text-align:center;".column width="70%"}
+![](/figures/sir_plot1.png){fig-align="center" height="450"}
+:::
+
+::::
+
+
+
+---
+
+### Sliced Inverse Regression (SIR) 
+#### Deriving outcome-relevant features
+
+
+::::{layout-ncol=2} 
+
+::: {style="text-align:left; font-size: 50%;".column width="30%"}
+
+  - Let $X = (X_1, X_2) \in [0,1]^2$
+
+  - $Y = X_1^2 = (\beta^\top X)^2$, where $\beta = (1,0)^\top$
+
+  - **Slice $Y$ into $H=5$ partitions**
+:::
+
+
+
+
+::: {style="text-align:center;".column width="70%"}
+![](/figures/sir_plot2.png){fig-align="center" height="450"}
+:::
+
+::::
+
+---
+
+### Sliced Inverse Regression (SIR) 
+#### Deriving outcome-relevant features
+
+
+
+::::{layout-ncol=2} 
+
+::: {style="text-align:left; font-size: 50%;".column width="30%"}
+
+  - Let $X = (X_1, X_2) \in [0,1]^2$
+
+  - $Y = X_1^2 = (\beta^\top X)^2$, where $\beta = (1,0)^\top$
+
+  - **Find corresponding/induced partitions of $X$**
+
+
+:::
+
+
+::: {style="text-align:center;".column width="70%"}
+![](/figures/sir_plot3.png){fig-align="center" height="450"}
+:::
+
+::::
+
+---
+
+### Sliced Inverse Regression (SIR) 
+#### Deriving outcome-relevant features
+
+
+::::{layout-ncol=2} 
+
+::: {style="text-align:left; font-size: 50%;".column width="30%"}
+
+  - Let $X = (X_1, X_2) \in [0,1]^2$
+
+  - $Y = X_1^2 = (\beta^\top X)^2$, where $\beta = (1,0)^\top$
+
+  - **Compute mean of $X$ in each partition; this is $E(X|Y)$**
+
+
+:::
+
+
+::: {style="text-align:center;".column width="70%"}
+![](/figures/sir_plot4.png){fig-align="center" height="450"}
+:::
+
+::::
+
+ 
+
+---
+
+### Sliced Inverse Regression (SIR) 
+#### Deriving outcome-relevant features
+
+::::{layout-ncol=2} 
+
+::: {style="text-align:left;" .column width="30%"}
+
+  - Let $X = (X_1, X_2) \in [0,1]^2$
+
+  - $Y = X_1^2 = (\beta^\top X)^2$, where $\beta = (1,0)^\top$
+
+  - **Perform PCA on $E(X|Y)$**
+    
+    - Returns direction in which $E(X|Y)$ varies the most; 
+    
+    - $\max_{\beta_j} \beta_j^\top \cov\{E(X|Y)\} \beta_j$ such that $\beta_j^\top \var(X) \beta_k = \delta_{jk}$ for $j, k = 1, \ldots, d$;
+     
+
+:::
+
+
+::: {style="text-align:center;".column width="70%"}
+![](/figures/sir_plot5.png){fig-align="center" height="450"}
+:::
+
+::::
+
+---
+
+### Functional Sliced Inverse Regression (FSIR) 
+#### Deriving outcome-relevant features
+
+::::{layout-ncol=2} 
+
+::: {style="text-align:left;" .column width="30%"}
+
+  - Sliced Inverse Regression (1991); $X \in \R^p, Y \in \R$:
+  
+    - GEP: $\{\var(X)\}^{-1} \cov\{E(X|Y)\}$ 
+
+  - Functional Sliced Inverse Regression (2003); **$X(t) \in \sH$**, $Y \in \R$:
+  
+    - GEP: $\{\var(X)\}^{\dagger} \cov\{E(X|Y)\}$
+
+:::
+
+
+::: {style="text-align:center;".column width="70%"}
+![](/figures/sir_plot5.png){fig-align="center" height="450"}
+:::
+
+::::
+
+
+---
+
+### Functional Sliced Inverse Regression (FSIR; Ferré and Yao, 2003) 
+#### Deriving outcome-relevant features
+
+:::{.extrapad}
+
+  - Functional Sliced Inverse Regression (2003); **$X(t) \in \sH$**, $Y \in \R$:
+  
+    - GEP: $\{\var(X)\}^{\dagger} \cov\{E(X|Y)\}$
+    
+
+    - $\var(X)$ is now an infinite-dimensional operator; requires a generalized inverse for GEP;
+    
+    - Conventional FSIR approach truncates $\var(X)$ to compute $\{\var(X)\}^{\dagger}$; 
+
+      - $\var(X) = \sum_{j=1}^\infty \lambda_j \psi_j \otimes \psi_j$ is truncated to finite-operator $\sum_{j=1}^K \lambda_j \psi_j \otimes \psi_j$ for some $K$;
+
+      - $K$ is commonly chosen based on the proportion of variance explained of $X(t)$, not necessarily $Y$;
+
+
+
+  
+::: 
+
+
+---
+
+### Functional Sliced Inverse Regression (FSIR; Ferré and Yao, 2003) 
+#### Deriving outcome-relevant features
+
+:::{.extrapad}  
+  
+  - Truncating $\var(X)$ projects $X(t)$ onto a finite subspace spanned by the leading eigenfunctions of $\var(X)$;
+    
+    - $X(t) = \mu_X(t) + \sum_{j=1}^\infty \xi_j \psi_j(t)$ becomes $\tilde X(t) = \mu_X(t) + \sum_{j=1}^K \xi_j \psi_j(t)$
+    
+    - This subspace of $\var(X)$ might miss relevant information on $Y$; 
+
+    - **More be ideal to project $X(t)$ onto a finite subspace that retains as much relevant information on $Y$**
+
+
+:::
+
+
+---
+
+### A Natural Projection for Functional Sliced Inverse Regression (NAPFSIR; Quach et. al., 2026)
+#### Deriving outcome-relevant features
+
+<br/> 
+
+:::{.extrapad}  
+  
+From the FSIR GEP: 
+
+  - $\max_{\beta_j} \beta_j^\top \cov\{E(X|Y)\} \beta_j$ such that $\beta_j^\top \var(X) \beta_k = \delta_{jk}$ for $j, k = 1, \ldots, d$;
+
+  - $\Lambda = \cov\{E(X|Y)\}$ is a finite operator and contains all the relevant information on $Y$; 
+  
+  - So we can project $X(t)$ onto this finite subspace without losing information on $Y$;
+
+    - Finite-ness by SDR assumption that $Y \indep X | \ipl \beta_1, X \ipr, \ldots, \ipl \beta_d, X \ipr$; 
+    
+    - Assume $\Lambda$ has sufficient rank, $d$, for convenience 
+ 
+
+:::
+  
+---
+
+
+### A Natural Projection for Functional Sliced Inverse Regression
+#### Deriving outcome-relevant features
+
+:::{.extrapad}  
+  
+The NAPFSIR GEP algorithm: 
+
+  - Project $X(t)$ onto $\Lambda = \cov\{E(X|Y)\}$ (instead of a finite subspace of $\var(X)$);
+
+    - Estimate $\cov\{E(X|Y)\}$ by B-spline basis expansion; 
+    
+    - Project $X(t)$ onto the eigenfunctions of $\cov\{E(X|Y)\}$
+
+  - Carry out SIR by solving the usual GEP on the new basis coefficients;
+  
+    - Empirically, improves recovery of relationships between $X(t)$ and $Y$
+
+    - Theoretically consistent with conventional non-parametric convergence rates 
+
+
+:::
+  
+---
+
+
+### A Natural Projection for Functional Sliced Inverse Regression 
+#### Deriving outcome-relevant features
+
+
+
+:::: {#thm-inverse_sdr style = "font-size: 80%;"}
+**Natural Projections for FSIR**
+
+Solutions to FSIR problem, 
+$$GEP \bigg ( \cov\{E(X|Y)\}, \var(X) \bigg ),$$
+are equivalent to solutions to 
+$$GEP \bigg (\cov\{E(X|Y)\}, P_{\cov\{E(X|Y)\}} \var(X) P^\top_{\cov\{E(X|Y)\}} \bigg ),$$
+where $P$ is the projection operator onto $\cov\{E(X|Y)\}$.
+
+::::
+
+  - Trivial when $X$ and $Y$ are euclidean.
+
+  - Non-trivial implications when $X$ or $Y$ are more complex, like functional data; 
+
+
+
+ 
+  
+---
+
+### A Natural Projection for Functional Sliced Inverse Regression
+#### Deriving outcome-relevant features
+
+
+
+:::: {#thm-inverse_sdr style = "font-size: 80%;"}
+**Consistency of NAPFSIR**
+
+Let $J$ be the number of observed time points, $K$ be number of B-spline basis functions used to estimate $\cov\{E(X|Y)\}$ and $\var(X)$, and $n$ be the sample size.
+
+Under conventional SDR and B-spline assumptions, with $\lim_{J \to \infty} \frac{K \log J}{J} = 0$ and $c \sim J^{2/3} n^\g$, the solutions to 
+$$GEP \bigg (\cov\{E(X|Y)\}, P_{\cov\{E(X|Y)\}} \var(X) P^\top_{\cov\{E(X|Y)\}} \bigg ).$$
+
+are consistent with convergence rate
+$$ \sup_{t \in [0,1]} \left| \hat{\beta}_j(t) - \beta_j(t) \right|^2 = O_p\left( J^{-2/3} +  n^{-1} \right). $$
+::::
+
+
+
+---
+
+
+### Overview
+#### Recap
+
+ 
+ 
+:::{style="font-size: 80%;"}
+
+1. Leverage functional nature of ECGs
+
+  - FDA methods like FPCA and FSIR account for the functional nature of ECGs;
+  - But projects the functions onto finite subspace of $\var(X)$
+
+2.  Derive outcome interpretable features
+
+  - NAPFSIR projects $X(t)$ onto a information preserving finite subspace for $Y$;
+
+3. [**Perform longitudinal analysis of Heart Failure progression**]{style="color: #a41e35;"} 
+
+  - Construct features to track diease progression over time;
+
+:::
+ 
+  
+
+---
+
+### Longitudinal Analysis of Heart Failure Progression
+#### Why Supervised Features?
+ 
+ 
+::::: {.columns}
+ 
+:::: {.column width="75%"}
+::: {style="text-align:center;"}
+![Red=HFrEF; Orange=HFpEF; Blue=Healthy; solid=end of follow-up; dotted= 3 years prior; dashed= 5 years prior;](/figures/pef_ref_smpl_ecgs.png){fig-align="left" width="950"}
+:::
+::::
+
+ 
+
+:::: {.column width="25%"}
+::: {style="text-align:left; font-size: 80%;"}
+
+- Visual inspection of ECGs of individuals over time is difficult when changes can be subtle; 
+- Derive summary scores to track disease progression over time;
+     
+:::
+
+::::
+
+:::::
+
+
+
+
+---
+
+### Longitudinal Analysis of Heart Failure Progression
+#### Phase 1 cohort for constructing features 
+
+:::{.extrapad}
+ 
+
+  - Phase 1 participants 
+   
+    - no history of CVD at study entry, and have at least two ECGs;
+    
+    - Use ECGs closest to diagnosis time for individuals with HFpEF or HFrEF; 
+    
+    - Use ECGs closest to study entry for Healthy individuals; 
+  
+  - We retrospectively validate our features on Phase 3 CRIC participants
+
+  
+
+:::
+
+---
+
+### Outcome-driven Functional Features
+#### Deriving outcome-relevant features
+
+::::: {.columns}
+:::: {.column width="60%"}
+![Overall Dysfunc; Vent Systolic Dysfunc; Vent Diastolic Dysfunc](/figures/rfsir_comps.png){fig-align="left" width="500"}
+::::
+
+::: {.column width="35%"}
+
+:::{ style="text-align:left; font-size:80%;"}
+
+- Outcome $Y$ is Healthy, HFpEF_1, HFpEF_2, HFrEF
+
+  - HFpEF is split by LVEF $\geq 50$; 
+
+- Supervised features may correspond to physiological mechanisms
+
+- Linearly combine them for diesease-specific features
+  
+  - Determine combination via multinomial logistic regression
+
+  - HF vs Healthy; HFpEF vs HFrEF
+
+:::
+::::
+:::::
+
+
+
+
+---
+
+### Retrospective longitudinal changes in scores 
+#### Longitudinal Analysis of Disease Progression
+
+<br/>
+
+Subtype-specific features are
+$$\hat f_{HFpEF}(t) = c_1 \text{component}_1 + c_2 \text{component}_2 + c_3 \text{component}_3$$
+
+with $\hat f_{HFrEF}(t)$ fitted similarly.
+
+<br/>
+
+To score a patient's ECG, we use the feature, $\hat f_{HFpEF}(t)$, as a weight function applied to the ECG curve:
+$$ s = \ipl \hat f_{HFrEF}, X - \mu_X \ipr = \frac{1}{J} \sum_{j=1}^J \hat f(t_j) X(t_j) $$
+
+
+---
+
+### Retrospective longitudinal changes in scores 
+#### Longitudinal Analysis of Disease Progression
+
+<br/>
+
+To the scores $\{s_1, \dots, s_n\}$ for each HF-subtype, 
+
+  - we fit a linear mixed model to time (in years) with random intercept and slope for each patient 
+  $$ s = \b_0 + \b_1 t + \g_0 + \g_1 t + \vep $$
+  
+  - the estimated average slope, $\b_1$, reflects the longitudinal changes in scores over time
+
+  - the subject-specific intercept, $\b_0 + \g_0$ and slope, $\b_1 + \g_1$, can be used to evaluate the association between longitudinal changes in scores and disease progression
+
+---
+
+### Retrospective longitudinal changes in scores 
+#### Longitudinal Analysis of Disease Progression
+
+
+:::{layout-ncol=2}
+
+
+::: {style="text-align:left;"  .column width="70%" }
+![Longitudinal Trajectories of feature scores. Red=HFrEF; Green=HFpEF; purple=HF; blue=Healthy](/figures/pef_ref_traj.png){fig-align="center" height="450"}
+:::
+ 
+
+::: {style="text-align:left; font-size:75%;" .column width="30%"}
+ 
+Among individuals with CKD, the longitudinal changes in our features can strongly discern individuals with HF from Healthy and individuals with HFpEF from HFrEF. 
+
+:::   
+ 
+
+
+:::
+
+
+
+
+---
+
+### Retrospective Phase 1 Analysis
+#### Longitudinal Analysis of Disease Progression
+
+:::::{layout-ncol=2} 
+     
+::: {style="text-align:center;".column width="70%"}
+![Logistic Regression of subject trajectories; One StdDev change in OR reported](/figures/phs1_tbl12.png){fig-align="center" height="450"}
+:::
+
+
+:::: {.column width="30%"}
+
+::: {style="text-align:left;font-size: 85%;" .extrapad  }
+ 
+  - Model 1: Just feature slope and intercepts
+  
+  - Model 2: Model 1 + relevant baseline covariates
+ 
+  - Model 3: Model 2 + baseline Echo   
+ 
+  
+:::
+
+ 
+
+  
+::::
+
+:::::
+
+
+---
+
+### Retrospective Phase 1 Analysis
+#### Longitudinal Analysis of Disease Progression
+
+:::::{layout-ncol=2} 
+     
+::: {style="text-align:center;".column width="70%"}
+![Logistic Regression of subject trajectories; One StdDev change in OR reported](/figures/phs1_tbl12.png){fig-align="center" height="450"}
+:::
+
+
+:::: {.column width="30%"}
+
+::: {style="text-align:left;font-size: 85%;" .extrapad}
+  
+  - After adjusting for baseline covariates, on average, a one-standard deviation increase in feature slope is associated with a [**44% decrease in odds of HFpEF**]{style="color: #a41e35;"}  and a [**49% decrease in odds of HFrEF**]{style="color: #a41e35;"} , compared to Healthy.  
+  
+:::
+  
+::::
+
+:::::
+
+---
+
+### Retrospective Phase 3 Analysis
+#### Longitudinal Analysis of Disease Progression
+
+:::::{layout-ncol=2} 
+     
+::: {style="text-align:center;".column width="70%"} 
+![Logistic Regression of subject trajectories; One StdDev change in OR reported](/figures/phs3_tbl12.png){fig-align="center" height="400"}
+:::
+
+
+:::: {.column width="30%"}
+:::{style="text-align:right;font-size: 85%;" .extrapad}
+  - No Echocardiograms were measured in Phase 3
+  
+  - After adjusting for baseline covariates, on average, a one-standard deviation increase in the feature slope is associated with a **46% decrease in odds of HFpEF** compared to healthy; insufficient HFrEF cases to evaluate association with HFrEF in Phase 3.
+:::
+:::: 
+
+::::: 
+
+---
+
+### Summary 
+<br/>
+
+:::{.extrapad .emphcolor style="text-align:left; font-size: 100%;"}
+
+**Contributions to CRIC aim:** 
+
+  - Developed NAPFSIR for supervised feature extraction in functional data;
+
+  - Constructed features reflecting physiological cardiac phenomena in HF-subtypes;
+
+  - Demonstrated Longitudinal changes in features within subject can discern HFpEF from HFrEF
+
+::: 
+ 
+
+<!-- ## Current Projects and Future Directions -->
+
+<!-- Current Projects: -->
+
+<!--   - Vascular effects of E-cigarettes  -->
+
+<!--   - Prospective Analysis for HFrEF and HFpEF  -->
+
+<!--   - Comparable study entry time in CRIC -->
+
+<!--   - Functional feature extraction in exponential family outcomes  -->
+
+<!--   - Functional feature extraction in function outcomes -->
+
+
+
+
+<!-- Future Directions:  -->
+
+<!--   - Incorporate supervised approach for deep learning methods for nonlinear features -->
+
+<!--   - Develop single-lead ECG analysis applicable to wearable devices for cardiovascular health -->
+
+<!--   - Collaborations to analyze new bio-medical data -->
+
+<!--   - Contribute expertise in supervised feature extraction to complex data -->
+
+
+
+---
+
+## Acknowledgements {.ack-slide}
+
+
+Thanks to my collaborators at Penn Medicine:
+
+::: {layout-nrow=2 style="text-align:center;"}
+
+![Dr. Wensheng Guo, PhD <br> Professor of Biostatistics](/figures/wen.png){fig-align="center" height="100"} 
+
+ 
+![Dr. Peter Yang, PhD <br> Professor of Biostatistics](/figures/peter.jpg){fig-align="center" height="100"}
+
+![Dr. Rajat Deo, MD <br> Associate Professor of Medicine <br> (Cardiovascular Medicine)](/figures/raj.jpg){fig-align="center" height="100"}
+
+
+![Supported by grant R01-HL161303 from the National Institute of Diabetes and Digestive and Kidney
+Diseases.](nih_niddk_logo.svg){fig-align="center" height="100"}
+:::
+ 
+ 

@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="bryn_mawr_2026_april_final_files/libs/clipboard/clipboard.min.js"></script>
+<script src="bryn_mawr_2026_april_final_files/libs/quarto-html/tabby.min.js"></script>
+<script src="bryn_mawr_2026_april_final_files/libs/quarto-html/popper.min.js"></script>
+<script src="bryn_mawr_2026_april_final_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="bryn_mawr_2026_april_final_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="bryn_mawr_2026_april_final_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="bryn_mawr_2026_april_final_files/libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.36">
+
+  <meta name="dcterms.date" content="2026-04-20">
+  <title>A Natural Projection for Supervised Feature Extraction</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="bryn_mawr_2026_april_final_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="bryn_mawr_2026_april_final_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="bryn_mawr_2026_april_final_files/libs/revealjs/dist/theme/quarto-124de6e4d39a0fc2ee9d64d352478dca.css">
+  <link href="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+
+    TeX: {
+
+      Macros: { 
+
+        independenT: ["{\\mathrel{\\rlap{ #1 }\\mkern2mu{ #1 }}}",1],
+
+        argmin: "{\\DeclareMathOperator*{\argmin}{\arg\\min}}",
+
+        argmax: "{\\DeclareMathOperator*{\argmax}{\arg\\max}}", 
+
+        indep: "{\\independenT{\\perp}}",
+
+        vvec: "{\\mathrm{vec}}",
+
+        sq: "{\\mathrm{sq}}",
+
+        SS: "{\\mathscr{S}}",
+
+        R:"{\\mathbb{R}}",
+
+        N:"{\\mathbb{N}}",
+
+        ind:"{\\unicode{x1D7D9}}",
+
+        Xcal: "{\\mathcal{X}}",
+
+        cA: "{\\mathcal{A}}",
+
+        cH: "{\\mathcal{H}}",
+
+        cT: "{\\mathcal{T}}",
+
+        cP: "{\\mathcal{P}}",
+
+        cM: "{\\mathcal{M}}",
+
+        cC: "{\\mathcal{C}}",
+
+        cG: "{\\mathcal{G}}",
+
+        cB: "{\\mathcal{B}}",
+
+        cL: "{\\mathcal{L}}",
+
+        cX: "{\\mathcal{X}}",
+
+        cE: "{\\mathcal{E}}",
+
+        cR: "{\\mathcal{R}}",
+
+        cV: "{\\mathcal{V}}",
+
+        ran: "{\\mathrm{ran}}",
+
+        sH: "{\\mathscr{H}}",
+
+        sB: "{\\mathscr{B}}",
+
+        sC: "{\\mathscr{C}}",
+
+        sG: "{\\mathscr{G}}",
+
+        sE: "{\\mathscr{E}}",
+
+        sP: "{\\mathscr{P}}",
+
+        fM: "{\\mathfrak{M}}",
+
+        fL: "{\\mathfrak{L}}",
+
+        water: "{H_2O}",
+
+        ip: ['{\\langle #1 \\rangle}', 1],
+
+        ipl: '{\\langle}',
+
+        ipr: '{\\rangle}',
+
+        Abs: ['\\left\\lvert #2 \\right\\rvert_{\\text{#1}}', 2, ""],
+
+        var: "{\\mathrm{var}}",
+
+        cov: "{\\mathrm{cov}}",
+
+        vep: "{\\varepsilon}",
+
+        sig: "{\\sigma}",
+
+        a: "{\\alpha}",
+
+        b: "{\\beta}",
+
+        d: "{\\delta}",
+
+        g: "{\\gamma}",
+
+        l: "{\\lambda}",
+
+        t: "{\\tau}"
+
+      }
+
+    }
+
+  });
+
+  </script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="figures/logos/MED_Formal_Red_Black.png" data-background-position="5% 5%" data-background-size="25%" class="quarto-title-block center">
+  <h1 class="title">A Natural Projection for Supervised Feature Extraction</h1>
+  <p class="subtitle">with Application to Electrocardiograms in Chronic Kidney Disease</p>
+
+<div class="quarto-title-authors">
+</div>
+
+  <p class="date">2026-04-20</p>
+</section>
+<section class="slide level2">
+
+<h3 id="overview">Overview</h3>
+<div class="extrapad" style="font-size: 100%;">
+<ul>
+<li><p><strong>Motivation:</strong> Chronic Renal Insufficiency Cohort (CRIC) study and Heart Failure</p></li>
+<li><p><strong>Methodology:</strong> Supervised Functional Feature Extraction</p>
+<ul>
+<li><p>Existing methods: FPCA and FSIR</p></li>
+<li><p>Our proposed alternative approach</p></li>
+</ul></li>
+<li><p><strong>Application:</strong> Construct features characterizing HF with promise for tracking disease progression in CKD patients</p></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="chronic-renal-insufficiency-cohort-cric-study">Chronic Renal Insufficiency Cohort (CRIC) Study</h3>
+<div class="quarto-layout-panel" data-layout="[30, 70]">
+<div class="quarto-layout-row">
+<div class="extrapad quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p><br></p>
+<ul>
+<li><p>An observational study, ages 21-74, varying stages of chronic kidney disease (CKD)</p></li>
+<li><p>Examine risk factors for the progression of CKD and cardiovascular disease (CVD) in CKD patients.</p></li>
+</ul>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/cric_phases.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="heart-failure-among-ckd-patients">Heart Failure among CKD patients</h3>
+<p><br></p>
+<div class="extrapad" style="font-size: 90%;">
+<ul>
+<li>CKD patients at a higher risk of Heart Failure<sup>1</sup><sup>2</sup>;
+<ul>
+<li><span style="color: #a41e35;"><strong>incidence of Heart Failure can exacerbate co-morbidities and renal disease progression</strong></span></li>
+</ul></li>
+<li>Find features for heart failure in CKD patients from their electrocardiograms (ECGs)
+<ul>
+<li>ECGs are non-invasive and abundant in CRIC study</li>
+<li>ECGs measured in initial steps of diagnosing Heart Failure</li>
+</ul></li>
+</ul>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>Pfeffer MA, Shah AM, Borlaug BA. Heart Failure With Preserved Ejection Fraction In Perspective. Circ Res. 2019 May 24;124(11):1598-1617. doi: 10.1161/CIRCRESAHA.119.313572. PMID: 31120821; PMCID: PMC6534165.</p></li><li id="fn2"><p>Murphy SP, Ibrahim NE, Januzzi JL. Heart Failure With Reduced Ejection Fraction: A Review. JAMA. 2020;324(5):488–504. doi:10.1001/jama.2020.10262</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="phases-of-electrocardiograms">Phases of Electrocardiograms</h3>
+<div style="font-size: 100%;">
+<p>Electrocardiograms (ECGs) record the electrical activity from the heart impulses during the cardiac cycle - the sequence of events for one complete heartbeat.</p>
+</div>
+<div style="text-align:center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/ecg_phases.jpg" height="400"></p>
+<figcaption>Phases of the cardiac cycle<sup>1</sup></figcaption>
+</figure>
+</div>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn3"><p>Bernal, Daniel. Phases of the Cardiac Cycle. https://bernalstudio.artstation.com/projects/ZLrON</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="visualizing-electrocardiograms">Visualizing Electrocardiograms</h3>
+<p>Electrocardiograms (ECGs) record the electrical activity from the heart impulses during the cardiac cycle - the sequence of events for one complete heartbeat.</p>
+<div style="text-align:center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/ecg_demo.gif" height="350"></p>
+<figcaption>One full cardiac cycle<sup>1</sup></figcaption>
+</figure>
+</div>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn4"><p>Alila Medical Media. https://www.alilamedicalmedia.com/</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="lead-electrocardiograms">12-lead Electrocardiograms</h3>
+<p>Full 12-lead ECG recorded per visit in CRIC; but only interested in lead I</p>
+<div style="text-align:center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/norm_2x.png" height="450"></p>
+<figcaption>A normal 12-lead ECG tracing<sup>1</sup></figcaption>
+</figure>
+</div>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn5"><p>Jenkins, Dean and Gerred, Stephen. ECG Library. https://ecglibrary.com/norm.php</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="importance-of-heart-failure-subtypes1415">Importance of Heart Failure Subtypes<sup>1</sup><sup>2</sup></h3>
+<div class="quarto-layout-panel" data-layout="[[30],[-5], [70]]">
+<div class="quarto-layout-row">
+<div class="extrapad quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<ul>
+<li><p>Heart Failure (HF) has conventionally been classified by the left ventricular ejection fraction (LVEF) measurment from an echocardiogram</p></li>
+<li><p>Most HF (&gt; 80%) cases are classified as HF with preserved ejection fraction (HFpEF), or HF with reduced ejection fraction (HFrEF)</p></li>
+</ul>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" data-layout.ncol="2" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div class="column extrapad" style="font-size: 100%;">
+<p>HF with preserved EF (LVEF <span class="math inline">\(\geq 50\)</span>):</p>
+<ul>
+<li><p>Diastolic (relaxation) Dysfunction</p></li>
+<li><p>Therapies: SGLT2, lifestyle</p></li>
+</ul>
+</div><div class="column extrapad" style="font-size: 100%;">
+<p>HF with reduced EF (LVEF <span class="math inline">\(\leq 40\)</span>):</p>
+<ul>
+<li><p>Systolic (contraction) Dysfunction</p></li>
+<li><p>Therapies: ACE-inhibitors/ARB/ARNI/<span class="math inline">\(\beta\)</span>-blockers, device implants, SGLT2, lifestyle</p></li>
+</ul>
+</div></div>
+</div>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn6"><p>Murphy, S. P., Ibrahim, N. E., &amp; Januzzi, J. L., Jr (2020). Heart Failure With Reduced Ejection Fraction: A Review. JAMA, 324(5), 488–504. https://doi.org/10.1001/jama.2020.10262</p></li><li id="fn7"><p>Redfield MM, Borlaug BA. Heart Failure With Preserved Ejection Fraction: A Review. JAMA. 2023;329(10):827–838. doi:10.1001/jama.2023.2020</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="cric-objective">CRIC Objective</h3>
+<h4 id="our-approach">Our approach</h4>
+<p><strong>“The primary objectives of the CRIC Study were to examine risk factors for progression of CKD and CVD … study aimed to develop predictive models to identify high-risk subgroups…”<sup>1</sup></strong></p>
+<div class="extrapad">
+<ul>
+<li><p>Use dimension reduction to construct features of Heart Failure sub-types from patient ECGs</p></li>
+<li><p>Develop models for tracking disease progression over multi-year visits</p></li>
+</ul>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn8"><p>Dember, Laura (2024). Chronic Renal Insufficiency Cohort Study (CRIC) (Version 13) [Dataset] NIDDK Central Repository. https://doi.org/10.58020/6dxf-ed78</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="existing-work">Existing Work</h3>
+<p><br></p>
+<div class="extrapad" style="font-size: 90%;">
+<p>Papers that address using ECGs for analyzing HFpEF and HFrEF:</p>
+<ul>
+<li><p>conventional statistical methods compare ECG summary parameters to identify and differentiate HFpEF and HFrEF</p>
+<ul>
+<li><p>ECG parameters are summary quantities of the ECG recordings, like heart rate, QRS duration, QT interval, etc.</p></li>
+<li><p>Cumbersome and inefficient;</p></li>
+</ul></li>
+<li><p>DL and AI methods<sup>1</sup><sup>2</sup> focus on prediction error</p>
+<ul>
+<li>are blackboxes; little work on tracking longitudinally; uses ECGs as raw images - potentially inefficient;</li>
+</ul></li>
+</ul>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn9"><p>Choi, J., Lee, S., Chang, M., Lee, Y., Oh, G. C., &amp; Lee, H. Y. (2022). Deep learning of ECG waveforms for diagnosis of heart failure with a reduced left ventricular ejection fraction. Scientific reports, 12(1), 14235. https://doi.org/10.1038/s41598-022-18640-8</p></li><li id="fn10"><p>Unterhuber, M., Rommel, K. P., Kresoja, K. P., Lurz, J., Kornej, J., Hindricks, G., Scholz, M., Thiele, H., &amp; Lurz, P. (2021). Deep learning detects heart failure with preserved ejection fraction using a baseline electrocardiogram. European heart journal. Digital health, 2(4), 699–703. https://doi.org/10.1093/ehjdh/ztab081</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="overview-of-aims">Overview of Aims</h3>
+<h4 id="objectives">Objectives</h4>
+<div class="extrapad">
+<ol type="1">
+<li><p>Leverage functional nature of ECGs to improve feature extraction</p></li>
+<li><p>Derive features reflective of physiological mechanisms and interpretable to clinicians</p></li>
+<li><p>Use features to perform longitudinal analysis of disease progression</p></li>
+</ol>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="leveraging-functional-data">Leveraging Functional Data</h3>
+<div class="column extrapad add-colspace" style="width:40%;">
+<p>Functional data:</p>
+<ul>
+<li><p>Assume recorded observations <span class="math inline">\({X(t_1), X(t_2), \ldots, X(t_J)}\)</span> come from underlying smooth function <span class="math inline">\(\{X(t): t \in [0,1]\}\)</span></p></li>
+<li><p>Current value of observation depends on values adjacent</p></li>
+<li><p>Ideal to account for functional nature instead of using as raw image or euclidean vector.</p></li>
+</ul>
+</div><div class="column extrapad" style="width:40%;">
+<p>Applications:</p>
+<ul>
+<li><p>Electrocardiograms</p></li>
+<li><p>Accelerometer data from activity and gait analyses</p></li>
+<li><p>Real-time monitoring devices for biomarkers</p></li>
+<li><p>Circadian rhythms from wearable devices</p></li>
+</ul>
+</div><div class="fragment">
+<p><strong>But the underlying curves are infinite dimensional; need to project into finite space</strong></p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="functional-principcal-component-analysis-fpca">Functional Principcal Component Analysis (FPCA)</h3>
+<h4 id="leveraging-functional-data-1">Leveraging Functional Data</h4>
+<div class="quarto-layout-panel" data-layout="[60,-1, 40]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 59.4%;justify-content: flex-start;">
+<ul>
+<li><p><strong>PCA</strong>: Unsupervised feature extraction method in multivariate analysis, <span class="math inline">\(X \in \R^p\)</span></p></li>
+<li><p><span class="math inline">\(\var(X) = \sum_{j=1}^p \lambda_j v_j v_j^\top\)</span></p></li>
+<li><p>Features <span class="math inline">\(v_1, \ldots, v_p\)</span> represent the variability in <span class="math inline">\(X\)</span>, from largest to smallest</p></li>
+<li><p><strong>FPCA</strong>: extends PCA to functional <span class="math inline">\(X(t) \in \sH\)</span>;</p></li>
+<li><p><span class="math inline">\(\var(X) = \sum_{j=1}^\infty \lambda_j (\psi_j \otimes \psi_j )\)</span></p></li>
+<li><p>Feature functions <span class="math inline">\(\{\psi_j(t)\}_{j=1}^{\infty}\)</span> represent variability in <span class="math inline">\(X(t)\)</span></p></li>
+<li><p>Limitation: FPCA extracts the leading features most relevant to <span class="math inline">\(X(t)\)</span>; not necessarily relevant to outcome, <span class="math inline">\(Y\)</span></p></li>
+</ul>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 1.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="column quarto-layout-cell" style="flex-basis: 39.6%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/fpca_ecgs.png" height="400"></p>
+<figcaption>First 3 FPCA features (top) relative to ECGs (bottom). Solid-blue are healthy; dashed-red are HF.</figcaption>
+</figure>
+</div>
+</div></div>
+</div>
+<!-- ## Supervised Feature Extraction -->
+<!-- :::{layout="[50, -1, 50]"} -->
+<!-- :::{.column .extrapad } -->
+<!-- Sliced Inverse Regression (1991); $X \in \R^p, Y \in \R$: -->
+<!--   - GEV: $\{\var(X)\}^{-1} \cov\{E(X|Y)\}$  -->
+<!--     - GEV effectively re-orders features of $\var(X)$ by relevance to $Y$  -->
+<!-- ::: -->
+<!-- :::{.column .extrapad } -->
+<!-- Functional Sliced Inverse Regression (2003); $X(t), Y \in \R$: -->
+<!--   - GEP: $\{\var(X)\}^{\dagger} \cov\{E(X|Y)\}$ -->
+<!--   - Generalized inverse of $\var(X)$ requires truncating $\var(X)$  -->
+<!--     - Usual basis representations for $X(t)$ truncates $\var(X)$ based on features most relevant to $X(t)$; but most relevant to $X(t)$ not necessarily relevant to $Y$ -->
+<!--     - Then GEP re-orders features that have already lost information on $Y$ -->
+<!-- ::: -->
+<!-- ::: -->
+</section>
+<section class="slide level2">
+
+<h3 id="supervised-feature-extraction">Supervised Feature Extraction</h3>
+<h4 id="deriving-outcome-relevant-features">Deriving outcome-relevant features</h4>
+<p><br></p>
+<div class="extrapad">
+<p>Use Sufficient Dimension Reduction (SDR) derive features that are relevant to the outcome <span class="math inline">\(Y\)</span>.</p>
+<ul>
+<li><p>Sufficient Dimension Reduction (SDR) problem:</p>
+<ul>
+<li><p>For <span class="math inline">\(X \in \R^p\)</span> and <span class="math inline">\(Y \in \R\)</span>, assume <span class="math inline">\(Y \indep X | \ipl \beta_1, X \ipr, \ldots, \ipl \beta_d, X \ipr\)</span>.</p></li>
+<li><p>Finding the <span class="math inline">\(d\)</span> features <span class="math inline">\(\beta_1, \ldots, \beta_d\)</span> are sufficient for characterizing the relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>.</p>
+<ul>
+<li>Estimating a <span class="math inline">\(d\)</span>-dimensional subspace of <span class="math inline">\(\var(X)\)</span> that captures the relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>;</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sliced-inverse-regression-sir-li-1991">Sliced Inverse Regression (SIR; Li, 1991)</h3>
+<h4 id="deriving-outcome-relevant-features-1">Deriving outcome-relevant features</h4>
+<p><br></p>
+<div class="extrapad">
+<p>Seminal SDR method: Sliced Inverse Regression (SIR) (1991); <span class="math inline">\(X \in \R^p, Y \in \R\)</span>:</p>
+<ul>
+<li><p>Generalized Eigenvalue Problem; <span class="math inline">\(GEP(\cov\{E(X|Y)\}, \var(X))\)</span>:</p>
+<ul>
+<li><p><span class="math inline">\(\max_{\beta_j} \beta_j^\top \cov\{E(X|Y)\} \beta_j\)</span> such that <span class="math inline">\(\beta_j^\top \var(X) \beta_k = \delta_{jk}\)</span> for <span class="math inline">\(j, k = 1, \ldots, d\)</span>;</p></li>
+<li><p>Returns features related to <span class="math inline">\(Y\)</span> as opposed to just characterizing <span class="math inline">\(X\)</span> like FPCA;</p></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sliced-inverse-regression-sir">Sliced Inverse Regression (SIR)</h3>
+<h4 id="deriving-outcome-relevant-features-2">Deriving outcome-relevant features</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<ul>
+<li><p>Let <span class="math inline">\(X = (X_1, X_2) \in [0,1]^2\)</span></p></li>
+<li><p><span class="math inline">\(Y = X_1^2 = (\beta^\top X)^2\)</span>, where <span class="math inline">\(\beta = (1,0)^\top\)</span></p></li>
+</ul>
+</div><div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/sir_plot1.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sliced-inverse-regression-sir-1">Sliced Inverse Regression (SIR)</h3>
+<h4 id="deriving-outcome-relevant-features-3">Deriving outcome-relevant features</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<ul>
+<li><p>Let <span class="math inline">\(X = (X_1, X_2) \in [0,1]^2\)</span></p></li>
+<li><p><span class="math inline">\(Y = X_1^2 = (\beta^\top X)^2\)</span>, where <span class="math inline">\(\beta = (1,0)^\top\)</span></p></li>
+<li><p><strong>Slice <span class="math inline">\(Y\)</span> into <span class="math inline">\(H=5\)</span> partitions</strong></p></li>
+</ul>
+</div><div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/sir_plot2.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sliced-inverse-regression-sir-2">Sliced Inverse Regression (SIR)</h3>
+<h4 id="deriving-outcome-relevant-features-4">Deriving outcome-relevant features</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<ul>
+<li><p>Let <span class="math inline">\(X = (X_1, X_2) \in [0,1]^2\)</span></p></li>
+<li><p><span class="math inline">\(Y = X_1^2 = (\beta^\top X)^2\)</span>, where <span class="math inline">\(\beta = (1,0)^\top\)</span></p></li>
+<li><p><strong>Find corresponding/induced partitions of <span class="math inline">\(X\)</span></strong></p></li>
+</ul>
+</div><div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/sir_plot3.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sliced-inverse-regression-sir-3">Sliced Inverse Regression (SIR)</h3>
+<h4 id="deriving-outcome-relevant-features-5">Deriving outcome-relevant features</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<ul>
+<li><p>Let <span class="math inline">\(X = (X_1, X_2) \in [0,1]^2\)</span></p></li>
+<li><p><span class="math inline">\(Y = X_1^2 = (\beta^\top X)^2\)</span>, where <span class="math inline">\(\beta = (1,0)^\top\)</span></p></li>
+<li><p><strong>Compute mean of <span class="math inline">\(X\)</span> in each partition; this is <span class="math inline">\(E(X|Y)\)</span></strong></p></li>
+</ul>
+</div><div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/sir_plot4.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sliced-inverse-regression-sir-4">Sliced Inverse Regression (SIR)</h3>
+<h4 id="deriving-outcome-relevant-features-6">Deriving outcome-relevant features</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<ul>
+<li><p>Let <span class="math inline">\(X = (X_1, X_2) \in [0,1]^2\)</span></p></li>
+<li><p><span class="math inline">\(Y = X_1^2 = (\beta^\top X)^2\)</span>, where <span class="math inline">\(\beta = (1,0)^\top\)</span></p></li>
+<li><p><strong>Perform PCA on <span class="math inline">\(E(X|Y)\)</span></strong></p>
+<ul>
+<li><p>Returns direction in which <span class="math inline">\(E(X|Y)\)</span> varies the most;</p></li>
+<li><p><span class="math inline">\(\max_{\beta_j} \beta_j^\top \cov\{E(X|Y)\} \beta_j\)</span> such that <span class="math inline">\(\beta_j^\top \var(X) \beta_k = \delta_{jk}\)</span> for <span class="math inline">\(j, k = 1, \ldots, d\)</span>;</p></li>
+</ul></li>
+</ul>
+</div><div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/sir_plot5.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="functional-sliced-inverse-regression-fsir">Functional Sliced Inverse Regression (FSIR)</h3>
+<h4 id="deriving-outcome-relevant-features-7">Deriving outcome-relevant features</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<ul>
+<li><p>Sliced Inverse Regression (1991); <span class="math inline">\(X \in \R^p, Y \in \R\)</span>:</p>
+<ul>
+<li>GEP: <span class="math inline">\(\{\var(X)\}^{-1} \cov\{E(X|Y)\}\)</span></li>
+</ul></li>
+<li><p>Functional Sliced Inverse Regression (2003); <strong><span class="math inline">\(X(t) \in \sH\)</span></strong>, <span class="math inline">\(Y \in \R\)</span>:</p>
+<ul>
+<li>GEP: <span class="math inline">\(\{\var(X)\}^{\dagger} \cov\{E(X|Y)\}\)</span></li>
+</ul></li>
+</ul>
+</div><div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/sir_plot5.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="functional-sliced-inverse-regression-fsir-ferré-and-yao-2003">Functional Sliced Inverse Regression (FSIR; Ferré and Yao, 2003)</h3>
+<h4 id="deriving-outcome-relevant-features-8">Deriving outcome-relevant features</h4>
+<div class="extrapad">
+<ul>
+<li><p>Functional Sliced Inverse Regression (2003); <strong><span class="math inline">\(X(t) \in \sH\)</span></strong>, <span class="math inline">\(Y \in \R\)</span>:</p>
+<ul>
+<li><p>GEP: <span class="math inline">\(\{\var(X)\}^{\dagger} \cov\{E(X|Y)\}\)</span></p></li>
+<li><p><span class="math inline">\(\var(X)\)</span> is now an infinite-dimensional operator; requires a generalized inverse for GEP;</p></li>
+<li><p>Conventional FSIR approach truncates <span class="math inline">\(\var(X)\)</span> to compute <span class="math inline">\(\{\var(X)\}^{\dagger}\)</span>;</p>
+<ul>
+<li><p><span class="math inline">\(\var(X) = \sum_{j=1}^\infty \lambda_j \psi_j \otimes \psi_j\)</span> is truncated to finite-operator <span class="math inline">\(\sum_{j=1}^K \lambda_j \psi_j \otimes \psi_j\)</span> for some <span class="math inline">\(K\)</span>;</p></li>
+<li><p><span class="math inline">\(K\)</span> is commonly chosen based on the proportion of variance explained of <span class="math inline">\(X(t)\)</span>, not necessarily <span class="math inline">\(Y\)</span>;</p></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="functional-sliced-inverse-regression-fsir-ferré-and-yao-2003-1">Functional Sliced Inverse Regression (FSIR; Ferré and Yao, 2003)</h3>
+<h4 id="deriving-outcome-relevant-features-9">Deriving outcome-relevant features</h4>
+<div class="extrapad">
+<ul>
+<li><p>Truncating <span class="math inline">\(\var(X)\)</span> projects <span class="math inline">\(X(t)\)</span> onto a finite subspace spanned by the leading eigenfunctions of <span class="math inline">\(\var(X)\)</span>;</p>
+<ul>
+<li><p><span class="math inline">\(X(t) = \mu_X(t) + \sum_{j=1}^\infty \xi_j \psi_j(t)\)</span> becomes <span class="math inline">\(\tilde X(t) = \mu_X(t) + \sum_{j=1}^K \xi_j \psi_j(t)\)</span></p></li>
+<li><p>This subspace of <span class="math inline">\(\var(X)\)</span> might miss relevant information on <span class="math inline">\(Y\)</span>;</p></li>
+<li><p><strong>More be ideal to project <span class="math inline">\(X(t)\)</span> onto a finite subspace that retains as much relevant information on <span class="math inline">\(Y\)</span></strong></p></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="a-natural-projection-for-functional-sliced-inverse-regression-napfsir-quach-et.-al.-2026">A Natural Projection for Functional Sliced Inverse Regression (NAPFSIR; Quach et. al., 2026)</h3>
+<h4 id="deriving-outcome-relevant-features-10">Deriving outcome-relevant features</h4>
+<p><br></p>
+<div class="extrapad">
+<p>From the FSIR GEP:</p>
+<ul>
+<li><p><span class="math inline">\(\max_{\beta_j} \beta_j^\top \cov\{E(X|Y)\} \beta_j\)</span> such that <span class="math inline">\(\beta_j^\top \var(X) \beta_k = \delta_{jk}\)</span> for <span class="math inline">\(j, k = 1, \ldots, d\)</span>;</p></li>
+<li><p><span class="math inline">\(\Lambda = \cov\{E(X|Y)\}\)</span> is a finite operator and contains all the relevant information on <span class="math inline">\(Y\)</span>;</p></li>
+<li><p>So we can project <span class="math inline">\(X(t)\)</span> onto this finite subspace without losing information on <span class="math inline">\(Y\)</span>;</p>
+<ul>
+<li><p>Finite-ness by SDR assumption that <span class="math inline">\(Y \indep X | \ipl \beta_1, X \ipr, \ldots, \ipl \beta_d, X \ipr\)</span>;</p></li>
+<li><p>Assume <span class="math inline">\(\Lambda\)</span> has sufficient rank, <span class="math inline">\(d\)</span>, for convenience</p></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="a-natural-projection-for-functional-sliced-inverse-regression">A Natural Projection for Functional Sliced Inverse Regression</h3>
+<h4 id="deriving-outcome-relevant-features-11">Deriving outcome-relevant features</h4>
+<div class="extrapad">
+<p>The NAPFSIR GEP algorithm:</p>
+<ul>
+<li><p>Project <span class="math inline">\(X(t)\)</span> onto <span class="math inline">\(\Lambda = \cov\{E(X|Y)\}\)</span> (instead of a finite subspace of <span class="math inline">\(\var(X)\)</span>);</p>
+<ul>
+<li><p>Estimate <span class="math inline">\(\cov\{E(X|Y)\}\)</span> by B-spline basis expansion;</p></li>
+<li><p>Project <span class="math inline">\(X(t)\)</span> onto the eigenfunctions of <span class="math inline">\(\cov\{E(X|Y)\}\)</span></p></li>
+</ul></li>
+<li><p>Carry out SIR by solving the usual GEP on the new basis coefficients;</p>
+<ul>
+<li><p>Empirically, improves recovery of relationships between <span class="math inline">\(X(t)\)</span> and <span class="math inline">\(Y\)</span></p></li>
+<li><p>Theoretically consistent with conventional non-parametric convergence rates</p></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="a-natural-projection-for-functional-sliced-inverse-regression-1">A Natural Projection for Functional Sliced Inverse Regression</h3>
+<h4 id="deriving-outcome-relevant-features-12">Deriving outcome-relevant features</h4>
+<div id="thm-inverse_sdr" class="theorem" style="font-size: 80%;">
+<p><span class="theorem-title"><strong>Theorem 1</strong></span> <strong>Natural Projections for FSIR</strong></p>
+<p>Solutions to FSIR problem, <span class="math display">\[GEP \bigg ( \cov\{E(X|Y)\}, \var(X) \bigg ),\]</span> are equivalent to solutions to <span class="math display">\[GEP \bigg (\cov\{E(X|Y)\}, P_{\cov\{E(X|Y)\}} \var(X) P^\top_{\cov\{E(X|Y)\}} \bigg ),\]</span> where <span class="math inline">\(P\)</span> is the projection operator onto <span class="math inline">\(\cov\{E(X|Y)\}\)</span>.</p>
+</div>
+<ul>
+<li><p>Trivial when <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are euclidean.</p></li>
+<li><p>Non-trivial implications when <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span> are more complex, like functional data;</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="a-natural-projection-for-functional-sliced-inverse-regression-2">A Natural Projection for Functional Sliced Inverse Regression</h3>
+<h4 id="deriving-outcome-relevant-features-13">Deriving outcome-relevant features</h4>
+<div id="thm-inverse_sdr" class="theorem" style="font-size: 80%;">
+<p><span class="theorem-title"><strong>Theorem 2</strong></span> <strong>Consistency of NAPFSIR</strong></p>
+<p>Let <span class="math inline">\(J\)</span> be the number of observed time points, <span class="math inline">\(K\)</span> be number of B-spline basis functions used to estimate <span class="math inline">\(\cov\{E(X|Y)\}\)</span> and <span class="math inline">\(\var(X)\)</span>, and <span class="math inline">\(n\)</span> be the sample size.</p>
+<p>Under conventional SDR and B-spline assumptions, with <span class="math inline">\(\lim_{J \to \infty} \frac{K \log J}{J} = 0\)</span> and <span class="math inline">\(c \sim J^{2/3} n^\g\)</span>, the solutions to <span class="math display">\[GEP \bigg (\cov\{E(X|Y)\}, P_{\cov\{E(X|Y)\}} \var(X) P^\top_{\cov\{E(X|Y)\}} \bigg ).\]</span></p>
+<p>are consistent with convergence rate <span class="math display">\[ \sup_{t \in [0,1]} \left| \hat{\beta}_j(t) - \beta_j(t) \right|^2 = O_p\left( J^{-2/3} +  n^{-1} \right). \]</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="overview-1">Overview</h3>
+<h4 id="recap">Recap</h4>
+<div style="font-size: 80%;">
+<ol type="1">
+<li>Leverage functional nature of ECGs</li>
+</ol>
+<ul>
+<li>FDA methods like FPCA and FSIR account for the functional nature of ECGs;</li>
+<li>But projects the functions onto finite subspace of <span class="math inline">\(\var(X)\)</span></li>
+</ul>
+<ol start="2" type="1">
+<li>Derive outcome interpretable features</li>
+</ol>
+<ul>
+<li>NAPFSIR projects <span class="math inline">\(X(t)\)</span> onto a information preserving finite subspace for <span class="math inline">\(Y\)</span>;</li>
+</ul>
+<ol start="3" type="1">
+<li><span style="color: #a41e35;"><strong>Perform longitudinal analysis of Heart Failure progression</strong></span></li>
+</ol>
+<ul>
+<li>Construct features to track diease progression over time;</li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="longitudinal-analysis-of-heart-failure-progression">Longitudinal Analysis of Heart Failure Progression</h3>
+<h4 id="why-supervised-features">Why Supervised Features?</h4>
+<div class="columns">
+<div class="column" style="width:75%;">
+<div style="text-align:center;">
+<div class="quarto-figure quarto-figure-left">
+<figure>
+<p><img data-src=".\figures/pef_ref_smpl_ecgs.png" width="950"></p>
+<figcaption>Red=HFrEF; Orange=HFpEF; Blue=Healthy; solid=end of follow-up; dotted= 3 years prior; dashed= 5 years prior;</figcaption>
+</figure>
+</div>
+</div>
+</div><div class="column" style="width:25%;">
+<div style="text-align:left; font-size: 80%;">
+<ul>
+<li>Visual inspection of ECGs of individuals over time is difficult when changes can be subtle;</li>
+<li>Derive summary scores to track disease progression over time;</li>
+</ul>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+<h3 id="longitudinal-analysis-of-heart-failure-progression-1">Longitudinal Analysis of Heart Failure Progression</h3>
+<h4 id="phase-1-cohort-for-constructing-features">Phase 1 cohort for constructing features</h4>
+<div class="extrapad">
+<ul>
+<li><p>Phase 1 participants</p>
+<ul>
+<li><p>no history of CVD at study entry, and have at least two ECGs;</p></li>
+<li><p>Use ECGs closest to diagnosis time for individuals with HFpEF or HFrEF;</p></li>
+<li><p>Use ECGs closest to study entry for Healthy individuals;</p></li>
+</ul></li>
+<li><p>We retrospectively validate our features on Phase 3 CRIC participants</p></li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="outcome-driven-functional-features">Outcome-driven Functional Features</h3>
+<h4 id="deriving-outcome-relevant-features-14">Deriving outcome-relevant features</h4>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-left">
+<figure>
+<p><img data-src=".\figures/rfsir_comps.png" width="500"></p>
+<figcaption>Overall Dysfunc; Vent Systolic Dysfunc; Vent Diastolic Dysfunc</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:35%;">
+<div style="text-align:left; font-size:80%;">
+<ul>
+<li><p>Outcome <span class="math inline">\(Y\)</span> is Healthy, HFpEF_1, HFpEF_2, HFrEF</p>
+<ul>
+<li>HFpEF is split by LVEF <span class="math inline">\(\geq 50\)</span>;</li>
+</ul></li>
+<li><p>Supervised features may correspond to physiological mechanisms</p></li>
+<li><p>Linearly combine them for diesease-specific features</p>
+<ul>
+<li><p>Determine combination via multinomial logistic regression</p></li>
+<li><p>HF vs Healthy; HFpEF vs HFrEF</p></li>
+</ul></li>
+</ul>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+<h3 id="retrospective-longitudinal-changes-in-scores">Retrospective longitudinal changes in scores</h3>
+<h4 id="longitudinal-analysis-of-disease-progression">Longitudinal Analysis of Disease Progression</h4>
+<p><br></p>
+<p>Subtype-specific features are <span class="math display">\[\hat f_{HFpEF}(t) = c_1 \text{component}_1 + c_2 \text{component}_2 + c_3 \text{component}_3\]</span></p>
+<p>with <span class="math inline">\(\hat f_{HFrEF}(t)\)</span> fitted similarly.</p>
+<p><br></p>
+<p>To score a patient’s ECG, we use the feature, <span class="math inline">\(\hat f_{HFpEF}(t)\)</span>, as a weight function applied to the ECG curve: <span class="math display">\[ s = \ipl \hat f_{HFrEF}, X - \mu_X \ipr = \frac{1}{J} \sum_{j=1}^J \hat f(t_j) X(t_j) \]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="retrospective-longitudinal-changes-in-scores-1">Retrospective longitudinal changes in scores</h3>
+<h4 id="longitudinal-analysis-of-disease-progression-1">Longitudinal Analysis of Disease Progression</h4>
+<p><br></p>
+<p>To the scores <span class="math inline">\(\{s_1, \dots, s_n\}\)</span> for each HF-subtype,</p>
+<ul>
+<li><p>we fit a linear mixed model to time (in years) with random intercept and slope for each patient <span class="math display">\[ s = \b_0 + \b_1 t + \g_0 + \g_1 t + \vep \]</span></p></li>
+<li><p>the estimated average slope, <span class="math inline">\(\b_1\)</span>, reflects the longitudinal changes in scores over time</p></li>
+<li><p>the subject-specific intercept, <span class="math inline">\(\b_0 + \g_0\)</span> and slope, <span class="math inline">\(\b_1 + \g_1\)</span>, can be used to evaluate the association between longitudinal changes in scores and disease progression</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="retrospective-longitudinal-changes-in-scores-2">Retrospective longitudinal changes in scores</h3>
+<h4 id="longitudinal-analysis-of-disease-progression-2">Longitudinal Analysis of Disease Progression</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/pef_ref_traj.png" height="450"></p>
+<figcaption>Longitudinal Trajectories of feature scores. Red=HFrEF; Green=HFpEF; purple=HF; blue=Healthy</figcaption>
+</figure>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<p>Among individuals with CKD, the longitudinal changes in our features can strongly discern individuals with HF from Healthy and individuals with HFpEF from HFrEF.</p>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="retrospective-phase-1-analysis">Retrospective Phase 1 Analysis</h3>
+<h4 id="longitudinal-analysis-of-disease-progression-3">Longitudinal Analysis of Disease Progression</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/phs1_tbl12.png" height="450"></p>
+<figcaption>Logistic Regression of subject trajectories; One StdDev change in OR reported</figcaption>
+</figure>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<div class="extrapad" style="text-align:left;font-size: 85%;">
+<ul>
+<li><p>Model 1: Just feature slope and intercepts</p></li>
+<li><p>Model 2: Model 1 + relevant baseline covariates</p></li>
+<li><p>Model 3: Model 2 + baseline Echo</p></li>
+</ul>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="retrospective-phase-1-analysis-1">Retrospective Phase 1 Analysis</h3>
+<h4 id="longitudinal-analysis-of-disease-progression-4">Longitudinal Analysis of Disease Progression</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/phs1_tbl12.png" height="450"></p>
+<figcaption>Logistic Regression of subject trajectories; One StdDev change in OR reported</figcaption>
+</figure>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<div class="extrapad" style="text-align:left;font-size: 85%;">
+<ul>
+<li>After adjusting for baseline covariates, on average, a one-standard deviation increase in feature slope is associated with a <span style="color: #a41e35;"><strong>44% decrease in odds of HFpEF</strong></span> and a <span style="color: #a41e35;"><strong>49% decrease in odds of HFrEF</strong></span> , compared to Healthy.</li>
+</ul>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="retrospective-phase-3-analysis">Retrospective Phase 3 Analysis</h3>
+<h4 id="longitudinal-analysis-of-disease-progression-5">Longitudinal Analysis of Disease Progression</h4>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="column quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/phs3_tbl12.png" height="400"></p>
+<figcaption>Logistic Regression of subject trajectories; One StdDev change in OR reported</figcaption>
+</figure>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<div class="extrapad" style="text-align:right;font-size: 85%;">
+<ul>
+<li><p>No Echocardiograms were measured in Phase 3</p></li>
+<li><p>After adjusting for baseline covariates, on average, a one-standard deviation increase in the feature slope is associated with a <strong>46% decrease in odds of HFpEF</strong> compared to healthy; insufficient HFrEF cases to evaluate association with HFrEF in Phase 3.</p></li>
+</ul>
+</div>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="summary">Summary</h3>
+<p><br></p>
+<div class="extrapad emphcolor" style="text-align:left; font-size: 100%;">
+<p><strong>Contributions to CRIC aim:</strong></p>
+<ul>
+<li><p>Developed NAPFSIR for supervised feature extraction in functional data;</p></li>
+<li><p>Constructed features reflecting physiological cardiac phenomena in HF-subtypes;</p></li>
+<li><p>Demonstrated Longitudinal changes in features within subject can discern HFpEF from HFrEF</p></li>
+</ul>
+</div>
+<!-- ## Current Projects and Future Directions -->
+<!-- Current Projects: -->
+<!--   - Vascular effects of E-cigarettes  -->
+<!--   - Prospective Analysis for HFrEF and HFpEF  -->
+<!--   - Comparable study entry time in CRIC -->
+<!--   - Functional feature extraction in exponential family outcomes  -->
+<!--   - Functional feature extraction in function outcomes -->
+<!-- Future Directions:  -->
+<!--   - Incorporate supervised approach for deep learning methods for nonlinear features -->
+<!--   - Develop single-lead ECG analysis applicable to wearable devices for cardiovascular health -->
+<!--   - Collaborations to analyze new bio-medical data -->
+<!--   - Contribute expertise in supervised feature extraction to complex data -->
+</section>
+<section id="acknowledgements" class="slide level2 ack-slide">
+<h2>Acknowledgements</h2>
+<p>Thanks to my collaborators at Penn Medicine:</p>
+<div class="quarto-layout-panel" data-layout-nrow="2" style="text-align:center;">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/wen.png" height="100"></p>
+<figcaption>Dr.&nbsp;Wensheng Guo, PhD <br> Professor of Biostatistics</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/peter.jpg" height="100"></p>
+<figcaption>Dr.&nbsp;Peter Yang, PhD <br> Professor of Biostatistics</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src=".\figures/raj.jpg" height="100"></p>
+<figcaption>Dr.&nbsp;Rajat Deo, MD <br> Associate Professor of Medicine <br> (Cardiovascular Medicine)</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="nih_niddk_logo.svg" height="100"></p>
+<figcaption>Supported by grant R01-HL161303 from the National Institute of Diabetes and Digestive and Kidney Diseases.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<p><img src="figures/logos/temple_t_nobox.png" class="slide-logo"></p>
+<div class="footer footer-default">
+<p><a href="https://harrisq.github.io">https://harrisq.github.io</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="bryn_mawr_2026_april_final_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

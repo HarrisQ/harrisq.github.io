@@ -1,0 +1,536 @@
+/*
+ 
+ 
+ */
+
+
+/*-- scss:defaults --*/
+
+
+// MUST have /*-- scss:rules --*/ section in the .scss file even if empty, otherwise Quarto errors
+
+
+
+// fonts
+@import url('https://use.typekit.net/wwp5vsy.css'); 
+
+// bc-blot for testing if the font commands are actually even working;
+ 
+
+// $font-family-sans-serif: "bc-blot", sans-serif;
+// $font-style: normal;
+// $font-weight: 400;
+
+// $font-family-sans-serif: harfang-pro, sans-serif;
+// $font-family-sans-serif: din-2014, sans-serif;
+// $font-family-sans-serif: Lato, sans-serif;
+
+// font-family: "bc-blot", sans-serif;
+// font-weight: 400;
+// font-style: normal;
+
+// font-family: "bc-blot-inline", sans-serif;
+// font-weight: 400;
+// font-style: normal;
+
+
+// font-family: "din-2014", sans-serif;
+// font-weight: 400;
+// font-style: normal;
+
+// font-family: "din-2014", sans-serif;
+// font-weight: 400;
+// font-style: italic;
+
+// font-family: "din-2014", sans-serif;
+// font-weight: 700;
+// font-style: italic;
+
+
+// font-family: "harfang-pro", serif;
+// font-weight: 400;
+// font-style: normal;
+
+
+// font-family: "harfang-pro", serif;
+// font-weight: 400;
+// font-style: italic;
+
+
+// font-family: "harfang-pro", serif;
+// font-weight: 700;
+// font-style: normal;
+
+// font-family: "harfang-pro", serif;
+// font-weight: 700;
+// font-style: italic;
+
+// font-family: "lato", sans-serif;
+// font-weight: 400;
+// font-style: normal;
+
+// font-family: "lato", sans-serif;
+// font-weight: 400;
+// font-style: italic;
+
+// font-family: "lato", sans-serif;
+// font-weight: 700;
+// font-style: normal;
+
+// font-family: "lato", sans-serif;
+// font-weight: 700;
+// font-style: italic;
+
+ 
+
+
+// colors
+
+
+// Primary Temple Colors
+$lksomred: #a41e35;
+$lksomwht: #ffffff;
+$lksomblk: #1d1d1d;
+
+// Secondary Temple Colors
+$sec1: #cbf6ff; // Icy Blue
+$sec2: #fdb913; // Ochre
+
+// Accent Temple Colors
+$acc1: #f2eee8; // Eggshell
+$acc2: #e7201d; // Geranium
+
+
+$yellow: #b58900;
+$orange: #cb4b16;
+$red: #dc322f;
+$magenta: #d33682;
+$violet: #6c71c4;
+$blue: #268bd2;
+$cyan: #2aa198;
+$green: #859900;
+
+
+
+
+/*-- scss:rules --*/
+
+
+
+// h1 is also same as title page font; but might want different h1 from title
+
+#title-slide .title {
+    font-family: "harfang-pro", sans-serif;
+    font-size: 2em;
+    // background-color: $lksomwht;
+    // top right bottom left
+    padding: 1.5em 0.25em 0.5em 0.25em;
+    height: 250px;
+    color: $lksomred;
+    border-radius: 0px;
+}
+
+#title-slide .subtitle {
+    font-family: "harfang-pro", sans-serif;
+    font-size: 1em;
+    // background-color: $lksomwht;
+    padding: 0.25em 0.25em 0.25em 0.25em;
+    height: 150;
+    color: $lksomblk;
+    border-radius: 0px;
+}
+ 
+.quarto-title-author-name {
+      font-family:"harfang-pro", sans-serif;
+      font-size: 40px;
+      color: $lksomred;
+    }
+
+#title-slide .date {
+  font-family: "harfang-pro", sans-serif;
+  font-size: 0.5em;
+  color: $lksomblk;
+}
+
+// Not used for quarto slides; too large font and overbearing 
+.reveal h1 {
+    font-family: "bc-blot", sans-serif;
+    // font-size: 4em;
+    // background-color: $lksomwht;
+    padding: 10px 0px 10px 20px;
+    height: 85px;
+    color: $lksomred;
+    border-radius: 0px;
+}
+
+// h2  custom; slide titles
+.reveal h2 {
+    font-family: "harfang-pro", sans-serif;
+  // background-color: $lksomwht;
+
+    // padding: 10px 0px 0px 0px;
+    height: 85px;
+    color: $lksomred;
+    border-radius: 0px; 
+}
+
+.reveal h3 {
+    font-family: "harfang-pro", sans-serif;
+    // font-weight: 400;
+    font-size: 0.85em;
+  // background-color: $lksomwht;
+    // padding: 0px 0px 20px 10px; 
+    color: $lksomred;
+    border-radius: 0px; 
+}
+
+.reveal h4 {
+    font-family: "harfang-pro", sans-serif;
+    // font-weight: 400;
+    font-size: 0.6em;
+  // background-color: $lksomwht;
+    // padding: 0px 0px 20px 10px; 
+    color: $lksomblk;
+    border-radius: 0px; 
+}
+
+// body custom
+.reveal p {
+    font-family: "harfang-pro", sans-serif;
+    font-size: 0.75em;  
+    color: $lksomblk; 
+    border-radius: 0px;
+    
+}
+
+
+// em unit is relative to current font size in the environment its in I think
+
+.reveal p strong, .reveal em, .reveal i {
+    font-family: "harfang-pro", sans-serif;
+    font-size: 1em; 
+    color: $lksomred; 
+    
+}
+
+// Change font for unordered lists and ordered lists 
+.reveal ul, .reveal ol {
+  font-family: "harfang-pro", sans-serif;// Example: Georgia font
+  font-size: 0.9em;
+}
+
+
+.reveal ol li::marker { 
+  font-weight: bold;
+  color: $lksomred;  
+}
+
+// Change font for unordered lists and ordered lists 
+.reveal ul ul, .reveal ul ul ul, .reveal ol ol, .reveal ol ol ol {
+  font-family: "harfang-pro", sans-serif;// Example: Georgia font
+  font-size: 0.9em;
+}
+
+ 
+// $presentation-heading-font: "bc-blot", sans-serif;
+// $presentation-body-font: "harfang-pro", sans-serif;
+// $presentation-mathfont-sans-serif: Lato, sans-serif;
+
+.reveal p.figcaption {
+  font-size: 0.5em;
+}
+
+
+ 
+
+/* ---- Target only the ending slide ---- */
+
+.end {
+  background-color: $lksomred;  
+  background-image: url(figures/logos/lksom-inverse.png);
+  background-position: 2% 98%, center;
+  background-size: 100px, cover;
+}
+
+
+.reveal .slides section.ack-slide {
+  background-color: $lksomwht;   
+  h2, h1 {
+    color: $lksomred;
+    // letter-spacing: 0.02em;
+    // margin-bottom: 0.75em;
+  } 
+
+  p {
+    color: $lksomblk;
+    // letter-spacing: 0.02em;
+    // margin-bottom: 0.75em;
+  } 
+
+}
+
+.reveal .slides section.end-slide {
+  background-color: $lksomred;    
+  // background-position: right 3rem bottom 3rem !important;
+  // background-size: 160px auto !important; 
+  // color: $lksomwht;
+
+   /* Center content nicely */
+  display: grid;
+  place-content: center;
+  text-align: center;
+
+  
+}
+
+.reveal .slides section.subover-slide {
+      // background-image: linear-gradient(to right, white 50%,$lksomred);
+      // background-size: 100% 100%;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%; /* Adjust as needed for desired half */
+        height: 100%;
+        background-color: $lksomred; /* Your desired color for one half */
+        z-index: -1; /* Ensures content is above the background */
+      }
+
+
+    }
+
+
+
+.reveal .slides section.end-slideee {
+  background-color: $lksomred;    
+
+  /* Center content nicely */
+  display: grid;
+  place-content: center;
+  text-align: center;
+
+  /* Bigger finishing headline spacing */
+  h2, h1, p {
+    color: $lksomwht;
+    // letter-spacing: 0.02em;
+    // margin-bottom: 0.75em;
+  } 
+
+  p.end-caption {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    margin-top: 0.25em;
+  }
+
+  /* Add the logo as a decorative element in the corner */
+  position: relative;
+  isolation: isolate; /* ensure pseudo-element stacks correctly */
+
+  // &::after {
+  //   content: "";
+  //   position: absolute;
+  //   // right: $logo-offset-x;
+  //   // bottom: $logo-offset-y;
+  //   // width: $logo-size;
+  //   // height: $logo-size;
+  //   // background-image: $logo-url;
+  //   background-repeat: no-repeat;
+  //   background-size: contain;
+  //   background-position: center;
+  //   opacity: 0.95;
+  //   pointer-events: none; /* don’t block clicks */
+  //   z-index: 0;
+  // }
+}
+
+
+// .reveal h1.title {
+//   background-image: url(logos/MED_Formal_Red_Black.png);
+//   background-repeat: no-repeat;
+//   background-position: top left;
+//   background-size: 200px;
+// }
+
+// this is default reference to logo
+.reveal .slide-logo { 
+    right: 25px !important; /*positioning*/
+    top: 10px !important; /*positioning*/
+    bottom: unset !important; /*positioning*/
+    // height: 125px !important; /*size*/
+    // width: 300px !important; /*size*/
+    // height: 9pc !important;
+    // width: 20pc !important;
+
+    height:8pc !important;
+    width: 9pc !important;
+
+    max-width: unset !important;
+    max-height: unset !important;
+    // background-size: contain;
+    // background-repeat: no-repeat;
+    // background-position: center right;
+}
+ 
+.reveal .slide aside .aside-footnotes {
+    font-size: 10px;
+}
+
+
+// remove logo on slides by adding {.hide.logo}
+body:has(.present.hide-logo) {
+                --logo-display: none;
+              }
+              .slide-logo {
+                display: var(--logo-display, block) !important;
+              }
+ 
+
+.overview li  {
+  margin-top:30px  !important;
+  margin-bottom:60px  !important;
+  
+}
+
+.extrapad li {
+  margin-top:30px  !important;
+  margin-bottom:30px  !important;
+  font-size: 1em;
+  
+}
+
+// .extrapad li:not(:last-child) {
+//   margin-top:30px  !important;
+//   margin-bottom:30px  !important;
+//   font-size: 1em;
+  
+// }
+
+.add-colspace{
+padding-right: 11%;
+} 
+ 
+
+.emphcolor {
+  color: $lksomred !important;
+  
+}
+
+.v-center-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 90%;
+        }
+
+
+// .reveal h1 {
+//     font-family: "bc-blot", sans-serif;
+//   // background-color: $lksomwht;
+//     padding: 10px 0px 10px 20px;
+//     height: 85px;
+//     color: $lksomred;
+//     border-radius: 0px;
+    
+// }
+
+ 
+
+/*$body-bg: #f0f1eb !default;
+$body-color: #000 !default;
+$link-color: #51483d !default;
+$selection-bg: #26351c !default;*/
+
+
+/* moon */
+/*$body-bg: #191919 ;
+$body-color: #fff;
+$link-color: #42affa;*/
+
+
+/* simple */
+
+
+
+
+/* MOON  */
+/*$body-color: $base1 !default;
+$presentation-heading-color: $base2 !default;
+$presentation-heading-text-shadow: none !default;
+$body-bg: $base3 !default;
+$link-color: $blue !default;
+$selection-bg: $magenta !default;
+
+$presentation-heading-text-transform: uppercase !default; // from settings.scss
+$presentation-heading-font: "League Gothic", sans-serif !default; // from settings.scss*/
+
+
+
+// Change text colors against dark slide backgrounds
+
+// input panel
+/*$input-panel-bg: rgba(233, 236, 239, 0.2) !default;*/
+
+ 
+ 
+  
+/*.reveal a {
+  line-height: 1.3em;
+} 
+
+.reveal .slide blockquote {
+  border-left: 3px solid $text-muted;
+  padding-left: 0.5em;
+}*/
+
+/* Creating custom slide css */
+
+/*
+.reveal .title {
+  background-color: $lksomred; 
+   
+  background-size: 300px;
+  background-position: left;
+  background-repeat: no-repeat;
+  padding-left: 10px;
+  background-origin: content-box;
+
+  padding: 10px 0px 10px 20px; 
+  
+   
+  display: block;
+  position: fixed;
+  bottom: unset !important;
+  right: unset !important;
+  top: 5px;
+  left: 12px;
+  height: 100px !important;
+  width: 100x !important;
+  max-width: unset !important;
+  max-height: unset !important; 
+ 
+  body-color: $lksomred;
+  body-bg: $lksomred; 
+  color: $lksomred;
+  border-radius: 0px; 
+} */
+
+// .title2 {
+//   background-color: $lksomwht;
+//   body-color: $lksomblk;
+//   body-bg: $lksomwht;
+//   /*horiz vert*/
+// /*  background-position: 10% 10%; */
+  
+//   /*background-size: 160px; */ 
+// /*  vertical-align: top;*/
+//   /*background-image: url(https://github.com/jvcasillas/ru_xaringan/raw/master/img/logo/ru_shield.png);*/
+//   /*background-image: url(upenn_logo.png);
+//   background-position: 9% 15%; */
+// /*  background-size: 200px; */
+
+// /* delete this for 4:3 aspect ratio */
+// /*  padding-left: 75px;  */
+
+ 
