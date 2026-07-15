@@ -4,6 +4,6 @@ title: "Stat Jobs"
 description: "A webscraper for statistics jobs."
 ---
 
-A web scraper of some popular job boards for mostly academic jobs in statistics or biostatistics. Find it [here](https://harrisq.shinyapps.io/stat_jobs/)  
+A web scraper of some popular job boards for mostly academic jobs in statistics or biostatistics. Find it [here](https://019f6633-0346-e24b-240b-188c67bd04ac.share.connect.posit.cloud/)  
 
 ![Screenshot of scraper.](../images/stat_jobs.png){fig-align="left" fig-alt="screenshot of scraper."}
