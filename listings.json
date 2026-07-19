@@ -8,7 +8,14 @@
     "items": []
   },
   {
-    "listing": "/research/index.html",
+    "listing": "/software/index.html",
+    "items": [
+      "/software/pages/stat_jobs.html",
+      "/software/pages/linear_sufficient_dimension_reduction.html"
+    ]
+  },
+  {
+    "listing": "/index.html",
     "items": []
   },
   {
@@ -76,14 +83,7 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/research/index.html",
     "items": []
-  },
-  {
-    "listing": "/software/index.html",
-    "items": [
-      "/software/pages/stat_jobs.html",
-      "/software/pages/linear_sufficient_dimension_reduction.html"
-    ]
   }
 ]
