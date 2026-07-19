@@ -46,12 +46,14 @@ about:
       url: https://scholar.google.com/citations?user=2hH69DkAAAAJ&hl=en
     - text: Stat Jobs
       url: https://019f6633-0346-e24b-240b-188c67bd04ac.share.connect.posit.cloud/
-    # - text: "{{< ai orcid >}} ORCID 0000-0003-3131-0864"
-    #   url: https://orcid.org/0000-0003-3131-0864
+    - text: "{{< ai orcid >}} ORCID"
+      url: https://orcid.org/0000-0003-3131-0864
 back-to-top-navigation: false
 ---
 
 ::: {#about-harrisquach .animate__animated .animate__zoomInDown}
+
+-   Providing biostatistical support to cross-functional interdisciplinary research teams 
 -   Developing statistical methods and dimension reduction tools for summarizing and visualizing data <br/> to facilitate interpretable models and insightful analyses.
 -   Read more about me [here](about.qmd).
 :::
