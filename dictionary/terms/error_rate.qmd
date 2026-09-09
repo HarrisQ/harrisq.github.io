@@ -1,6 +1,6 @@
 ---
 title: "Error Rate"
-description: "A type of [metric](metric.qmd). It is a value that tells us how often a model produces incorrect predictions. The lower the error rate, the better."
+description: "A type of metric. It is a value that tells us how often a model produces incorrect predictions. The lower the error rate, the better."
 ---
 
 ---

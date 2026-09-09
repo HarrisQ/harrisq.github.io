@@ -1,6 +1,6 @@
 ---
 title: Mean Absolute Error (MAE)
-description: "A type of [metric](metric.qmd). It is a value that tells us, on average, how close a set of predicted values is from the actual values. The smaller the MAE, the better."
+description: "A type of metric. It is a value that tells us, on average, how close a set of predicted values is from the actual values. The smaller the MAE, the better."
 ---
 
 ---

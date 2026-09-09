@@ -13,7 +13,7 @@ listing:
       - "date desc"
       - "title asc"
   - id: landing-apps
-    contents: extended_posts/pages
+    contents: extended_posts/pages_working
     type: grid
     max-items: 6
     grid-columns: 3

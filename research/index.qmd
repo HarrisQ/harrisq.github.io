@@ -3,21 +3,6 @@ title: Research #'{{< animate bounceInDown "Research" duration-faster >}}'
 comments: false
 # margin-header: "[Research](https://harrisq.github.io/research/) © 2024 by [Harris Quach](https://forbo7.github.io/about.html) is licensed under [CC
 # BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1)"
-listing:
-  - id: pages
-    contents: pages
-    sort:
-      - "title desc"
-      - "date desc"
-    categories: true
-    sort-ui: [date, author]
-    filter-ui: [title, date, auther]
-    type: grid
-    grid-columns: 3
-    grid-item-border: true
-    grid-item-align: left
-    image-height: 100%
-    date-format: "dddd, DD MMMM YYYY | YYYY-MM-DD"
 format:
   html:
     page-layout: full

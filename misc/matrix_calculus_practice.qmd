@@ -15,8 +15,8 @@ Do let me know of any corrections.
 
 == Questions
 #let arr(var) = {$upright(arrow(#var))$}
-#let partial(out, inp) = {$(diff out)/(diff inp)$}
-#let derive(out, inp) = {$(dif out)/(dif inp)$}
+#let partial(out, inp) = {$(#sym.partial out)/(#sym.partial inp)$}
+#let derive(out, inp) = {$(upright(d) out)/(upright(d) inp)$}
 #let dotp(v1, v2) = {$arr(v1) dot arr(v2)$}
 #set math.vec(delim: "[")
 #set math.mat(delim: "[")
@@ -29,23 +29,23 @@ Do let me know of any corrections.
   + Find the Jacobian containing $nabla f(x, y)$ and $nabla g(x, y)$ in denominator layout.
 + Let $arr(y) = arr(f)(arr(x)) = f_i (x_i) = x_i$. Show that $partial(arr(y), arr(x)) = I$. <q4>
 + $arr(y) = arr(f)(arr(w)) circle arr(g)(arr(x)) = f_i (w_i) circle g_i (x_i)$. Prove the following identities. <q5>
-  + If $arr(y) = arr(f)(arr(w)) plus.circle arr(g)(arr(w))$,
-    + show that $partial((arr(w) plus.circle arr(x)), arr(w)) = I$.
-    + show that $partial((arr(w) plus.circle arr(x)), arr(x)) = I$.
-  + If $arr(y) = arr(f)(arr(w)) minus.circle arr(g)(arr(w))$,
-    + show that $partial((arr(w) minus.circle arr(x)), arr(w)) = I$.
-    + show that $partial((arr(w) minus.circle arr(x)), arr(x)) = -I$.
-  + If $arr(y) = arr(f)(arr(w)) times.circle arr(g)(arr(w))$,
-    + show that $partial((arr(w) times.circle arr(x)), arr(w)) = "diag"(arr(x))$.
-    + show that $partial((arr(w) times.circle arr(x)), arr(x)) = "diag"(arr(w))$.
-  + If $arr(y) = arr(f)(arr(w)) \u{2298} arr(g)(arr(w))$,
-    + show that $partial((arr(w) \u{2298} arr(x)), arr(w)) = "diag"(dots.c 1/x_i dots.c)$.
-    + show that $partial((arr(w) \u{2298} arr(x)), arr(x)) = "diag"(dots.c -(w_i)/(x^2_i) dots.c)$.
+  + If $arr(y) = arr(f)(arr(w)) ⊕ arr(g)(arr(w))$,
+    + show that $partial((arr(w) ⊕ arr(x)), arr(w)) = I$.
+    + show that $partial((arr(w) ⊕ arr(x)), arr(x)) = I$.
+  + If $arr(y) = arr(f)(arr(w)) ⊖ arr(g)(arr(w))$,
+    + show that $partial((arr(w) ⊖ arr(x)), arr(w)) = I$.
+    + show that $partial((arr(w) ⊖ arr(x)), arr(x)) = -I$.
+  + If $arr(y) = arr(f)(arr(w)) ⊗ arr(g)(arr(w))$,
+    + show that $partial((arr(w) ⊗ arr(x)), arr(w)) = "diag"(arr(x))$.
+    + show that $partial((arr(w) ⊗ arr(x)), arr(x)) = "diag"(arr(w))$.
+  + If $arr(y) = arr(f)(arr(w)) ⊘ arr(g)(arr(w))$,
+    + show that $partial((arr(w) ⊘ arr(x)), arr(w)) = "diag"(dots.c 1/x_i dots.c)$.
+    + show that $partial((arr(w) ⊘ arr(x)), arr(x)) = "diag"(dots.c -(w_i)/(x^2_i) dots.c)$.
 + $arr(y) = arr(f)(arr(x)) circle arr(g)(z) = arr(x) circle arrow(1)z$. Prove the following identities once with matricies and once with a general form of the equation. <q6>
-  + $partial((arr(x) plus.circle z), arr(x)) = I$
-  + $partial((arr(x) plus.circle z), z) = arrow(1)$
-  + $partial((arr(x) times.circle z), arr(x)) = I z$
-  + $partial((arr(x) times.circle z), z) = arr(x)$
+  + $partial((arr(x) ⊕ z), arr(x)) = I$
+  + $partial((arr(x) ⊕ z), z) = arrow(1)$
+  + $partial((arr(x) ⊗ z), arr(x)) = I z$
+  + $partial((arr(x) ⊗ z), z) = arr(x)$
 + $y = "sum"(arr(f)(arr(x))) = sum^n_(i=1) f_i (arr(x))$, where $f_i (arr(x)) ≠ x_i$. Show that $partial(y, arr(x)) = mat(sum_i partial(f_i(arr(x)), x_1), sum_i partial(f_i(arr(x)), x_2), dots.c, sum_i partial(f_i(arr(x)), x_n))$. <q7>
 + $y = "sum"(arr(x))$. Show that $nabla y = arrow(1)^T$. <q8>
 + $y = "sum"(arr(x)z)$. <q9>
@@ -65,7 +65,7 @@ Do let me know of any corrections.
   + Show that $partial(arr(g), arr(x)) = "diag"(partial(g_i, x_i))$.
   + Show that $partial(, arr(x))arr(f)(arr(g)(arr(x))) = "diag"(partial(f_i, g_i) partial(g_i, x_i))$
 + #link(<a19>)[$y = "max"(0, arr(w) dot arr(x) + b)$.] <q19>
-  + Find $partial((arr(w) times.circle arr(x)), arr(w))$.
+  + Find $partial((arr(w) ⊗ arr(x)), arr(w))$.
   + Now find $partial("sum"(arr(u)), arr(u))$, where $arr(u) = vec(u_1, u_2, dots.v, u_n)$.
   + Therefore, find 
     + $partial((arr(w) dot arr(x) + b), arr(w))$.
@@ -128,7 +128,7 @@ Do let me know of any corrections.
   17. #link(<q17>)[$derive(arr(y), x) = vec(2/x, 3cos(3x))$] <a17>
   #enum(start: 19, 
   [ #link(<q19>)[#sym.space #sym.space #sym.space]<a19>
-    + $partial((arr(w) times.circle arr(x)), arr(w)) = "diag"(arr(x))$
+    + $partial((arr(w) ⊗ arr(x)), arr(w)) = "diag"(arr(x))$
     + $partial("sum"(arr(u)), arr(u)) = arrow(1)^T$
     +
       + $partial(y, arr(w)) = arr(x)^T$
