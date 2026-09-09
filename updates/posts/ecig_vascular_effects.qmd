@@ -1,0 +1,21 @@
+---
+title: "New Paper: Acute Effects of Smoking and Vaping on Vascular Function via Quantitative MRI"
+date: "2026-01-01"
+# TODO: Update to exact publication date if known
+author: "Harris Quach"
+description: "Our prospective crossover study quantifying the acute vascular effects of e-cigarettes vs. tobacco cigarettes via quantitative MRI is now published in JMRI."
+categories:
+  - Research
+  - Publications
+  - Cardiovascular
+---
+
+Our paper examining how smoking and vaping acutely affect vascular function has been published in the *[Journal of Magnetic Resonance Imaging](https://doi.org/10.1002/jmri.70403)*.
+
+## Summary
+
+E-cigarettes are often considered a safer alternative to tobacco, but their acute vascular effects are not well understood — particularly when measured across multiple vascular beds simultaneously. In this prospective study, we recruited 41 smokers/vapers and 17 non-smokers/non-vapers and scanned each participant pre- and post-challenge on three separate days, using either tobacco cigarettes (t-cigs), nicotinized e-cigarettes (e-cigs⁺), or non-nicotinized e-cigarettes (e-cigs⁻). Using 3T quantitative MRI (oximetry and blood flow velocimetry), we characterized changes in femoral artery blood flow velocity waveforms at rest and in response to cuff occlusion — providing a more comprehensive picture of acute vascular response than a single physiological endpoint can offer.
+
+## Citation
+
+> Nabbout, M., Hosseini, M., Quach, H., Langham, M. C., Caporale, A. S., Guo, W., et al. (2026). Acute effects of smoking and vaping on markers of vascular function via quantitative MRI. *Journal of Magnetic Resonance Imaging*. https://doi.org/10.1002/jmri.70403

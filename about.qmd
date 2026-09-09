@@ -17,7 +17,7 @@ about:
     - text: "{{< ai orcid >}} ORCID"
       url: https://orcid.org/0000-0002-9098-9187
     - icon: envelope
-      text: "{{< animate fadeIn 'Email' >}}"
+      text: "{{< animate fadeIn 'harris [dot] quach [at] temple [dot] edu' >}}"
       href: mailto:harris+dot+quach+at+temple+dot+edu
 comments: false
 page-layout: full
@@ -25,7 +25,7 @@ page-layout: full
 
 :::{.animate__animated .animate__slideInRight .animate__faster}
 
-I am an Assistant Professor in the Center for Biostatistics and Epidemiology within the Department of Biomedical Educations and Data Sciences at the Lewis Katz School of Medicine within Temple University. 
+I am an Assistant Professor in the Center for Biostatistics and Epidemiology within the Department of Biomedical Education and Data Science at the Lewis Katz School of Medicine within Temple University. 
 My day-to-day involves developing assisting trainees, residents and faculty with all statistical aspects of their projects, from IRB development and study design to statistical analyses and interpretation. 
 In addition to the interdisciplinary, collaborative research with medical faculty, I continue to develop supervised dimension reduction methods for learning models by constructing summary statistics that describe the most endpoint-relevant features in the data.
 My statistical methods development is motivated by electronic health records (EHRs), electrocardiogram (ECG) data and cardiovascular endpoints in renal disease patients. 

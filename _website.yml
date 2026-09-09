@@ -55,16 +55,9 @@ website:
       # - icon: rss
       #   href: forblog/index.xml
     right: "[Feedback](https://harrisq.github.io/feedback.html) | Website made with [Quarto](https://quarto.org/)"
-  # twitter-card:
-  #   title: "ForBo7 // Salman Naqvi"
-  #   description: "The world of ForBo7!"
-  #   image: cover.png
-  #   card-style: summary_large_image
-  #   creator: "@ForBo7"
-  #   site: "@ForBo7"
-  # open-graph:
-  #   description: "The world of ForBo7!"
-  #   image: cover.png
+  open-graph:
+    description: "Harris Quach — Assistant Professor, Center for Biostatistics and Epidemiology at Temple University, developing dimension reduction methods for biomedical and functional data."
+    image: images/profile_4_2.png
   comments:
     giscus:
       repo: HarrisQ/harrisq.github.io
@@ -75,5 +68,5 @@ website:
       reactions-enabled: true
       loading: lazy
       input-position: top
-      theme: light 
+      theme: preferred_color_scheme
   google-analytics: "G-RP3VXX4HME"

@@ -23,7 +23,7 @@ listing:
 about:
   id: about-harrisquach
   template: jolla
-  image: images/profile_home.jpg
+  image: images/profile_about.jpg
   image-shape: round
   links:
     # Variables don't work here.
@@ -44,7 +44,7 @@ about:
       url: https://www.linkedin.com/in/harrisquach/
     - text: "{{< ai google-scholar >}} Google Scholar"
       url: https://scholar.google.com/citations?user=2hH69DkAAAAJ&hl=en
-    - text: Stat Jobs
+    - text: "{{< fa briefcase >}} Stat Jobs"
       url: https://019f6633-0346-e24b-240b-188c67bd04ac.share.connect.posit.cloud/
     - text: "{{< ai orcid >}} ORCID"
       url: https://orcid.org/0000-0002-9098-9187
