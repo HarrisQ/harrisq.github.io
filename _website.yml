@@ -3,7 +3,7 @@
 website:
   title: "Harris Quach"
   site-url: https://harrisq.github.io/
-  description: ""
+  description: "Harris Quach — Assistant Professor, Center for Biostatistics and Epidemiology at Temple University, developing dimension reduction methods for biomedical and complex data."
   favicon: favicon.ico
 #  favicon: cover.png
   image: images/profile_4_2.png
@@ -36,7 +36,7 @@ website:
       # - icon: rss
       #   href: forblog/index.xml
   page-footer:
-    left: "[Harris Quach](https://harrisq.github.io/) © 2024" #"and ForBlog™ by [Harris Quach](https://harrisq.github.io/about.html)"
+    left: "[Harris Quach](https://harrisq.github.io/) © 2026" #"and ForBlog™ by [Harris Quach](https://harrisq.github.io/about.html)"
     center:
       - icon: github
         text: Github
@@ -54,7 +54,7 @@ website:
       #   href: mailto:salmananaqvii+forblog@gmail.com
       # - icon: rss
       #   href: forblog/index.xml
-    right: "[Version 2.2.1.5](https://harrisq.github.io/patch_notes.html) | [Feedback](https://harrisq.github.io/feedback.html) | Website made with [Quarto](https://quarto.org/)"
+    right: "[Feedback](https://harrisq.github.io/feedback.html) | Website made with [Quarto](https://quarto.org/)"
   # twitter-card:
   #   title: "ForBo7 // Salman Naqvi"
   #   description: "The world of ForBo7!"

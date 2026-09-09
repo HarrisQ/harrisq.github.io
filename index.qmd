@@ -47,7 +47,7 @@ about:
     - text: Stat Jobs
       url: https://019f6633-0346-e24b-240b-188c67bd04ac.share.connect.posit.cloud/
     - text: "{{< ai orcid >}} ORCID"
-      url: https://orcid.org/0000-0003-3131-0864
+      url: https://orcid.org/0000-0002-9098-9187
 back-to-top-navigation: false
 ---
 
